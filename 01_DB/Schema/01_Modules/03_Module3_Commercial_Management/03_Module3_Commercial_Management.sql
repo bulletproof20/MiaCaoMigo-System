@@ -116,9 +116,6 @@ create table product (
     ina_dat_pro timestamp,
     -- Inactivation date
 
-    id_fam int,
-    -- Family
-
     id_pur int,
     -- Last purchase
 
@@ -190,6 +187,15 @@ create table stock (
     check (qty_sto >= 0)
     -- Prevents negative stock
 );
+
+    alter table stock
+    add constraint fk_stock_product
+    foreign key (id_pro)
+    references product(id_pro)
+    on delete cascade;
+
+    
+-- this constraint had to be added via alter table after creating the stock table to prevent an error during the creation of the product table.
 
 --=========================================================
 -- 5. PURCHASE
