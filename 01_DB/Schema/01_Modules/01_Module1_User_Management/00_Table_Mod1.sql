@@ -591,6 +591,9 @@ create table clock_in (
     end_dat_clk timestamp,
     -- Exit time
 
+    ext_tim_clk interval,
+    -- Extra time
+
     constraint pk_clock_in primary key (id_clk),
     -- Unique identifier
 
