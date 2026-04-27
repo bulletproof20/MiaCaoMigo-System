@@ -1,11 +1,12 @@
 --=========================================================
 -- TRIGGERS - MODULE 1
--- Binds functions to table events
+-- Enforces business rules and data integrity through table events
 --=========================================================
 
 --=========================================================
--- TRIGGER: trg_block_clock_in_insert
--- Executes validation before inserting a clock-in record
+-- TRIGGER 1: trg_block_clock_in_insert
+-- Prevents clock-in creation when the employee is absent
+-- during the specified period, without affecting clock-out.
 --=========================================================
 
 create or replace trigger trg_block_clock_in_insert
@@ -15,8 +16,9 @@ execute function fn_block_clock_in_if_absent(); -- calls validation function
 
 
 --=========================================================
--- TRIGGER: trg_block_employee_inactivation
--- Executes validation before setting employee deactivation
+-- TRIGGER 2: trg_block_employee_inactivation
+-- Prevents employee inactivation if there is an active
+-- clock-in record (without end time).
 --=========================================================
 
 create or replace trigger trg_block_employee_inactivation
@@ -26,31 +28,43 @@ execute function fn_block_inactivate_if_clock_active(); -- calls validation
 
 
 --=========================================================
--- TRIGGER: trg_block_assistant_overlap
--- Executes validation before inserting/updating assistant
+-- TRIGGER 3: trg_block_assistant_disjunction
+-- Ensures role disjunction by preventing an employee already
+-- assigned as veterinarian from being assigned as assistant,
+-- and vice versa.
 --=========================================================
 
-create or replace trigger trg_block_assistant_overlap
+create or replace trigger trg_block_assistant_disjunction
 before insert or update on assistant     -- fires on insert or role change
 for each row                              -- executes once per affected row
 execute function fn_block_assistant_if_veterinarian_exists(); -- calls validation
 
 
 --=========================================================
--- TRIGGER: trg_block_veterinarian_overlap
--- Executes validation before inserting/updating veterinarian
+-- TRIGGER 4: trg_block_veterinarian_disjunction
+-- Ensures role disjunction by preventing an employee already
+-- assigned as assistant from being assigned as veterinarian,
+-- and vice versa.
 --=========================================================
 
-create or replace trigger trg_block_veterinarian_overlap
+create or replace trigger trg_block_veterinarian_disjunction
 before insert or update on veterinarian   -- fires on insert or role change
 for each row                               -- executes once per affected row
 execute function fn_block_veterinarian_if_assistant_exists(); -- calls validation
 
 
+
+/*
+drop trigger trg_check_user_mandatory_role on user_account;
+
+-- The teacher advised against implementing this trigger,
+-- as the mandatory role assignment is ensured at the application layer.
+
 --=========================================================
--- TRIGGER: trg_check_user_mandatory_role
--- Executes validation at end of transaction to ensure
--- user has at least one role
+-- TRIGGER X: trg_check_user_mandatory_role
+-- Ensures that each user is associated with at least one role
+-- (employee and/or client), validating at transaction commit
+-- to guarantee consistency after all related operations.
 --=========================================================
 
 create constraint trigger trg_check_user_mandatory_role

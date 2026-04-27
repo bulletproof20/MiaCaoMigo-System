@@ -2,119 +2,243 @@
 
 ## Purpose
 
-This README provides guidance for configuring and running the Docker environment used in the MiaCaoMigo project.
+This document explains how to configure and run the Docker environment used in the MiaCaoMigo project.
 
-All project-related documentation, including system description, requirements, and design decisions, is available in the `00_Planeamento/` directory.
+Its goal is to ensure that any developer can set up the database quickly, consistently, and without manual configuration.
+
+All system-related documentation (requirements, architecture, design decisions) is available in the `00_Planeamento/` directory.
 
 ---
 
 ## Overview
 
-Docker is used to deploy a PostgreSQL database in a consistent and reproducible manner across all development environments.
+Docker is used to deploy a fully configured PostgreSQL database in a controlled and reproducible environment.
 
-This ensures that all team members work with the same database configuration, avoiding inconsistencies caused by local setups.
+This setup guarantees that:
+
+* All developers use the same database version and configuration
+* The full schema is automatically created
+* Business logic (functions, triggers, jobs) is preloaded
+* No manual setup is required
+
+The database is initialized automatically on first run using SQL scripts included in the project.
 
 ---
 
 ## Requirements
 
-Ensure the following tools are installed:
+Make sure the following tools are installed:
 
 * Docker
 * Docker Compose
 
 Verify installation:
 
-```bash id="wkm8ci"
+```bash
 docker --version
 docker compose version
 ```
 
 ---
 
-## Running the Environment
+## Project Structure (Relevant to Docker)
 
-From the root of the project, execute:
-
-```bash id="drq7yx"
-docker compose up -d
+```
+01_DB/
+ ├── Schema/
+ │    ├── init.sql              # Entry point for DB initialization
+ │    ├── 00_Core/             # Core structures and shared logic
+ │    ├── 01_Modules/          # Modular domain structure
+ │
+docker-compose.yml             # Container orchestration
+Dockerfile                     # Custom PostgreSQL image (with pg_cron)
 ```
 
-This will start the PostgreSQL container and initialize the database.
+### Key Concepts
+
+* **init.sql**
+  Central script responsible for orchestrating the entire database creation.
+  It calls all other SQL files in the correct order.
+
+* **00_Core/**
+  Contains shared elements (e.g., common functions, base structures).
+
+* **01_Modules/**
+  Contains modularized database logic (tables, functions, triggers, procedures, jobs).
 
 ---
 
-## Manual Alternative
+## Running the Environment
 
-If the Docker Compose setup does not work as expected, the container can be created manually:
+From the root of the project:
 
-```bash id="mxm8o7"
-docker run -d --name miacaomigo-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=1234 -e POSTGRES_DB=miacaomigo -p 5433:5432 postgres:15
+```bash
+docker compose up -d --build
 ```
+
+This will:
+
+1. Build a custom PostgreSQL image (with `pg_cron`)
+2. Start the container
+3. Create the database (`miacaomigo`)
+4. Execute `init.sql`
+5. Load the entire schema automatically
+
+---
+
+## What Happens on First Run
+
+During the first execution:
+
+* PostgreSQL is initialized
+* The database `miacaomigo` is created
+* The script `init.sql` is executed
+* All modules are loaded:
+
+  * Tables
+  * Functions
+  * Triggers
+  * Indexes
+  * Stored procedures
+  * Scheduled jobs (via pg_cron)
+
+⚠️ This process runs **only once**, when the volume is empty.
 
 ---
 
 ## Database Access
 
-Use the following connection parameters:
+Connection parameters:
 
-* Host: localhost
-* Port: 5433
-* Database: miacaomigo
-* Username: postgres
-* Password: 1234
+* Host: `localhost`
+* Port: `5433`
+* Database: `miacaomigo`
+* Username: `postgres`
+* Password: `1234`
 
 ---
 
-## Port Configuration Justification
+## Port Configuration
 
-The database is exposed on port **5433** instead of the default PostgreSQL port **5432**.
+The container uses:
 
-This avoids conflicts with local PostgreSQL installations, which typically use port 5432. By mapping port 5433 on the host to port 5432 inside the container, multiple PostgreSQL instances can run simultaneously without interference.
+* **5432** internally (PostgreSQL default)
+* **5433** externally (host machine)
+
+This avoids conflicts with local PostgreSQL installations.
 
 ---
 
 ## Connecting via Visual Studio Code
 
-To interact with the database, it is recommended to use Visual Studio Code with the PostgreSQL extension.
+Recommended tool: **PostgreSQL extension**
 
-After installing the extension:
+Steps:
 
-1. Open the PostgreSQL panel
-2. Create a new connection
-3. Use the connection parameters defined above
+1. Open PostgreSQL panel
+2. Create new connection
+3. Use the credentials above
 
 ---
 
-## Initialization Scripts
+## pg_cron (Scheduled Jobs)
 
-SQL scripts placed in `01_DB/init/` are executed automatically when the database is created for the first time.
+The system includes `pg_cron`, allowing scheduled database jobs.
 
-Scripts are executed in alphabetical order, so proper naming is required to maintain dependencies.
+This enables:
+
+* Automatic data maintenance
+* Scheduled processes (e.g., closing records at midnight)
+* Background operations inside PostgreSQL
+
+Configuration is handled automatically via:
+
+* Dockerfile (installs pg_cron)
+* docker-compose (activates it)
+* init.sql (creates jobs)
+
+---
+
+## Initialization Rules
+
+* Only `.sql` files in `/docker-entrypoint-initdb.d` root are executed automatically
+* Subfolders are ignored by PostgreSQL
+* Therefore, **init.sql must be in the root of Schema/**
 
 ---
 
 ## Data Persistence
 
-The database uses a Docker volume to ensure that data is preserved across container restarts.
+A Docker volume is used:
+
+* Data is preserved between restarts
+* Container can be stopped/started without losing data
 
 ---
 
 ## Resetting the Environment
 
-To remove all data and recreate the database:
+To fully reset the database:
 
-```bash id="v7l4gl"
+```bash
 docker compose down -v
-docker compose up -d
+docker compose up -d --build
 ```
 
-This operation deletes all stored data.
+This will:
+
+* Delete all data
+* Recreate the database from scratch
+* Re-run all initialization scripts
+
+---
+
+## Manual Alternative (Not Recommended)
+
+```bash
+docker run -d \
+  --name miacaomigo-db \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=1234 \
+  -e POSTGRES_DB=miacaomigo \
+  -p 5433:5432 \
+  postgres:15
+```
+
+⚠️ This does NOT include:
+
+* pg_cron
+* automatic schema loading
+* project configuration
+
+Use only for debugging.
 
 ---
 
 ## Notes
 
-* Initialization scripts run only during the first container creation
-* A fixed PostgreSQL version is used to ensure stability
-* Port 5433 is used to avoid conflicts with local installations
+* Initialization scripts run only on first container creation
+* The database is fully self-contained and reproducible
+* pg_cron is pre-configured and ready to use
+* The setup is designed for zero manual intervention
+* Port 5433 avoids conflicts with local PostgreSQL instances
+
+---
+
+## Summary
+
+With a single command:
+
+```bash
+docker compose up
+```
+
+You get:
+
+* A running PostgreSQL instance
+* Fully built schema
+* Business rules enforced (triggers/functions)
+* Scheduled jobs configured
+* Identical environment across all machines
+
+---

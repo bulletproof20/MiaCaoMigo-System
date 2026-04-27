@@ -1,11 +1,15 @@
+
+-- Triggers
+
 --=========================================================
 -- FUNCTIONS - MODULE 1 (USER MANAGEMENT / ATTENDANCE)
 -- Contains trigger-support functions and business logic
 --=========================================================
 
 --=========================================================
--- FUNCTION: fn_block_clock_in_if_absent
--- Prevents clock-in during absence (used by trigger)
+-- FUNCTION 1: fn_block_clock_in_if_absent
+-- Prevents clock-in during absence by blocking inserts
+-- that overlap with an absence period.
 --=========================================================
 
 create or replace function fn_block_clock_in_if_absent()
@@ -31,8 +35,9 @@ $$ language plpgsql;
 
 
 --=========================================================
--- FUNCTION: fn_block_inactivate_if_clock_active
--- Prevents employee inactivation if there is an active clock-in
+-- FUNCTION 2: fn_block_inactivate_if_clock_active
+-- Prevents employee inactivation if there is an active
+-- clock-in record (without end time).
 --=========================================================
 
 create or replace function fn_block_inactivate_if_clock_active()
@@ -61,9 +66,68 @@ $$ language plpgsql;
 
 
 --=========================================================
--- FUNCTION: fn_check_user_has_mandatory_role
--- Prevents creation of a user without at least one role
--- (employee and/or client)
+-- FUNCTION 3: fn_block_assistant_if_veterinarian_exists
+-- Ensures role disjunction by preventing assignment as
+-- assistant when the employee is already a veterinarian.
+--=========================================================
+
+create or replace function fn_block_assistant_if_veterinarian_exists()
+returns trigger as $$
+begin
+    -- Check if employee is being assigned as assistant
+    if exists (
+        select 1
+        from veterinarian v
+        where v.id_emp = new.id_emp   -- same employee
+    ) then
+        -- Block insert/update if already veterinarian
+        raise exception 
+        'Cannot assign employee % as assistant: already veterinarian',
+        new.id_emp;
+    end if;
+
+    -- Allow operation if no conflict
+    return new;
+end;
+$$ language plpgsql;
+
+
+--=========================================================
+-- FUNCTION 4: fn_block_veterinarian_if_assistant_exists
+-- Ensures role disjunction by preventing assignment as
+-- veterinarian when the employee is already an assistant.
+--=========================================================
+
+create or replace function fn_block_veterinarian_if_assistant_exists()
+returns trigger as $$
+begin
+    -- Check if employee is being assigned as veterinarian
+    if exists (
+        select 1
+        from assistant a
+        where a.id_emp = new.id_emp   -- same employee
+    ) then
+        -- Block insert/update if already assistant
+        raise exception 
+        'Cannot assign employee % as veterinarian: already assistant',
+        new.id_emp;
+    end if;
+
+    -- Allow operation if no conflict
+    return new;
+end;
+$$ language plpgsql;
+
+
+
+/*
+-- The teacher advised against implementing the mandatory role 
+-- trigger, as this constraint is ensured at the application layer.
+
+--=========================================================
+-- FUNCTION X: fn_check_user_has_mandatory_role
+-- Ensures that a user is associated with at least one role
+-- (employee and/or client), blocking orphan users.
 --=========================================================
 
 create or replace function fn_check_user_has_mandatory_role()
@@ -90,3 +154,13 @@ begin
     return null;
 end;
 $$ language plpgsql;
+*/
+
+
+
+
+
+
+-- Jobs 
+
+

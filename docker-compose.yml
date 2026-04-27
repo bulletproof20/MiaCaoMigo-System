@@ -1,17 +1,50 @@
+# Versão do formato do docker-compose
+# (3.8 é estável e suficiente para este tipo de setup)
+version: '3.8'
+
 services:
-  postgres:
-    image: postgres:15
+  # Nome do serviço (podes chamar "db", "postgres", etc.)
+  db:
+    
+    # Indica que vamos usar um Dockerfile local (na mesma pasta)
+    # Esse Dockerfile instala o pg_cron
+    build: .
+
+    # Nome fixo do container (facilita comandos tipo docker exec)
     container_name: miacaomigo-db
+
+    # Reinicia automaticamente o container se ele cair
     restart: unless-stopped
+
+    # Variáveis de ambiente usadas pelo PostgreSQL no arranque
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: miacaomigo
+      POSTGRES_USER: postgres        # utilizador principal da DB
+      POSTGRES_PASSWORD: 1234        # password do utilizador
+      POSTGRES_DB: miacaomigo        # base de dados criada automaticamente
+
+    # Mapeamento de portas (host:container)
     ports:
       - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./01_DB/init:/docker-entrypoint-initdb.d
+      # 5433 → porta no teu PC
+      # 5432 → porta interna do PostgreSQL
+      # Isto evita conflito com PostgreSQL local
 
+    volumes:
+      # Volume persistente (dados da DB não se perdem ao parar container)
+      - postgres_data:/var/lib/postgresql/data
+
+      # Monta a pasta Schema do projeto dentro do container
+      # PostgreSQL executa automaticamente os .sql aqui na primeira inicialização
+      - ./01_DB/Schema:/docker-entrypoint-initdb.d
+
+    # Configuração adicional passada diretamente ao PostgreSQL
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_cron
+      -c cron.database_name=miacaomigo
+
+
+# Definição do volume persistente
 volumes:
   postgres_data:
+    # Volume gerido pelo Docker (não precisas configurar nada)
