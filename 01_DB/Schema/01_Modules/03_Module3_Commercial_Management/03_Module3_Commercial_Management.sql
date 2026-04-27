@@ -125,6 +125,12 @@ create table product (
     id_sto int,
     -- Current stock
 
+    id_fam int,
+    -- Family
+
+    id_ret int,
+    -- Last return
+
     constraint pk_product primary key (id_pro),
     -- Unique identifier
 
@@ -134,15 +140,18 @@ create table product (
 
     constraint fk_purchase foreign key(id_pur) references purchase(id_pur)
           on delete set null
---on delete set null because if the purchase is deleted for any reason, 
---the product should not be deleted, removed from the catalog 
---and the stock of that product should not be affected
-
+    --on delete set null because if the purchase is deleted for any reason, 
+    --the product should not be deleted, removed from the catalog 
+    --and the stock of that product should not be affected
 
     constraint fk_stock foreign key(id_sto) references stock(id_sto)
             on delete set null
 
-        
+    constraint fk_family foreign key (id_fam) references family(id_fam)
+        on delete set null
+
+    constraint fk_return foreign key (id_ret) references return(id_ret)
+        on delete set null
 
 
 
