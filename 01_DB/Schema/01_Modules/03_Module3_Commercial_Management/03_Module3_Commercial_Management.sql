@@ -1,5 +1,5 @@
 --=========================================================
--- MODULE 3: COMMERCIAL MANAGEMENT (incompleto)
+-- MODULE 3: COMMERCIAL MANAGEMENT (Por retificar)
 --=========================================================
 
 --=========================================================
@@ -53,8 +53,39 @@ create table family (
     -- Unique identifier
 );
 
+
 --=========================================================
--- 2. PRODUCT
+-- 2. INVOICE
+--=========================================================
+-- Stores billing information related to appointments
+create table invoice (
+    id_inv int generated always as identity,
+    -- Invoice identifier
+
+    val_inv numeric(10,2),
+    -- Total value
+
+    dat_inv timestamp,
+    -- Issue date
+
+    bod_inv text,
+    -- Description/content
+
+    id_app int,
+    -- Appointment
+
+    constraint pk_invoice primary key (id_inv),
+    -- Unique identifier
+
+    constraint fk_invoice_appointment foreign key (id_app)
+        references appointment(id_app)
+        on delete set null
+    -- Links to appointment
+);
+
+
+--=========================================================
+-- 3. PRODUCT
 --=========================================================
 -- Stores product information
 create table product (
@@ -88,18 +119,37 @@ create table product (
     id_fam int,
     -- Family
 
+    id_pur int,
+    -- Last purchase
+
+    id_sto int,
+    -- Current stock
+
     constraint pk_product primary key (id_pro),
     -- Unique identifier
 
-    constraint fk_product_family 
-        foreign key (id_fam)
-        references family(id_fam)
+    constraint fk_product_family foreign key (id_fam) references family(id_fam)
         on delete set null
     -- Links product to family
+
+    constraint fk_purchase foreign key(id_pur) references purchase(id_pur)
+          on delete set null
+--on delete set null because if the purchase is deleted for any reason, 
+--the product should not be deleted, removed from the catalog 
+--and the stock of that product should not be affected
+
+
+    constraint fk_stock foreign key(id_sto) references stock(id_sto)
+            on delete set null
+
+        
+
+
+
 );
 
 --=========================================================
--- 3. STOCK
+-- 4. STOCK
 --=========================================================
 -- Tracks product stock and batches
 create table stock (
@@ -136,7 +186,7 @@ create table stock (
 );
 
 --=========================================================
--- 4. PURCHASE
+-- 5. PURCHASE
 --=========================================================
 -- Represents product purchase operations
 create table purchase (
@@ -158,17 +208,28 @@ create table purchase (
     sta_pur varchar(50),
     -- Status
 
-    id_ext_ent int,
+    id_inv int,
     -- Supplier
+
+    id_cli int,
+    -- client
+
+    id_emp int,
+    -- Employee responsible
 
     constraint pk_purchase primary key (id_pur),
     -- Unique identifier
 
-    constraint fk_purchase_supplier 
-        foreign key (id_ext_ent)
-        references external_entity(id_ext_ent)
-        on delete set null,
+    constraint fk_invoice foreign key (id_inv) references invoice(id_inv)
+        on DELETE cascade,
     -- Links to supplier
+
+    constraint fk_client foreign key (id_cli) references client(id_cli)
+        on DELETE set null,
+
+    constraint fk_employee foreign key (id_emp) references employee(id_emp)
+        on DELETE set null,
+
 
     constraint chk_sta_pur
     check (sta_pur in ('pending','received','cancelled') or sta_pur is null)
@@ -176,7 +237,7 @@ create table purchase (
 );
 
 --=========================================================
--- 5. RETURN
+-- 6. RETURN
 --=========================================================
 -- Represents product return operations
 create table return (
@@ -200,7 +261,7 @@ create table return (
 );
 
 --=========================================================
--- 6. ASSOCIATIVE TABLES
+-- 7. ASSOCIATIVE TABLES
 --=========================================================
 -- Defines many-to-many relationships
 
@@ -302,3 +363,5 @@ create table employee_return (
         references return(id_ret)
         on delete cascade
 );
+
+
