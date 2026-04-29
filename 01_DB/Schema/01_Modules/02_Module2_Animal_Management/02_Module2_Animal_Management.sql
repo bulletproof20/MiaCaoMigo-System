@@ -48,8 +48,25 @@ create table species (
     sci_nam_spc varchar(100),
     -- Scientific name
 
+    id_bre int,
+    -- Associated breed
+
+    id_ani int,
+    -- Associated animal
+
     constraint pk_species primary key (id_spc)
     -- Unique identifier
+
+    constraint fk_species_breed foreign key (id_bre) references breed (id_bre) 
+    on delete set null,
+    -- Links to breed
+
+    constraint fk_species_animal foreign key (id_ani) references animal (id_ani)
+    on delete set null,
+    --links to animal
+
+
+
 );
 
 --=========================================================
@@ -111,23 +128,34 @@ create table animal (
     id_bre int,
     -- Breed
 
+    id_del int,
+    -- Associated delivery
+
+    id_own int,
+    -- Associated ownership
+
     constraint pk_animal primary key (id_ani),
     -- Unique identifier
 
     constraint uq_reg_id_ani unique (reg_id_ani),
     -- Prevents duplicate registrations
 
-    constraint fk_animal_species 
-        foreign key (id_spc)
-        references species(id_spc)
+    constraint fk_animal_species foreign key (id_spc) references species(id_spc)
         on delete restrict,
     -- Links to species
 
-    constraint fk_animal_breed 
-        foreign key (id_bre)
-        references breed(id_bre)
+    constraint fk_animal_breed foreign key (id_bre) references breed(id_bre)
         on delete set null,
     -- Links to breed
+
+    constraint fk_animal_delivery foreign key(id_del) references delivery(id_del)
+    on delete set null,
+        --links to delivery
+
+    constraint fk_animal_ownership foreign key(id_own) references ownership(id_own)
+    on delete set null,
+        --links to ownership
+
 
     constraint chk_gen_ani
     check (gen_ani in ('M','F') or gen_ani is null)
@@ -195,6 +223,9 @@ create table ownership (
     id_emp int,
     -- Responsible employee
 
+    id_ani int,
+    -- associated animal
+
     constraint pk_ownership primary key (id_own),
     -- Unique identifier
 
@@ -215,6 +246,10 @@ create table ownership (
         references employee(id_emp)
         on delete set null,
     -- Tracks responsible employee
+
+    constraint fk_ownership_animal foreign key (id_ani) references animal(id_ani)
+    on delete cascade,
+    -- Links to animal
 
     constraint chk_ownership_dates
     check (
@@ -301,6 +336,9 @@ create table delivery (
     id_ani int not null,
     -- Animal
 
+    id_usr int,
+    -- Responsible user
+
     constraint pk_delivery primary key (id_del),
     -- Unique identifier
 
@@ -315,6 +353,10 @@ create table delivery (
         references animal(id_ani)
         on delete cascade,
     -- Links to animal
+
+    constraint fk_delivery_user foreign key(id_user) references user_account(id_usr)
+    on delete set null,
+    -- Links to responsible user
 
     constraint chk_delivery_dates
     check (
