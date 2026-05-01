@@ -169,36 +169,6 @@ create table anamnesis (
 );
 
 --=========================================================
-<<<<<<< HEAD
--- 3. ASSESSMENT
---=========================================================
--- Stores clinical evaluation results
-create table assessment (
-    id_ass int generated always as identity,
-    -- Assessment identifier
-
-    id_app int not null,
-    -- Foreign key to the related appointment
-
-    reg_dat_ass timestamp not null default current_timestamp,
-    -- Record date and time
-
-    des_ass text,
-    -- Detailed description of the clinical findings
-
-    constraint pk_assessment primary key (id_ass),
-    -- Unique identifier
-
-    constraint fk_assessment_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade
-    -- Links to appointment. If appointment is deleted, this record is also deleted.
-);
-
---=========================================================
-=======
->>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
 -- 4. PRESCRIPTION
 --=========================================================
 -- Stores prescriptions issued during appointment
@@ -228,27 +198,6 @@ create table prescription (
 --=========================================================
 -- 5. ASSOCIATIVE TABLE BETWEEN APPOINTMENT AND PRODUCTS
 --=========================================================
-<<<<<<< HEAD
--- Stores billing information related to appointments or other sales.
-create table invoice (
-    id_inv int generated always as identity,
-    -- Invoice identifier
-
-    val_inv numeric(10,2) not null,
-    -- Total value of the invoice. Must be non-negative.
-
-    dat_inv timestamp not null default current_timestamp,
-    -- Issue date of the invoice
-
-    status_inv invoice_status not null default 'Pending',
-    -- Current status of the invoice (e.g., Pending, Paid)
-
-    bod_inv text,
-    -- Description/content of the invoice (e.g., list of items and services)
-
-    id_app int,
-    -- Associated appointment (optional, as an invoice can be for product sales alone)
-=======
 create table rel_app_product (
     id_app int not null,
     -- Prescription
@@ -263,40 +212,10 @@ create table rel_app_product (
     -- Dosage
 
     constraint pk_appointment_product primary key (id_app, id_pro),
->>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
 
     constraint fk_app_pro_appointment 
         foreign key (id_app)
         references appointment(id_app)
-<<<<<<< HEAD
-        on delete set null,
-    -- If an appointment is deleted, the invoice remains but is unlinked for record-keeping.
-
-    constraint chk_val_inv check (val_inv >= 0)
-    -- Ensures the invoice value is not negative
-);
-
---=========================================================
--- 6. ASSOCIATIVE TABLES
---=========================================================
--- Defines many-to-many relationships between core entities.
-
--- EMPLOYEE ↔ APPOINTMENT
--- Associates one or more employees (e.g., vet, assistant) with an appointment.
-create table employee_appointment (
-    id_emp int not null,
-    -- Employee
-
-    id_app int not null,
-    -- Appointment
-
-    constraint pk_employee_appointment primary key (id_emp, id_app),
-
-    constraint fk_emp_app_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-=======
->>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
         on delete cascade,
 
     constraint fk_pre_pro_product 
@@ -309,11 +228,6 @@ create table employee_appointment (
     -- Ensures valid quantity
 );
 
-<<<<<<< HEAD
--- CLIENT ↔ APPOINTMENT
--- Associates one or more clients (tutors) with an appointment.
-create table client_appointment (
-=======
 --=========================================================
 -- 7. CLIENT_NOTIFICATION
 --=========================================================
@@ -322,7 +236,6 @@ create table client_notification (
     id_not int generated always as identity,
     -- Notification identifier
 
->>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
     id_cli int not null,
     -- Client associated with the notification
 
@@ -339,38 +252,10 @@ create table client_notification (
     constraint fk_client_notification_client foreign key (id_cli) references client(id_cli) on delete cascade
 );
 
-<<<<<<< HEAD
--- ANIMAL ↔ APPOINTMENT
--- Associates one or more animals (patients) with an appointment.
-create table animal_appointment (
-    id_ani int not null,
-    -- Animal
-
-    id_app int not null,
-    -- Appointment
-
-    constraint pk_animal_appointment primary key (id_ani, id_app),
-
-    constraint fk_ani_app_animal 
-        foreign key (id_ani)
-        references animal(id_ani)
-        on delete cascade,
-
-    constraint fk_ani_app_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade
-);
-
--- PRESCRIPTION ↔ PRODUCT
--- Details the products included in a prescription, with quantity and dosage.
-create table prescription_product (
-=======
 --=========================================================
 -- 6. ASSOCIATIVE TABLE BETWEEN PRESCRIPTION AND PRODUCTS
 --=========================================================
 create table rel_pre_prod (
->>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
     id_pre int not null,
     -- Prescription
 
@@ -398,78 +283,5 @@ create table rel_pre_prod (
 
     constraint chk_qty_pre
     check (qty_pre_pro > 0)
-<<<<<<< HEAD
-    -- Ensures prescribed quantity is a positive number
-);
-
--- EMPLOYEE ↔ ANAMNESIS
--- Associates employee(s) with an anamnesis record. Useful for tracking who
--- collected the information or for collaborative/supervisory scenarios.
-create table employee_anamnesis (
-    id_emp int not null,
-    -- Employee
-
-    id_ana int not null,
-    -- Anamnesis
-
-    constraint pk_employee_anamnesis primary key (id_emp, id_ana),
-
-    constraint fk_emp_ana_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-
-    constraint fk_emp_ana_anamnesis 
-        foreign key (id_ana)
-        references anamnesis(id_ana)
-        on delete cascade
-);
-
--- EMPLOYEE ↔ ASSESSMENT
--- Associates employee(s) with an assessment record. Useful for tracking who
--- performed the assessment or for collaborative/supervisory scenarios.
-create table employee_assessment (
-    id_emp int not null,
-    -- Employee
-
-    id_ass int not null,
-    -- Assessment
-
-    constraint pk_employee_assessment primary key (id_emp, id_ass),
-
-    constraint fk_emp_ass_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-
-    constraint fk_emp_ass_assessment 
-        foreign key (id_ass)
-        references assessment(id_ass)
-        on delete cascade
-);
-
--- EMPLOYEE ↔ PRESCRIPTION
--- Associates employee(s) with a prescription. Useful for tracking who
--- issued the prescription, especially in a multi-vet environment.
-create table employee_prescription (
-    id_emp int not null,
-    -- Employee
-
-    id_pre int not null,
-    -- Prescription
-
-    constraint pk_employee_prescription primary key (id_emp, id_pre),
-
-    constraint fk_emp_pre_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-
-    constraint fk_emp_pre_prescription 
-        foreign key (id_pre)
-        references prescription(id_pre)
-        on delete cascade
-=======
     -- Ensures valid quantity
->>>>>>> 86b290baa0a7fff5681770d597ff529f1509d490
 );
