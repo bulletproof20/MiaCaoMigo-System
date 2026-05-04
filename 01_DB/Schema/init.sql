@@ -60,8 +60,12 @@ create extension if not exists pg_cron;
 
 
 
+-- =========================================================
+-- MODULE 3: (exemplo)
+-- =========================================================
 
-
+-- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Module3_Commercial_Management.sql
+-- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Module3_Trigger.sql
 
 
 -- =========================================================
