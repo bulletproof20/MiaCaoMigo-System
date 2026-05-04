@@ -6,6 +6,8 @@
 -- ---------------------------------------------------------
 -- 1. EXTENSÕES
 -- ---------------------------------------------------------
+\echo 'Creating pg_cron extension...'
+drop extension if exists pg_cron cascade; -- remove se já existir para evitar erros
 create extension if not exists pg_cron;
 
 -- ---------------------------------------------------------
@@ -21,17 +23,22 @@ create extension if not exists pg_cron;
 -- MODULE 1: USER MANAGEMENT
 -- =========================================================
 
+\echo 'Initializing Module 1: User Management...'
 -- Tabelas
 \i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/00_Table_Mod1.sql
+\echo 'Module 1: Tables created.'
 
 -- Funções
 \i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/01_Functions_Mod1.sql
+\echo 'Module 1: Functions created.'
 
 -- Triggers (dependem das funções)
 \i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/02_Trigger_Mod1.sql
+\echo 'Module 1: Triggers created.'
 
 -- Índices
 \i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/03_Indexes_Mod1.sql
+\echo 'Module 1: Indexes created.'
 
 -- Procedures (se tiveres)
 \i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/04_Procedures_Mod1.sql
@@ -61,21 +68,24 @@ create extension if not exists pg_cron;
 -- MODULE 4: APPOINTMENT MANAGEMENT
 -- =========================================================
 
+\echo 'Initializing Module 4: Appointment Management...'
 -- Tabelas
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Table_Mod4.sql
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Table_mod4.sql
+\echo 'Module 4: Tables created.'
 
--- Funções
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/01_Functions_mod4.sql
+\echo 'Module 4: Functions created.'
 
--- Triggers (dependem das funções)
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Trigger_Mod4.sql
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Triggers_mod4.sql
+\echo 'Module 4: Triggers created.'
 
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Jobs_Mod4.sql
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Jobs_mod4.sql
+\echo 'Module 4: Jobs created.'
+
 
 
 -- =========================================================
 -- FINAL
 -- =========================================================
-
 -- sanity check (opcional)
--- SELECT 'Database initialized successfully' AS status;
+\echo 'Database initialized successfully' AS status;

@@ -1,4 +1,4 @@
-create extension pg_cron; 
+-- create extension pg_cron; 
 
 --=========================================================
 -- JOB 1: auto_close_clock_in_midnight

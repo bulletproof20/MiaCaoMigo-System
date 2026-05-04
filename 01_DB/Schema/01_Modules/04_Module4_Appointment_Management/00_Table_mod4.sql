@@ -69,7 +69,7 @@ create table appointment (
     id_emp int NOT NULL,
 
     --client identifier
-    id_cli NOT NULL,
+    id_cli int NOT NULL,
 
     sch_dat_app timestamp,
     -- Scheduled datetime

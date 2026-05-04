@@ -20,8 +20,8 @@
 -- * * * * *
 
 
-select cron.schedule(
-    'daily_appointment_warnings',
-    '0 8 * * *',  -- Executa todos os dias às 08:00 [A ser alterado ~ João]
-    $$ select fn_appointment_warning_next_day(); $$
-);
+-- select cron.schedule(
+--     'daily_appointment_warnings',
+--     '0 8 * * *',  -- Executa todos os dias às 08:00 [A ser alterado ~ João]
+--     $$ select fn_appointment_warning_next_day(); $$
+-- );

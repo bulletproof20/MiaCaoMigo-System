@@ -54,21 +54,21 @@ execute function fn_block_veterinarian_if_assistant_exists(); -- calls validatio
 
 
 
-/*
-drop trigger trg_check_user_mandatory_role on user_account;
 
--- The teacher advised against implementing this trigger,
--- as the mandatory role assignment is ensured at the application layer.
+-- drop trigger trg_check_user_mandatory_role on user_account;
 
---=========================================================
--- TRIGGER X: trg_check_user_mandatory_role
--- Ensures that each user is associated with at least one role
--- (employee and/or client), validating at transaction commit
--- to guarantee consistency after all related operations.
---=========================================================
+-- -- The teacher advised against implementing this trigger,
+-- -- as the mandatory role assignment is ensured at the application layer.
 
-create constraint trigger trg_check_user_mandatory_role
-after insert on user_account              -- fires after user creation
-deferrable initially deferred             -- executes only at transaction commit
-for each row                              -- executes once per affected row
-execute function fn_check_user_has_mandatory_role(); -- calls validation
+-- --=========================================================
+-- -- TRIGGER X: trg_check_user_mandatory_role
+-- -- Ensures that each user is associated with at least one role
+-- -- (employee and/or client), validating at transaction commit
+-- -- to guarantee consistency after all related operations.
+-- --=========================================================
+
+-- create constraint trigger trg_check_user_mandatory_role
+-- after insert on user_account              -- fires after user creation
+-- deferrable initially deferred             -- executes only at transaction commit
+-- for each row                              -- executes once per affected row
+-- execute function fn_check_user_has_mandatory_role(); -- calls validation
