@@ -134,6 +134,8 @@ create table product (
     constraint fk_product_family foreign key (id_fam) references family(id_fam)
         on delete set null,
     -- Links product to family
+    constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete set null
+    -- Links product to family. Outras FKs serão adicionadas no final.
 
     constraint fk_purchase_product foreign key(id_pur) references purchase(id_pur)
           on delete set null,
@@ -399,7 +401,34 @@ CREATE TABLE InvoiceLine (
 );
 
 -- Melhorar a tabela Return para ligar à linha da fatura
+<<<<<<< HEAD
 ALTER TABLE Return ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_INVOICE_LINE);
 ALTER TABLE Return ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
 ALTER TABLE Return DROP COLUMN REGISTRATION_DATE; -- duplicado
 ALTER TABLE Return RENAME COLUMN INACTIVATION_DATE TO RETURN_DATE;
+=======
+ALTER TABLE "return" ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_INVOICE_LINE);
+ALTER TABLE "return" ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
+ALTER TABLE "return" DROP COLUMN reg_dat_ret; -- duplicado
+ALTER TABLE "return" RENAME COLUMN ina_dat_ret TO RETURN_DATE;
+
+-- =========================================================
+-- 8. ADICIONAR CONSTRAINTS ADIADAS
+-- (Resolve as dependências circulares com a tabela 'product')
+-- =========================================================
+
+ALTER TABLE product
+ADD CONSTRAINT fk_purchase_product
+FOREIGN KEY(id_pur) REFERENCES purchase(id_pur)
+ON DELETE SET NULL;
+
+ALTER TABLE product
+ADD CONSTRAINT fk_stock
+FOREIGN KEY(id_sto) REFERENCES stock(id_sto)
+ON DELETE SET NULL;
+
+ALTER TABLE product
+ADD CONSTRAINT fk_return
+FOREIGN KEY (id_ret) REFERENCES "return"(id_ret)
+ON DELETE SET NULL;
+>>>>>>> 8894e6b1db57caeaf11856394d4f33582d61de43
