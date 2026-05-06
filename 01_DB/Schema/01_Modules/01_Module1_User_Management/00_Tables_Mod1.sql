@@ -97,7 +97,7 @@ create table user_account (
     constraint chk_ema_usr_format
 	check (
 	    ema_usr = lower(trim(ema_usr))
-	    and ema_usr ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+	    and ema_usr ~ '.+@.+\..+'
 	    and ema_usr !~ '@miacaomigo\.pt$'
 	)
 	-- Validates email format and normalization
@@ -481,7 +481,7 @@ create table login_record (
         eml_usr is null
         or (
             eml_usr = lower(trim(eml_usr))
-            and eml_usr ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+            and eml_usr ~ '.+@.+\..+'
         )
     ),
     -- Validates email snapshot format (if provided)
