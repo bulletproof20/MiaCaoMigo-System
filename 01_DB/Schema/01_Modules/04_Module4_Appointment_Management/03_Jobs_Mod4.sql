@@ -20,8 +20,9 @@
 -- * * * * *
 
 
--- select cron.schedule(
---     'daily_appointment_warnings',
---     '0 8 * * *',  -- Executa todos os dias às 08:00 [A ser alterado ~ João]
---     $$ select fn_appointment_warning_next_day(); $$
--- );
+select cron.schedule(
+    'daily_appointment_warnings',
+    '0 8-19 * * 1-5',  -- Executa de hora em hora, das 08:00 às 16:00, de segunda a sexta-feira
+    --A assumir que a clinica só está aberta das 08:00 às 19:00
+    $$ select fn_appointment_warning_next_day(); $$
+);
