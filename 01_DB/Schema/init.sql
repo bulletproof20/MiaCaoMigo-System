@@ -111,15 +111,10 @@ create extension if not exists pg_cron;
 -- =========================================================
 -- FINAL
 -- =========================================================
-<<<<<<< HEAD
-\echo '--- Database initialization complete. ---'
-SELECT 'Database initialized successfully' AS status;
-=======
 
 -- Apply all Foreign Keys
 \i /docker-entrypoint-initdb.d/99_Final/01_ForeignKeys.sql
 
 
 -- sanity check (opcional)
--- SELECT 'Database initialized successfully' AS status;
->>>>>>> 667ea31 (ultimo push antes da alteração das FK)
+SELECT 'Database initialized successfully' AS status;
