@@ -53,7 +53,7 @@ create extension if not exists btree_gist;
 -- Funções base reutilizáveis
 \echo '--- Including Core Base Functions...'
 -- \i /docker-entrypoint-initdb.d/00_Core/02_Functions_Base.sql
-
+/*
 
 -- =========================================================
 -- 3. TABLE CREATION PHASE
@@ -287,15 +287,41 @@ create extension if not exists btree_gist;
 -- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/05_Jobs_Mod4.sql
 
 
-
+*/
 -- =========================================================
 -- 10. SANITY CHECK
 -- =========================================================
+<<<<<<< HEAD
 
 \echo '--- Starting Sanity Check...'
+=======
+/*
+-- Tabelas
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Table_Mod4.sql
+>>>>>>> 9792af4 (teste)
 
 -- final validation query confirming that
 -- the initialization process finished
 -- successfully without fatal errors.
 
+<<<<<<< HEAD
 select 'database initialized successfully' as status;
+=======
+-- Triggers (dependem das funções)
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Trigger_Mod4.sql
+
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Jobs_Mod4.sql
+
+*/
+-- =========================================================
+-- FINAL
+-- =========================================================
+
+-- Apply all Foreign Keys
+-- Made so theres no FK issues during the initial data load 
+\i /docker-entrypoint-initdb.d/99_Final/01_ForeignKeys.sql
+
+
+-- sanity check (opcional)
+SELECT 'Database initialized successfully' AS status;
+>>>>>>> 9792af4 (teste)
