@@ -131,12 +131,10 @@ create table product (
     constraint pk_product primary key (id_pro),
     -- Unique identifier
 
-    constraint fk_product_family foreign key (id_fam) references family(id_fam)
-        on delete set null,
-    -- Links product to family
     constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete set null
     -- Links product to family. Outras FKs serão adicionadas no final.
 
+<<<<<<< HEAD
     constraint fk_purchase_product foreign key(id_pur) references purchase(id_pur)
           on delete set null,
     --on delete set null because if the purchase is deleted for any reason, 
@@ -150,6 +148,8 @@ create table product (
     constraint fk_return foreign key (id_ret) references return(id_ret)
         on delete set null
 
+=======
+>>>>>>> 667ea31 (ultimo push antes da alteração das FK)
 
 );
 

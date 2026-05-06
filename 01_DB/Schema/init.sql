@@ -71,28 +71,6 @@ create extension if not exists pg_cron;
 
 
 -- =========================================================
--- MODULE 4: APPOINTMENT MANAGEMENT (Carregado antes do Módulo 3 devido a dependências)
--- =========================================================
-\echo '--- Starting Module 4: Appointment Management ---'
-
--- Tabelas
-\echo '--- Including Module 4 Tables...'
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Table_Mod4.sql
-
--- Funções
-\echo '--- Including Module 4 Functions...'
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
-
--- Triggers (dependem das funções)
-\echo '--- Including Module 4 Triggers...'
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Trigger_Mod4.sql
-
--- Jobs
-\echo '--- Including Module 4 Jobs...'
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Jobs_Mod4.sql
-
-
--- =========================================================
 -- MODULE 3: COMMERCIAL MANAGEMENT
 -- =========================================================
 \echo '--- Starting Module 3: Commercial Management ---'
@@ -115,7 +93,33 @@ create extension if not exists pg_cron;
 
 
 -- =========================================================
+-- MODULE 4: APPOINTMENT MANAGEMENT
+-- =========================================================
+
+-- Tabelas
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Table_Mod4.sql
+
+-- Funções
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
+
+-- Triggers (dependem das funções)
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Trigger_Mod4.sql
+
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Jobs_Mod4.sql
+
+
+-- =========================================================
 -- FINAL
 -- =========================================================
+<<<<<<< HEAD
 \echo '--- Database initialization complete. ---'
 SELECT 'Database initialized successfully' AS status;
+=======
+
+-- Apply all Foreign Keys
+\i /docker-entrypoint-initdb.d/99_Final/01_ForeignKeys.sql
+
+
+-- sanity check (opcional)
+-- SELECT 'Database initialized successfully' AS status;
+>>>>>>> 667ea31 (ultimo push antes da alteração das FK)
