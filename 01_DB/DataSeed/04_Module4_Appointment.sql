@@ -42,9 +42,6 @@ insert into appointment (id_animal, id_emp, id_cli, sch_dat_app, sta_dat_app, en
 -- 2. OVERALL ASSESSMENT
 --=========================================================
 insert into overall_assessment (id_app, body_temp, weight, hrt_rate, resp_rate, general_status) values
-(2, 38.5, 12.4, 80, 20, 'Animal alerta, mas com desconforto na orelha direita.');
-
-insert into overall_assessment (id_app, body_temp, weight, hrt_rate, resp_rate, general_status) values
 (5, 37.8, 15.0, 75, 18, 'Recuperação excelente, sem sinais de complicação.'),
 (8, 39.0, 8.2, 90, 25, 'Pele avermelhada e com crostas, prurido intenso.'),
 (10, 39.5, 10.1, 100, 30, 'Vómitos e diarreia, desidratado.'),
@@ -64,9 +61,7 @@ insert into overall_assessment (id_app, body_temp, weight, hrt_rate, resp_rate, 
 -- 3. ANAMNESIS
 --=========================================================
 insert into anamnesis (id_app, des_ana) values
-(2, 'Dono reporta que o cão coça a orelha insistentemente há 3 dias e apresenta odor forte.');
-
-insert into anamnesis (id_app, des_ana) values
+(2, 'Dono reporta que o cão coça a orelha insistentemente há 3 dias e apresenta odor forte.'),
 (5, 'Dono satisfeito com a recuperação do animal após cirurgia.'),
 (8, 'Dono refere que o animal se coça muito e tem zonas sem pelo.'),
 (10, 'Dono relata que o animal vomitou várias vezes e teve diarreia nas últimas 24h.'),
@@ -86,9 +81,7 @@ insert into anamnesis (id_app, des_ana) values
 -- 4. PRESCRIPTION
 --=========================================================
 insert into prescription (id_app, des_pre) values
-(2, 'Limpeza diária com solução otológica e aplicação de gotas antibióticas.');
-
-insert into prescription (id_app, des_pre) values
+(2, 'Limpeza diária com solução otológica e aplicação de gotas antibióticas.'),
 (5, 'Manter repouso e observar cicatrização da ferida.'),
 (8, 'Creme tópico para dermatite e banhos com champô medicado.'),
 (10, 'Dieta gastrointestinal e probióticos.'),
@@ -109,9 +102,7 @@ insert into prescription (id_app, des_pre) values
 -- Dependencies: product(1, 4) from Mod3
 --=========================================================
 insert into rel_app_product (id_app, id_pro, qty_pre_pro, dos_pre_pro) values
-(2, 4, 1, 'Aplicação única em consultório para limpeza');
-
-insert into rel_app_product (id_app, id_pro, qty_pre_pro, dos_pre_pro) values
+(2, 4, 1, 'Aplicação única em consultório para limpeza'),
 (5, 1, 1, 'Ração de convalescença, 1kg'),
 (8, 4, 1, 'Champô medicado, aplicação em consultório'),
 (10, 2, 1, 'Ração gastrointestinal, 1kg'),
@@ -132,9 +123,7 @@ insert into rel_app_product (id_app, id_pro, qty_pre_pro, dos_pre_pro) values
 -- Dependencies: prescription(1), product(4)
 --=========================================================
 insert into rel_pre_prod (id_pre, id_pro, qty_pre_pro, dos_pre_pro) values
-(1, 4, 1, 'Aplicar 3 gotas em cada ouvido, 2x ao dia durante 7 dias');
-
-insert into rel_pre_prod (id_pre, id_pro, qty_pre_pro, dos_pre_pro) values
+(1, 4, 1, 'Aplicar 3 gotas em cada ouvido, 2x ao dia durante 7 dias'),
 (2, 1, 1, 'Ração de convalescença, 1kg, por 15 dias'),
 (3, 4, 1, 'Champô medicado, 2x por semana'),
 (4, 2, 1, 'Ração gastrointestinal, 2kg, por 10 dias'),
@@ -155,9 +144,7 @@ insert into rel_pre_prod (id_pre, id_pro, qty_pre_pro, dos_pre_pro) values
 --=========================================================
 insert into client_notification (id_cli, message, is_read) values
 (4, 'Lembrete: O seu animal tem uma consulta agendada para amanhã às 10:00.', false),
-(5, 'A fatura da consulta de ontem já se encontra disponível para pagamento.', true);
-
-insert into client_notification (id_cli, message, is_read) values
+(5, 'A fatura da consulta de ontem já se encontra disponível para pagamento.', true),
 (4, 'A sua consulta de vacinação anual foi agendada para daqui a 3 dias.', false),
 (5, 'O resultado dos exames do seu animal já está disponível.', false),
 (4, 'Não se esqueça de dar a medicação ao seu animal.', false),
