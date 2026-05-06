@@ -1,46 +1,51 @@
 --=========================================================
--- TRIGGERS - MODULE 2 (ANIMAL MANAGEMENT / ADOPTION)
--- Enforces business rules for adoptions and animal flow
+-- TRIGGERS - MODULE 2 (ANIMAL MANAGEMENT)
+-- Enforces business rules and data integrity through table events
 --=========================================================
 
 --=========================================================
--- TRIGGER 1: trg_register_adoption
--- Validates if an animal is available before allowing
--- a new ownership record to be created.
+-- TRIGGER 1: trg_block_ownership_if_animal_inactive
+-- Impede a criação de uma posse (Ownership) se o animal
+-- estiver marcado com uma data de inativação.
 --=========================================================
-create or replace trigger trg_register_adoption
-before insert on ownwership
-for each row
-execute function fn_register_adoption();
+
+create or replace trigger trg_block_ownership_if_animal_inactive
+before insert on ownership           -- dispara antes de associar um dono
+for each row                         -- executa para cada nova posse
+execute function fn_block_ownership_if_animal_inactive();
+
 
 --=========================================================
--- TRIGGER 2: trg_register_delivery_team
--- Handles post-rescue logic, ensuring the animal status
--- is updated to 'Interno' after a delivery is registered.
+-- TRIGGER 2: trg_check_delivery_date_consistency
+-- Garante a integridade temporal impedindo que a entrega
+-- ocorra antes do resgate do animal.
 --=========================================================
-create or replace trigger trg_register_delivery_team
-after insert on delivery
-for each row
-execute function fn_register_delivery_team();
+
+create or replace trigger trg_check_delivery_date_consistency
+before insert or update on delivery   -- dispara no registo ou alteração da entrega
+for each row                          -- executa por linha afetada
+execute function fn_check_delivery_date_after_rescue();
+
 
 --=========================================================
--- TRIGGER 3: trg_animal_exit
--- Automatically closes open ownerships when an animal's 
--- status is updated to a terminal state (e.g., 'Falecido').
+-- TRIGGER 3: trg_prevent_duplicate_active_ownership
+-- Garante que um animal não possa ter dois registos de posse
+-- ativos (sem data de fim) em simultâneo.
 --=========================================================
-create or replace trigger trg_animal_exit
-after update of sta_ani on animal
-for each row
-execute function fn_animal_exit();
+
+create or replace trigger trg_prevent_duplicate_active_ownership
+before insert on ownership           -- dispara antes da inserção
+for each row                         -- executa para cada tentativa de inserção
+execute function fn_prevent_overlapping_ownership();
+
 
 --=========================================================
--- TRIGGER 4: trg_get_animal_history
--- Note: Typically, 'GET' functions are called via SELECT.
--- If used as a trigger for logging purposes, it would 
--- trigger after changes to relevant tables.
+-- TRIGGER 4: trg_validate_animal_breed_species
+-- Verifica se a raça selecionada para o animal pertence 
+-- efetivamente à espécie indicada (evita erros biológicos).
 --=========================================================
-create or replace trigger trg_get_animal_history
-after insert or update on Titularidade
-for each row
-execute function fn_get_animal_history();
 
+create or replace trigger trg_validate_animal_breed_species
+before insert or update on animal    -- dispara na criação ou edição do animal
+for each row                         -- executa por cada animal processado
+execute function fn_validate_breed_species_consistency();
