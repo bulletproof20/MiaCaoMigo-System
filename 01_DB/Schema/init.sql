@@ -56,6 +56,22 @@ create extension if not exists pg_cron;
 
 
 
+-- =========================================================
+-- MODULE 4: APPOINTMENT MANAGEMENT
+-- =========================================================
+
+-- Tabelas
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Table_Mod4.sql
+
+-- Funções
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
+
+-- Triggers (dependem das funções)
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Trigger_Mod4.sql
+
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Jobs_Mod4.sql
+
+
 
 
 -- =========================================================
@@ -74,22 +90,6 @@ create extension if not exists pg_cron;
 -- Procedures (dependem das funções)
 \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Procedures.sql
 
-
-
--- =========================================================
--- MODULE 4: APPOINTMENT MANAGEMENT
--- =========================================================
-
--- Tabelas
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Table_Mod4.sql
-
--- Funções
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
-
--- Triggers (dependem das funções)
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Trigger_Mod4.sql
-
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Jobs_Mod4.sql
 
 
 -- =========================================================
