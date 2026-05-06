@@ -134,23 +134,6 @@ create table product (
     constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete set null
     -- Links product to family. Outras FKs serão adicionadas no final.
 
-<<<<<<< HEAD
-    constraint fk_purchase_product foreign key(id_pur) references purchase(id_pur)
-          on delete set null,
-    --on delete set null because if the purchase is deleted for any reason, 
-    --the product should not be deleted, removed from the catalog 
-    --and the stock of that product should not be affected
-
-    constraint fk_stock foreign key(id_sto) references stock(id_sto)
-            on delete set null,
-
-
-    constraint fk_return foreign key (id_ret) references return(id_ret)
-        on delete set null
-
-=======
->>>>>>> 667ea31 (ultimo push antes da alteração das FK)
-
 );
 
 --=========================================================
@@ -400,13 +383,6 @@ CREATE TABLE InvoiceLine (
     IVA NUMERIC(5,2) NOT NULL
 );
 
--- Melhorar a tabela Return para ligar à linha da fatura
-<<<<<<< HEAD
-ALTER TABLE Return ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_INVOICE_LINE);
-ALTER TABLE Return ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
-ALTER TABLE Return DROP COLUMN REGISTRATION_DATE; -- duplicado
-ALTER TABLE Return RENAME COLUMN INACTIVATION_DATE TO RETURN_DATE;
-=======
 ALTER TABLE "return" ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_INVOICE_LINE);
 ALTER TABLE "return" ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
 ALTER TABLE "return" DROP COLUMN reg_dat_ret; -- duplicado
@@ -431,4 +407,3 @@ ALTER TABLE product
 ADD CONSTRAINT fk_return
 FOREIGN KEY (id_ret) REFERENCES "return"(id_ret)
 ON DELETE SET NULL;
->>>>>>> 8894e6b1db57caeaf11856394d4f33582d61de43
