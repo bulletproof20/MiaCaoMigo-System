@@ -551,11 +551,17 @@ create table absence (
     end_dat_tim_abs timestamp not null,
     -- End datetime
 
-    mot_abs varchar(100),
-    -- Reason
+    mot_abs varchar(50) not null,
+    -- Reason (no_show, justified, etc.)
 
-    sta_abs varchar(20),
-    -- State (aproved, not aproved)
+    sta_abs varchar(20) not null default 'pending',
+    -- State (approved, rejected, pending)
+
+    res_abs int,
+    -- Responsible (NULL = system)
+
+    cre_tim_abs timestamp not null default current_timestamp,
+    -- Creation timestamp
 
     constraint pk_absence primary key (id_abs),
     -- Unique identifier
@@ -568,21 +574,28 @@ create table absence (
 
     constraint chk_mot_abs_format
     check (
-        mot_abs is null
-        or (
-            mot_abs = trim(mot_abs)
-            and length(mot_abs) > 3
-        )
+        mot_abs = lower(trim(mot_abs))
+        and length(mot_abs) > 2
     ),
     -- Prevents empty or meaningless reasons
+
+    constraint chk_sta_abs
+    check (
+        sta_abs in ('pending','approved','rejected', 'cancelled')
+    ),
+    -- Restricts valid states
 
     constraint fk_absence_employee 
         foreign key (id_emp)
         references employee(id_emp)
-        on delete cascade
+        on delete cascade,
+
+    constraint fk_absence_responsible
+        foreign key (res_abs)
+        references employee(id_emp)
+        on delete set null
     -- Links to employee
 );
-
 
 
 --=========================================================
@@ -602,9 +615,6 @@ create table clock_in (
 
     end_dat_clk timestamp,
     -- Exit time
-
-    ext_tim_clk interval,
-    -- Extra time
 
     constraint pk_clock_in primary key (id_clk),
     -- Unique identifier

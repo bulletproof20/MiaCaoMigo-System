@@ -1,3 +1,4 @@
+drop extension if exists pg_cron cascade;
 create extension pg_cron; 
 
 --=========================================================

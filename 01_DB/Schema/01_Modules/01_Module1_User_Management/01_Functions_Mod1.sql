@@ -1,6 +1,3 @@
-
--- Triggers
-
 --=========================================================
 -- FUNCTIONS - MODULE 1 (USER MANAGEMENT / ATTENDANCE)
 -- Contains trigger-support functions and business logic
@@ -155,12 +152,4 @@ begin
 end;
 $$ language plpgsql;
 */
-
-
-
-
-
-
--- Jobs 
-
 
