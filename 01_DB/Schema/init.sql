@@ -14,9 +14,9 @@ create extension if not exists pg_cron;
 -- 2. CORE (tipos, enums, funções base)
 -- ---------------------------------------------------------
 -- (ajusta conforme tiveres)
- \i /docker-entrypoint-initdb.d/00_Core/00_Types.sql
- \i /docker-entrypoint-initdb.d/00_Core/01_Enums.sql
- \i /docker-entrypoint-initdb.d/00_Core/02_Functions_Base.sql
+ --\i /docker-entrypoint-initdb.d/00_Core/00_Types.sql =======AINDA NAO EXISTEM=========
+ --\i /docker-entrypoint-initdb.d/00_Core/01_Enums.sql
+ --\i /docker-entrypoint-initdb.d/00_Core/02_Functions_Base.sql
 
 
 -- =========================================================
@@ -46,10 +46,13 @@ create extension if not exists pg_cron;
 -- MODULE 2: (exemplo)
 -- =========================================================
 
- \i /docker-entrypoint-initdb.d/01_Modules/02_ModuleX/00_Table.sql
- \i /docker-entrypoint-initdb.d/01_Modules/02_ModuleX/01_Functions.sql
- \i /docker-entrypoint-initdb.d/01_Modules/02_ModuleX/02_Triggers.sql
- \i /docker-entrypoint-initdb.d/01_Modules/02_ModuleX/05_Jobs.sql
+ \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/00_table_mod2.sql
+
+ \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/01_Functions_mod2.sql
+
+ \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/02_Triggers_mod2.sql
+
+-- \i /docker-entrypoint-initdb.d/01_Modules/02_ModuleX/05_Jobs.sql
 
 
 
