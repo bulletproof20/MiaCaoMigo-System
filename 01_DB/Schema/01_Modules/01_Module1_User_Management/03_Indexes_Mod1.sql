@@ -1,8 +1,10 @@
 --=========================================================
--- INDEXES - MODULE 1 (USER MANAGEMENT / ATTENDANCE)
--- Ensures data integrity and enforces business rules
--- through partial unique constraints
+-- INDEXES - MODULE 1
+-- Ensures data integrity and operational consistency
+-- through partial unique indexes.
 --=========================================================
+
+
 
 --=========================================================
 -- INDEX 1: uq_login_single_active_session_email
@@ -33,9 +35,47 @@ where dea_dat_emp is null;
 --=========================================================
 -- INDEX 3: uq_clock_in_active_per_employee
 -- Ensures that each employee can have only one
--- active clock-in (without end time).
+-- active clock-in record (without end time).
 --=========================================================
 
 create unique index uq_clock_in_active_per_employee
 on clock_in(id_emp)
 where end_dat_clk is null;
+
+
+
+
+
+
+
+--=========================================================
+-- EXCLUSION CONSTRAINTS - MODULE 1
+-- Ensures temporal integrity and prevents overlapping
+-- operational intervals through GiST exclusion constraints.
+--=========================================================
+
+
+
+--=========================================================
+-- EXCLUDE CONSTRAINT 1: ex_schedule_overlap
+-- Prevents overlapping schedule periods for the same
+-- employee on the same weekday.
+--
+-- Uses GiST indexing with timestamp ranges to enforce
+-- temporal integrity and avoid conflicting work shifts.
+--=========================================================
+
+alter table schedule
+add constraint ex_schedule_overlap
+exclude using gist (
+
+    id_emp with =,
+
+    day_wee_sch with =,
+
+    tsrange(
+        ('2000-01-01'::date + sta_tim_sch)::timestamp,
+        ('2000-01-01'::date + fin_hou_sch)::timestamp
+    ) with &&
+
+);

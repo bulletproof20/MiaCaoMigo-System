@@ -1,121 +1,301 @@
 -- =========================================================
 -- INIT: Database Setup (MiaCaoMigo)
--- Orquestra toda a criação da base de dados
--- =========================================================
+-- orchestrates the complete database creation
 -- =========================================================
 
+
+-- =========================================================
+-- 1. EXTENSIONS
+-- =========================================================
+
+\echo '--- Starting Extensions Setup...'
+
 -- ---------------------------------------------------------
--- 1. EXTENSÕES
+-- pg_cron
 -- ---------------------------------------------------------
-\echo 'Creating pg_cron extension...'
-drop extension if exists pg_cron cascade; -- remove se já existir para evitar erros
+-- Extensão que permite executar jobs agendados
+-- diretamente dentro do PostgreSQL.
+--
+-- O cascade remove dependências associadas caso
+-- a extensão já exista.
+
+\echo '--- creating pg_cron extension...'
+drop extension if exists pg_cron cascade;
+
+\echo '--- enabling pg_cron extension...'
 create extension if not exists pg_cron;
 
+
 -- ---------------------------------------------------------
--- 2. CORE (tipos, enums, funções base)
+-- btree_gist
 -- ---------------------------------------------------------
--- (ajusta conforme tiveres)
--- \echo '--- Including Core Types...'
--- \i /docker-entrypoint-initdb.d/00_Core/00_Types.sql =======AINDA NAO EXISTEM=========
--- \echo '--- Including Core Enums...'
+-- Extensão que adiciona suporte a operadores
+-- B-Tree (=, <, >, etc.) dentro de índices GiST.
+
+\echo '--- enabling btree_gist extension...'
+create extension if not exists btree_gist;
+
+
+-- =========================================================
+-- 2. CORE
+-- =========================================================
+
+\echo '--- Starting Core Setup...'
+
+-- Tipos personalizados globais
+\echo '--- Including Core Types...'
+-- \i /docker-entrypoint-initdb.d/00_Core/00_Types.sql
+
+-- Enums globais
+\echo '--- Including Core Enums...'
 -- \i /docker-entrypoint-initdb.d/00_Core/01_Enums.sql
--- \echo '--- Including Core Base Functions...'
+
+-- Funções base reutilizáveis
+\echo '--- Including Core Base Functions...'
 -- \i /docker-entrypoint-initdb.d/00_Core/02_Functions_Base.sql
 
 
 -- =========================================================
--- MODULE 1: USER MANAGEMENT
+-- 3. TABLE CREATION PHASE
 -- =========================================================
-\echo '--- Starting Module 1: User Management ---'
+-- in this phase all tables are created first.
+--
+-- this guarantees:
+-- - all entities exist beforehand
+-- - no dependency issues
+-- - easier modularization
+-- - cleaner foreign key management
+-- =========================================================
 
--- Tabelas
-\echo '--- Including Module 1 Tables...'
-\i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/00_Table_Mod1.sql
 
--- Funções
+
+-- =========================================================
+-- module 1: user management
+-- =========================================================
+
+\echo '--- Creating Module 1 Tables...'
+\i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/00_Tables_Mod1.sql
+
+
+-- =========================================================
+-- module 2: animal management
+-- =========================================================
+
+\echo '--- Creating Module 2 Tables...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/00_Tables_Mod2.sql
+
+
+-- =========================================================
+-- module 3: commercial management
+-- =========================================================
+
+\echo '--- Creating Module 3 Tables...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/00_Tables_Mod3.sql
+
+
+-- =========================================================
+-- module 4: appointment management
+-- =========================================================
+
+\echo '--- Creating Module 4 Tables...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Tables_Mod4.sql
+
+
+
+-- =========================================================
+-- 4. FOREIGN KEYS PHASE
+-- =========================================================
+-- foreign keys are applied only after all
+-- tables are created.
+--
+-- this avoids:
+-- - circular dependencies
+-- - missing table references
+-- - module loading order problems
+-- =========================================================
+
+\echo '--- Applying Global Foreign Keys...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/00_Core/99_ForeignKeys.sql
+
+
+
+-- =========================================================
+-- 5. FUNCTIONS PHASE
+-- =========================================================
+-- functions are loaded after tables and
+-- foreign keys because they may depend on:
+-- - constraints
+-- - relations
+-- - existing entities
+-- =========================================================
+
+
+-- =========================================================
+-- module 1: user management
+-- =========================================================
+
 \echo '--- Including Module 1 Functions...'
 \i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/01_Functions_Mod1.sql
 
--- Triggers (dependem das funções)
-\echo '--- Including Module 1 Triggers...'
-\i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/02_Trigger_Mod1.sql
 
--- Índices
+-- =========================================================
+-- module 2: animal management
+-- =========================================================
+
+\echo '--- Including Module 2 Functions...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/01_Functions_Mod2.sql
+
+
+-- =========================================================
+-- module 3: commercial management
+-- =========================================================
+
+\echo '--- Including Module 3 Functions...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/01_Functions_Mod3.sql
+
+
+-- =========================================================
+-- module 4: appointment management
+-- =========================================================
+
+\echo '--- Including Module 4 Functions...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
+
+
+
+-- =========================================================
+-- 6. TRIGGERS PHASE
+-- =========================================================
+-- triggers are loaded after functions because
+-- triggers depend directly on trigger functions.
+-- =========================================================
+
+
+-- =========================================================
+-- module 1: user management
+-- =========================================================
+
+\echo '--- Including Module 1 Triggers...'
+\i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/02_Triggers_Mod1.sql
+
+
+-- =========================================================
+-- module 2: animal management
+-- =========================================================
+
+\echo '--- Including Module 2 Triggers...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/02_Triggers_Mod2.sql
+
+
+-- =========================================================
+-- module 3: commercial management
+-- =========================================================
+
+\echo '--- Including Module 3 Triggers...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/02_Triggers_Mod3.sql
+
+
+-- =========================================================
+-- module 4: appointment management
+-- =========================================================
+
+\echo '--- Including Module 4 Triggers...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Triggers_Mod4.sql
+
+
+
+-- =========================================================
+-- 7. INDEXES PHASE
+-- =========================================================
+-- indexes are created after tables and
+-- constraints for optimization purposes.
+-- =========================================================
+
+
+-- =========================================================
+-- module 1: user management
+-- =========================================================
+
 \echo '--- Including Module 1 Indexes...'
 \i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/03_Indexes_Mod1.sql
 
--- Procedures (se tiveres)
+
+-- =========================================================
+-- module 2: animal management
+-- =========================================================
+
+\echo '--- Including Module 2 Indexes...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/03_Indexes_Mod2.sql
+
+
+-- =========================================================
+-- module 3: commercial management
+-- =========================================================
+
+\echo '--- Including Module 3 Indexes...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Indexes_Mod3.sql
+
+
+-- =========================================================
+-- module 4: appointment management
+-- =========================================================
+
+\echo '--- Including Module 4 Indexes...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Indexes_Mod4.sql
+
+
+
+-- =========================================================
+-- 8. PROCEDURES PHASE
+-- =========================================================
+
 \echo '--- Including Module 1 Procedures...'
 \i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/04_Procedures_Mod1.sql
 
--- Jobs (sempre no fim)
+\echo '--- Including Module 2 Procedures...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/04_Procedures_Mod2.sql
+
+\echo '--- Including Module 3 Procedures...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/04_Procedures_Mod3.sql
+
+\echo '--- Including Module 4 Procedures...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/04_Procedures_Mod4.sql
+
+
+
+-- =========================================================
+-- 9. JOBS PHASE
+-- =========================================================
+-- scheduled jobs are loaded at the end
+-- because they may depend on:
+-- - procedures
+-- - functions
+-- - triggers
+-- - existing data structures
+-- =========================================================
+
 \echo '--- Including Module 1 Jobs...'
 \i /docker-entrypoint-initdb.d/01_Modules/01_Module1_User_Management/05_Jobs_Mod1.sql
 
+\echo '--- Including Module 2 Jobs...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/05_Jobs_Mod2.sql
 
--- =========================================================
--- MODULE 2: ANIMAL MANAGEMENT
--- =========================================================
-\echo '--- Starting Module 2: Animal Management ---'
-\echo '--- Including Module 2 Tables...'
-\i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/00_table_mod2.sql
+\echo '--- Including Module 3 Jobs...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/05_Jobs_Mod3.sql
 
-\echo '--- Including Module 2 Functions...'
-\i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/01_Functions_mod2.sql
+\echo '--- Including Module 4 Jobs...'
+-- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/05_Jobs_Mod4.sql
 
-\echo '--- Including Module 2 Triggers...'
-\i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/02_Triggers_mod2.sql
-
--- \echo '--- Including Module 2 Jobs...'
--- \i /docker-entrypoint-initdb.d/01_Modules/02_ModuleX/05_Jobs.sql
 
 
 -- =========================================================
--- MODULE 3: COMMERCIAL MANAGEMENT
--- =========================================================
-\echo '--- Starting Module 3: Commercial Management ---'
-
--- Tabelas
-\echo '--- Including Module 3 Tables...'
-\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Module3_Commercial_Management.sql -- Este ficheiro deve conter as tabelas do Módulo 3
-
--- Funções (dependem das tabelas)
-\echo '--- Including Module 3 Functions...'
-\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Module3_Functions.sql
-
--- Triggers (dependem das funções)
-\echo '--- Including Module 3 Triggers...'
-\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Module3_Trigger.sql
-
--- Procedures (dependem das funções)
-\echo '--- Including Module 3 Procedures...'
-\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Procedures.sql
-
-
--- =========================================================
--- MODULE 4: APPOINTMENT MANAGEMENT
+-- 10. SANITY CHECK
 -- =========================================================
 
--- Tabelas
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Table_Mod4.sql
+\echo '--- Starting Sanity Check...'
 
--- Funções
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/01_Functions_Mod4.sql
+-- final validation query confirming that
+-- the initialization process finished
+-- successfully without fatal errors.
 
--- Triggers (dependem das funções)
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/02_Trigger_Mod4.sql
-
-\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Jobs_Mod4.sql
-
-
--- =========================================================
--- FINAL
--- =========================================================
-
--- Apply all Foreign Keys
--- Made so theres no FK issues during the initial data load 
-\i /docker-entrypoint-initdb.d/99_Final/01_ForeignKeys.sql
-
-
--- sanity check (opcional)
-SELECT 'Database initialized successfully' AS status;
+select 'database initialized successfully' as status;

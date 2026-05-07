@@ -116,4 +116,68 @@ end;
 $$ language plpgsql;
 
 
+--=========================================================
+-- FUNCTION 5: fn_block_absence_overlap_by_user
+-- Prevents overlapping absences for the same user,
+-- even across multiple employee records associated
+-- with that user.
+--=========================================================
+
+create or replace function fn_block_absence_overlap_by_user()
+returns trigger as $$
+begin
+
+    -- Only validate operationally active absence states
+    if new.sta_abs in ('pending', 'approved', 'detected') then
+
+        -- Check if another overlapping absence exists
+        -- for any employee record associated with the same user
+        if exists (
+
+            select 1
+
+            from absence a
+
+            inner join employee e_existing
+                on e_existing.id_emp = a.id_emp
+
+            inner join employee e_new
+                on e_new.id_emp = new.id_emp
+
+            where e_existing.id_usr = e_new.id_usr
+            -- Same user
+
+              and (
+                    tg_op = 'INSERT'
+                    or a.id_abs <> new.id_abs
+                  )
+            -- Ignore same absence during updates
+
+              and a.sta_abs in (
+                    'pending',
+                    'approved',
+                    'detected'
+                  )
+            -- Only validate operationally active absences
+
+              and new.sta_dat_tim_abs < a.end_dat_tim_abs
+              and new.end_dat_tim_abs > a.sta_dat_tim_abs
+            -- Temporal overlap validation
+
+        ) then
+
+            -- Block insert/update if overlap exists
+            raise exception
+            'Cannot create overlapping absences for the same user';
+
+        end if;
+
+    end if;
+
+    -- Allow operation if no conflict
+    return new;
+
+end;
+$$ language plpgsql;
+
 
