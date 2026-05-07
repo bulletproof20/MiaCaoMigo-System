@@ -53,3 +53,13 @@ for each row                               -- executes once per affected row
 execute function fn_block_veterinarian_if_assistant_exists(); -- calls validation
 
 
+--=========================================================
+-- TRIGGER 5: trg_block_absence_overlap_by_user
+-- Prevents overlapping absences for the same user
+-- across all associated employee records.
+--=========================================================
+
+create or replace trigger trg_block_absence_overlap_by_user
+before insert or update on absence     -- fires on insert or absence update
+for each row                           -- executes once per affected row
+execute function fn_block_absence_overlap_by_user(); -- calls validation
