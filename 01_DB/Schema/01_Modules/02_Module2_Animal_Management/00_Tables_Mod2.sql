@@ -170,7 +170,7 @@ create table external_entity (
 );
 
 --=========================================================
--- 5. OWNERSHIP
+-- 5. Ownership
 --=========================================================
 -- Defines ownership relation between client and animal
 create table ownership (
