@@ -161,3 +161,33 @@ begin
     end loop;
 end;
 $$ language plpgsql;
+
+
+--=========================================================
+-- FUNCTION 8: fn_appointment_see_app_clt
+-- Allows clients to see their appointments
+--=========================================================
+CREATE FUNCTION fn_appointment_see_app_clt(clt_id int)
+ RETURNS table(
+    id_app int,
+    sch_dat_app timestamp,
+    nam_usr varchar(100)
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  select ap.id_app, ap.sch_dat_app, uac.nam_usr 
+  from appointment ap 
+  inner join animal an on ap.id_app = an.id_app
+  inner join user_account uac on uac. = an.id_app
+  inner join client cl on ap.id_app = an.id_app
+  WHERE ap.id_cli = clt_id
+
+  EXCEPTION NOT FOUND then
+    RAISE EXCEPTION 'Cliente não encontrado'
+EXCEPTION IF OTHERS THEN
+    RAISE 'Erro: %', SQLERRM
+
+
+

@@ -1,50 +1,50 @@
-# Versão do formato do docker-compose
-# (3.8 é estável e suficiente para este tipo de setup)
+# Docker-compose format version
+# (3.8 is stable and sufficient for this type of setup)
 version: '3.8'
 
 services:
-  # Nome do serviço (podes chamar "db", "postgres", etc.)
+  # Service name (you can call it "db", "postgres", etc.)
   db:
     
-    # Indica que vamos usar um Dockerfile local (na mesma pasta)
-    # Esse Dockerfile instala o pg_cron
+    # Indicates that we will use a local Dockerfile (in the same folder)
+    # This Dockerfile installs pg_cron
     build: .
 
-    # Nome fixo do container (facilita comandos tipo docker exec)
+    # Fixed container name (facilitates commands like docker exec)
     container_name: miacaomigo-db
 
-    # Reinicia automaticamente o container se ele cair
+    # Automatically restarts the container if it crashes
     restart: unless-stopped
 
-    # Variáveis de ambiente usadas pelo PostgreSQL no arranque
+    # Environment variables used by PostgreSQL on startup
     environment:
-      POSTGRES_USER: postgres        # utilizador principal da DB
-      POSTGRES_PASSWORD: 1234        # password do utilizador
-      POSTGRES_DB: miacaomigo        # base de dados criada automaticamente
+      POSTGRES_USER: postgres        # main DB user
+      POSTGRES_PASSWORD: 1234        # user password
+      POSTGRES_DB: miacaomigo        # database created automatically
 
-    # Mapeamento de portas (host:container)
+    # Port mapping (host:container)
     ports:
       - "5433:5432"
-      # 5433 → porta no teu PC
-      # 5432 → porta interna do PostgreSQL
-      # Isto evita conflito com PostgreSQL local
+      # 5433 → port on your PC
+      # 5432 → internal PostgreSQL port
+      # This avoids conflict with a local PostgreSQL
 
     volumes:
-      # Volume persistente (dados da DB não se perdem ao parar container)
+      # Persistent volume (DB data is not lost when stopping the container)
       - postgres_data:/var/lib/postgresql/data
 
-      # Monta a pasta Schema do projeto dentro do container
-      # PostgreSQL executa automaticamente os .sql aqui na primeira inicialização
+      # Mounts the project's Schema folder inside the container
+      # PostgreSQL automatically executes the .sql files here on first initialization
       - ./01_DB/Schema:/docker-entrypoint-initdb.d
 
-    # Configuração adicional passada diretamente ao PostgreSQL
+    # Additional configuration passed directly to PostgreSQL
     command: >
       postgres
       -c shared_preload_libraries=pg_cron
       -c cron.database_name=miacaomigo
 
 
-# Definição do volume persistente
+# Persistent volume definition
 volumes:
   postgres_data:
-    # Volume gerido pelo Docker (não precisas configurar nada)
+    # Volume managed by Docker (you don't need to configure anything)
