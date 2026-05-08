@@ -4,21 +4,7 @@
 -- central orchestration script responsible for
 -- loading the complete database architecture.
 --
--- this file coordinates:
--- - infrastructure extensions
--- - structural entities
--- - integrity enforcement
--- - master/reference data
--- - metadata documentation
--- - reusable query layers
--- - validation routines
---
--- execution order is critical to ensure:
--- - dependency consistency
--- - relational integrity
--- - deterministic initialization
--- - stable deployment behavior
--- =========================================================
+
 
 \echo '========================================'
 \echo 'MIACAOMIGO DATABASE INITIALIZATION'
@@ -138,9 +124,3 @@
 -- =========================================================
 -- initialization completed
 -- =========================================================
--- final orchestration confirmation.
--- =========================================================
-
-\echo '========================================'
-\echo 'DATABASE INITIALIZATION FINISHED'
-\echo '========================================'
