@@ -291,3 +291,229 @@ comment on constraint chk_pas_cli_format on client is
 
 comment on constraint chk_client_dates on client is
 'ensures temporal consistency of client lifecycle';
+
+--=========================================================
+-- 9. login_record
+--=========================================================
+
+comment on table login_record is
+'stores authentication attempts, session lifecycle, and login audit history';
+
+comment on column login_record.id_log is
+'unique login record identifier';
+
+comment on column login_record.sig_tim_log is
+'login/sign-in timestamp';
+
+comment on column login_record.sou_tim_log is
+'logout/sign-out timestamp';
+
+comment on column login_record.suc_log is
+'indicates whether authentication was successful';
+
+comment on column login_record.ip_add_log is
+'ip address used during authentication attempt';
+
+comment on column login_record.eml_usr is
+'email snapshot used during authentication attempt';
+
+comment on column login_record.id_usr is
+'reference to associated user account when applicable';
+
+comment on constraint pk_login_record on login_record is
+'ensures unique identification of each login record';
+
+comment on constraint chk_login_time on login_record is
+'ensures temporal consistency of authentication sessions';
+
+comment on constraint chk_login_email_format on login_record is
+'validates normalized email snapshot format';
+
+comment on constraint fk_login_record_user on login_record is
+'links authentication record to user account';
+
+
+--=========================================================
+-- 10. schedule
+--=========================================================
+
+comment on table schedule is
+'defines recurring weekly operational schedules for employees';
+
+comment on column schedule.id_emp is
+'reference to employee entity';
+
+comment on column schedule.day_wee_sch is
+'day of the week associated with the schedule entry';
+
+comment on column schedule.sta_tim_sch is
+'schedule start time';
+
+comment on column schedule.fin_hou_sch is
+'schedule end time';
+
+comment on constraint pk_schedule on schedule is
+'ensures unique schedule interval per employee';
+
+comment on constraint chk_schedule_day on schedule is
+'validates allowed weekday range';
+
+comment on constraint chk_schedule_time on schedule is
+'validates schedule temporal interval consistency';
+
+comment on constraint fk_schedule_employee on schedule is
+'links schedule entry to employee';
+
+
+--=========================================================
+-- 11. absence
+--=========================================================
+
+comment on table absence is
+'stores employee absences, operational interruptions, and approval lifecycle';
+
+comment on column absence.id_abs is
+'unique absence identifier';
+
+comment on column absence.id_emp is
+'reference to employee entity';
+
+comment on column absence.sta_dat_tim_abs is
+'absence start timestamp';
+
+comment on column absence.end_dat_tim_abs is
+'absence end timestamp';
+
+comment on column absence.mot_abs is
+'normalized absence reason';
+
+comment on column absence.sta_abs is
+'current operational absence state';
+
+comment on column absence.res_abs is
+'employee responsible for absence validation or resolution';
+
+comment on column absence.cre_tim_abs is
+'absence creation timestamp';
+
+comment on constraint pk_absence on absence is
+'ensures unique identification of each absence';
+
+comment on constraint chk_absence_time on absence is
+'ensures absence temporal interval consistency';
+
+comment on constraint chk_mot_abs_format on absence is
+'validates normalized absence reason format';
+
+comment on constraint chk_sta_abs on absence is
+'restricts allowed operational absence states';
+
+comment on constraint fk_absence_employee on absence is
+'links absence to employee';
+
+comment on constraint fk_absence_responsible on absence is
+'tracks responsible employee for absence processing';
+
+
+--=========================================================
+-- 12. clock_in
+--=========================================================
+
+comment on table clock_in is
+'stores employee attendance intervals and operational presence records';
+
+comment on column clock_in.id_clk is
+'unique attendance record identifier';
+
+comment on column clock_in.id_emp is
+'reference to employee entity';
+
+comment on column clock_in.sta_dat_clk is
+'attendance start timestamp';
+
+comment on column clock_in.end_dat_clk is
+'attendance end timestamp';
+
+comment on constraint pk_clock_in on clock_in is
+'ensures unique identification of each attendance record';
+
+comment on constraint chk_clock_time on clock_in is
+'ensures temporal consistency of attendance intervals';
+
+comment on constraint fk_clock_employee on clock_in is
+'links attendance record to employee';
+
+
+--=========================================================
+-- 13. setup
+--=========================================================
+
+comment on table setup is
+'stores user interface preferences and operational configuration settings';
+
+comment on column setup.id_usr is
+'reference to associated user account';
+
+comment on column setup.the_set is
+'user interface theme preference';
+
+comment on column setup.lan_set is
+'user interface language preference';
+
+comment on constraint pk_setup on setup is
+'ensures one-to-one relation between setup and user account';
+
+comment on constraint fk_setup_user on setup is
+'links setup preferences to user account';
+
+comment on constraint chk_the_set_format on setup is
+'validates allowed interface theme values';
+
+comment on constraint chk_lan_set_format on setup is
+'validates normalized language code structure';
+
+
+--=========================================================
+-- 14. occupies
+--=========================================================
+
+comment on table occupies is
+'associates employees with operational access profiles';
+
+comment on column occupies.id_emp is
+'reference to employee entity';
+
+comment on column occupies.id_pro is
+'reference to profile entity';
+
+comment on constraint pk_occupies on occupies is
+'ensures unique employee-profile association';
+
+comment on constraint fk_occ_employee on occupies is
+'links association to employee';
+
+comment on constraint fk_occ_profile on occupies is
+'links association to profile';
+
+
+--=========================================================
+-- 15. have
+--=========================================================
+
+comment on table have is
+'associates profiles with granular operational permissions';
+
+comment on column have.id_pro is
+'reference to profile entity';
+
+comment on column have.id_per is
+'reference to permission entity';
+
+comment on constraint pk_have on have is
+'ensures unique profile-permission association';
+
+comment on constraint fk_have_profile on have is
+'links permission association to profile';
+
+comment on constraint fk_have_permission on have is
+'links permission association to permission';
