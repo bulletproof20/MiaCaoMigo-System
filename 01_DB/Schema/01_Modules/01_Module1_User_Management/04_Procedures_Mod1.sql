@@ -1,5 +1,11 @@
 --=========================================================
--- PROCEDURE: prc_auto_close_clock_in_midnight
+-- PROCEDURES - MODULE 1
+-- Contains automated operational maintenance procedures
+--=========================================================
+
+
+--=========================================================
+-- PROCEDURE 1: prc_auto_close_clock_in_midnight
 -- Closes open clock-in records from previous days by setting
 -- the end time to midnight (00:00) of the current day.
 --=========================================================
@@ -21,7 +27,7 @@ $$;
 
 
 --=========================================================
--- PROCEDURE: prc_auto_cancel_expired_absences
+-- PROCEDURE 2: prc_auto_cancel_expired_absences
 -- Automatically cancels pending absences whose end date
 -- has already passed, preserving historical records.
 --=========================================================

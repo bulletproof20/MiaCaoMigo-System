@@ -65,16 +65,3 @@ for each row                           -- executes once per affected row
 execute function fn_block_absence_overlap_by_user(); -- calls validation
 
 
---=========================================================
--- TRIGGER 7: trg_validate_schedule_operational_rules
--- Enforces operational scheduling rules including:
--- - sunday restriction
--- - operational working hours
--- - maximum schedules per weekday
--- - maximum weekly scheduled workload
---=========================================================
-
-create or replace trigger trg_validate_schedule_operational_rules
-before insert or update on schedule
-for each row
-execute function fn_validate_schedule_operational_rules();

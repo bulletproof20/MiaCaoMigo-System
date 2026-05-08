@@ -151,7 +151,7 @@ begin
                     tg_op = 'INSERT'
                     or a.id_abs <> new.id_abs
                   )
-            -- Ignore same absence during updates
+            -- Ignore same absence during updates 
 
               and a.sta_abs in (
                     'pending',

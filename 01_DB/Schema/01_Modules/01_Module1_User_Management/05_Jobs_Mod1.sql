@@ -18,7 +18,7 @@ select cron.schedule(
 -- pending absences whose end date has already passed.
 --=========================================================
 
-select cron.schedule(
+select cron.schedule( 
     'auto_cancel_expired_absences',
     '5 0 * * *',  -- every day at 00:05
     $$ call prc_auto_cancel_expired_absences(); $$

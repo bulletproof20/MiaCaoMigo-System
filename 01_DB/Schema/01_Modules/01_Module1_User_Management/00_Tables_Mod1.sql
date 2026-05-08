@@ -104,6 +104,7 @@ create table user_account (
 	-- and excludes corporate domain @miacaomigo.pt
 );
 
+
 --=========================================================
 -- 2. PROFILE
 --=========================================================
@@ -257,7 +258,7 @@ create table employee (
     -- Validates emergency phone format (E.164)
 
     constraint chk_pas_emp_format
-    check (length(trim(pas_emp)) >= 20),
+    check (length(trim(pas_emp)) >= 16),
     -- Ensures password hash is not trivial/invalid
 
     constraint fk_employee_user 
@@ -394,7 +395,7 @@ create table client (
     -- Links client to user
 
     constraint chk_pas_cli_format
-    check (length(trim(pas_cli)) >= 20),
+    check (length(trim(pas_cli)) >= 16),
     -- Ensures password hash is not trivial/invalid
 
     constraint chk_client_dates
@@ -576,7 +577,7 @@ create table absence (
     constraint chk_mot_abs_format
     check (
         mot_abs = lower(trim(mot_abs))
-        and length(mot_abs) > 2
+        and length(mot_abs) > 2 
     ),
     -- Prevents empty or meaningless reasons
 
