@@ -24,7 +24,6 @@ select cron.schedule(
     --A assumir que a clinica só está aberta das 09:00 às 20:00
     $$ CALL prc_generate_appointment_warnings(); $$
 );
-
 --=========================================================
 -- JOB 1: opened_appointments_auto_close
 -- Executes daily to close opened appointments on the previous day.

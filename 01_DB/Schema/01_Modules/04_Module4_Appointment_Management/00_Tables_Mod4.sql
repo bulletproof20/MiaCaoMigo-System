@@ -40,7 +40,7 @@ drop type if exists invoice_status cascade;
 -- Defines custom ENUM types for status fields to ensure data consistency.
 
 create type appointment_status as enum (
-    'Scheduled', 
+    'Scheduled',
     'In Progress', 
     'Completed', 
     'Cancelled', 

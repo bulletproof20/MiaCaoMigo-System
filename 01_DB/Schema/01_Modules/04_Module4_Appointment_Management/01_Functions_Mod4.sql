@@ -146,7 +146,6 @@ create or replace function fn_appointment_see_app_clt(p_client_id int)
 returns table(
     appointment_id int,
     scheduled_date timestamp,
-    start_date timestamp,
     status appointment_status,
     vet_name varchar(100),
     animal_name varchar(100)
@@ -156,9 +155,14 @@ begin
     return query
     select
         a.id_app,
-        a.sch_dat_app,
-        a.sta_dat_app,
-        a.status_app,
+        a.sch_dat_app,      
+        -- Derive the status on-the-fly for real-time accuracy
+        case
+            when a.status_app = 'Scheduled' and a.sch_dat_app < now() then 'Late'::appointment_status
+            else a.status_app
+            -- If the time has passed and it's still marked as 'Scheduled', we consider it 'Late' for client visibility, but we don't update the actual status in the database here.
+            -- The real status update would be handled by a scheduled job or trigger that runs periodically to update statuses based on time. - not incorporated 
+        end as status,
         e.nam_emp,
         an.nam_ani
     from appointment a

@@ -153,7 +153,7 @@ begin
         status_app = 'In Progress'
     where
         id_app = p_app_id
-        and status_app = 'Scheduled'; -- Can only start a scheduled appointment
+        and status_app in ('Scheduled'); -- Can start if it's scheduled 
 
     if not found then
         raise exception 'Não foi possível iniciar a consulta. Verifique se o ID % existe e se o estado é "Scheduled".', p_app_id;
@@ -189,3 +189,4 @@ begin
     end if;
 end;
 $$;
+
