@@ -32,3 +32,5 @@ selecr cron.schedule(
     'opened_appointments_auto_close',
     '30 22 * * 1-5',      -- Executa de meia em meia hora, das 08:00 às 19:30, de segunda a sexta-feira
     $$ CALL prc_auto_close_clock_in_midnight(); $$
+);
+--=========================================================
