@@ -71,13 +71,13 @@ create table appointment (
     --client identifier
     id_cli int NOT NULL,
 
-    sch_dat_app timestamp,
+    sch_dat_app timestamp NOT NULL,
     -- Scheduled datetime
 
-    sta_dat_app timestamp not null,
+    sta_dat_app timestamp,
     -- Actual start datetime of the consultation
 
-    end_dat_app timestamp not null,
+    end_dat_app timestamp,
     -- Actual end datetime of the consultation
 
     status_app appointment_status not null default 'Scheduled',

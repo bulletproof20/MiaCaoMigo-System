@@ -10,15 +10,16 @@
 create or replace function fn_block_overlapping_appointments()
 returns trigger as $$
 begin
-    -- Check for existing appointments that overlap with the new/updated one
+    -- Check for existing appointments that overlap with the new/updated one.
+    -- Assumes a fixed duration of 30 minutes for each appointment for scheduling purposes.
     if exists (
         select 1
         from appointment a
         where a.id_emp = new.id_emp -- Same veterinarian
           and a.id_app != new.id_app -- Exclude the current appointment itself during updates
-          and (
-                (new.sta_dat_app, new.end_dat_app) OVERLAPS (a.sta_dat_app, a.end_dat_app)
-              )
+          and a.status_app = 'Scheduled' -- Only check against other scheduled appointments
+          and (new.sch_dat_app, new.sch_dat_app + interval '30 minutes') OVERLAPS 
+              (a.sch_dat_app, a.sch_dat_app + interval '30 minutes')
     ) then
         raise exception 'O veterinário já tem uma consulta sobreposta agendada.';
     end if;
@@ -35,12 +36,14 @@ $$ language plpgsql;
 create or replace function fn_block_appointment_if_vet_unavailable()
 returns trigger as $$
 begin
-    -- Check if the veterinarian is absent during the proposed appointment time
+    -- Check if the veterinarian is absent during the proposed appointment time.
+    -- Assumes a fixed duration of 30 minutes for the appointment.
     if exists (
         select 1
         from absence a
         where a.id_emp = new.id_emp -- Same veterinarian
-          and (new.sta_dat_app, new.end_dat_app) OVERLAPS (a.sta_dat_tim_abs, a.end_dat_tim_abs)
+          and (new.sch_dat_app, new.sch_dat_app + interval '30 minutes') OVERLAPS 
+              (a.sta_dat_tim_abs, a.end_dat_tim_abs)
     ) then
         raise exception 'O veterinário está indisponível devido a uma ausência durante este período de consulta.';
     end if;
@@ -111,7 +114,8 @@ $$ language plpgsql;
 create or replace function fn_block_past_appointments()
 returns trigger as $$
 begin
-    if new.sta_dat_app < current_timestamp then
+    -- Check against the scheduled date, not the start date
+    if new.sch_dat_app < current_timestamp then
         raise exception 'A data de início da consulta não pode ser no passado.';
     end if;
     return new;
@@ -129,35 +133,6 @@ begin
         raise exception 'A data de término da consulta deve ser posterior à data de início.';
     end if;
     return new;
-end;
-$$ language plpgsql;
-
---=========================================================
--- FUNCTION 7: fn_appointment_warning_next_day
--- Generates a warning message for clients who have an appointment the next day.
---=========================================================
-create or replace function fn_appointment_warning_next_day()
-returns void as $$ -- Alterado para retornar VOID, pois será um job, não um trigger
-declare
-    consulta record;
-    v_aviso text;
-begin
-    for consulta in (
-        select
-            a.id_cli, -- Precisamos do ID do cliente para a nova tabela
-            c.nam_usr as nome_cliente,
-            e.nam_emp as nome_veterinario,
-            an.nam_ani as nome_animal
-        from appointment a
-        join client c on a.id_cli = c.id_cli
-        join animal an on a.id_animal = an.id_ani
-        join employee e on a.id_emp = e.id_emp
-        where a.sta_dat_app::date = current_date + interval '1 day'
-    ) loop
-        v_aviso := format('Bom dia %s, amanhã tem consulta com o veterinário %s para o seu animal %s.',
-                         consulta.nome_cliente, consulta.nome_veterinario, consulta.nome_animal);
-        insert into appointment_notification (id_cli, message) values (consulta.id_cli, v_aviso);
-    end loop;
 end;
 $$ language plpgsql;
 
@@ -193,3 +168,42 @@ begin
     order by a.sta_dat_app desc;
 end;
 $$;
+
+--=========================================================
+-- FUNCTION 9: fn_validate_animal_client_relationship
+-- Ensures that the animal being scheduled for an appointment
+-- actually belongs to the client.
+--=========================================================
+create or replace function fn_validate_animal_client_relationship()
+returns trigger as $$
+begin
+    -- This assumes an 'ownership' table exists linking clients and animals.
+    -- It checks for an active ownership record (end_dat_own IS NULL).
+    if not exists (
+        select 1
+        from ownership o
+        where o.id_animal = new.id_animal
+          and o.id_cli = new.id_cli
+          and o.end_dat_own is null
+    ) then
+        raise exception 'O animal com ID % não pertence ao cliente com ID %.', new.id_animal, new.id_cli;
+    end if;
+
+    return new;
+end;
+$$ language plpgsql;
+
+--=========================================================
+-- FUNCTION 10: fn_prevent_completed_appointment_modification
+-- Prevents any modification to an appointment that is already
+-- in a terminal state (Completed, Cancelled, No-Show).
+--=========================================================
+create or replace function fn_prevent_completed_appointment_modification()
+returns trigger as $$
+begin
+    if old.status_app in ('Completed', 'Cancelled', 'No-Show') then
+        raise exception 'Não é possível alterar uma consulta que já foi concluída, cancelada ou marcada como não comparência.';
+    end if;
+    return new;
+end;
+$$ language plpgsql;

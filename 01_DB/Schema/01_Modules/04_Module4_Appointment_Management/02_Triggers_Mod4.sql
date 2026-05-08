@@ -50,3 +50,21 @@ create or replace trigger trg_block_past_appointments
 before insert or update on appointment
 for each row
 execute function fn_block_past_appointments();
+
+--=========================================================
+-- TRIGGER 6: trg_validate_animal_client_relationship
+-- Ensures the animal belongs to the client before creating/updating an appointment.
+--=========================================================
+create or replace trigger trg_validate_animal_client_relationship
+before insert or update of id_animal, id_cli on appointment
+for each row
+execute function fn_validate_animal_client_relationship();
+
+--================================="========================
+-- TRIGGER 7: trg_prevent_completed_appointment_modification
+-- Prevents modification of appointments that are in a terminal state.
+--=========================================================
+create or replace trigger trg_prevent_completed_appointment_modification
+before update on appointment
+for each row
+execute function fn_prevent_completed_appointment_modification();
