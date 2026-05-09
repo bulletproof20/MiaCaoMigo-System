@@ -10,6 +10,10 @@
 -- - advanced indexing
 -- - exclusion constraints
 -- - automation
+--
+-- extension-specific COMMENT ON statements (if any) should stay
+-- beside the objects that depend on them or in 02_Comments when
+-- the described object is created during init.
 -- =========================================================
 
 \echo '========================================'

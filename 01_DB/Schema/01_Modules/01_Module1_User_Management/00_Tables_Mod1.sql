@@ -8,6 +8,9 @@
 -- This module defines the structure responsible for user management.
 -- It includes user data, authentication, roles, permissions,
 -- and operational records associated with system usage.
+--
+-- Foreign keys are applied in 01_ForeignKeys_Mod1.sql (after all
+-- module tables are created) to simplify init order and dependency control.
 
 --=========================================================
 -- 0. CLEANUP
@@ -262,24 +265,6 @@ create table employee (
     check (length(trim(pas_emp)) >= 16),
     -- Ensures password hash is not trivial/invalid
 
-    constraint fk_employee_user 
-        foreign key (id_usr)
-        references user_account(id_usr)
-        on delete cascade,
-    -- Links employee to user
-
-    constraint fk_employee_aut_reg 
-        foreign key (aut_reg_emp)
-        references employee(id_emp)
-        on delete set null,
-    -- Tracks creator
-
-    constraint fk_employee_aut_ina 
-        foreign key (aut_ina_emp)
-        references employee(id_emp)
-        on delete set null,
-    -- Tracks deactivator
-
     constraint chk_employee_dates
     check (
         -- Registration cannot be in the future
@@ -316,14 +301,8 @@ create table assistant (
     fun_ass varchar(100) not null,
     -- Function/role
 
-    constraint pk_assistant primary key (id_emp),
+    constraint pk_assistant primary key (id_emp)
     -- One-to-one with employee
-
-    constraint fk_assistant_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade
-    -- Links to employee
 );
 
 --=========================================================
@@ -339,12 +318,6 @@ create table veterinarian (
 
     constraint pk_veterinarian primary key (id_emp),
     -- One-to-one with employee
-
-    constraint fk_veterinarian_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-    -- Links to employee
 
     constraint uq_num_omv_vet unique (num_omv_vet),
     -- Prevents duplicate professional registrations
@@ -368,20 +341,8 @@ create table expert (
     id_spe int not null,
     -- Specialty identifier
 
-    constraint pk_expert primary key (id_emp, id_spe),
+    constraint pk_expert primary key (id_emp, id_spe)
     -- Composite unique assignment per veterinarian and specialty
-
-    constraint fk_expert_veterinarian
-        foreign key (id_emp)
-        references veterinarian(id_emp)
-        on delete cascade,
-    -- Links to veterinarian
-
-    constraint fk_expert_specialty
-        foreign key (id_spe)
-        references specialty(id_spe)
-        on delete cascade
-    -- Links to specialty
 );
 
 --=========================================================
@@ -412,12 +373,6 @@ create table client (
     constraint uq_client_user
         unique (id_usr),
     -- Unique identifier for user association (one-to-one)
-
-    constraint fk_client_user 
-        foreign key (id_usr)
-        references user_account(id_usr)
-        on delete cascade,
-    -- Links client to user
 
     constraint chk_pas_cli_format
     check (length(trim(pas_cli)) >= 16),
@@ -509,14 +464,8 @@ create table login_record (
             eml_usr = lower(trim(eml_usr))
             and eml_usr ~ '.+@.+\..+'
         )
-    ),
+    )
     -- Validates email snapshot format (if provided)
-
-    constraint fk_login_record_user 
-        foreign key (id_usr)
-        references user_account(id_usr)
-        on delete cascade
-    -- Links log to user (if exists)
 );
 
 --=========================================================
@@ -549,14 +498,8 @@ create table schedule (
         sta_tim_sch < fin_hou_sch
         and sta_tim_sch >= time '00:00:00'
         and fin_hou_sch <= time '23:59:59'
-    ),
+    )
     -- Validates time interval within a day
-
-    constraint fk_schedule_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade
-    -- Links to employee
 );
 
 
@@ -609,19 +552,8 @@ create table absence (
     constraint chk_sta_abs
     check (
         sta_abs in ('pending','approved','rejected', 'cancelled', 'detected')
-    ),
+    )
     -- Restricts valid states
-
-    constraint fk_absence_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-
-    constraint fk_absence_responsible
-        foreign key (res_abs)
-        references employee(id_emp)
-        on delete set null
-    -- Links to employee
 );
 
 
@@ -659,14 +591,8 @@ create table clock_in (
                 and end_dat_clk <= current_timestamp
             )
         )
-    ),
+    )
     -- Ensures valid attendance interval
-
-    constraint fk_clock_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade
-    -- Links to employee
 );
 
 --=========================================================
@@ -686,12 +612,6 @@ create table setup (
 
     constraint pk_setup primary key (id_usr),
     -- One-to-one relation with user
-
-    constraint fk_setup_user 
-        foreign key (id_usr)
-        references user_account(id_usr)
-        on delete cascade,
-    -- Links to user
 
     constraint chk_the_set_format
     check (
@@ -721,20 +641,8 @@ create table occupies (
     id_pro int not null,
     -- Profile
 
-    constraint pk_occupies primary key (id_emp, id_pro),
+    constraint pk_occupies primary key (id_emp, id_pro)
     -- Composite identifier (prevents duplicates)
-
-    constraint fk_occ_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-    -- Links to employee
-
-    constraint fk_occ_profile 
-        foreign key (id_pro)
-        references profile(id_pro)
-        on delete cascade
-    -- Links to profile
 );
 
 
@@ -750,18 +658,6 @@ create table have (
     id_per int not null,
     -- Permission
 
-    constraint pk_have primary key (id_pro, id_per),
+    constraint pk_have primary key (id_pro, id_per)
     -- Composite identifier (prevents duplicates)
-
-    constraint fk_have_profile 
-        foreign key (id_pro)
-        references profile(id_pro)
-        on delete cascade,
-    -- Links to profile
-
-    constraint fk_have_permission 
-        foreign key (id_per)
-        references permission(id_per)
-        on delete cascade
-    -- Links to permission
 );

@@ -47,8 +47,9 @@ docker compose version
 01_DB/
  ├── Schema/
  │    ├── init.sql              # Entry point for DB initialization
- │    ├── 00_Core/             # Core structures and shared logic
- │    ├── 01_Modules/          # Modular domain structure
+ │    ├── 03_Loaders/          # Ordered phases (extensions → tables → FKs → integrity → …)
+ │    ├── 01_Modules/          # Modular domain: 00_Tables … 06_Jobs per module
+ │    ├── 02_Comments/        # COMMENT ON metadata mirroring 01_Modules (…_Comments.sql)
  │
 docker-compose.yml             # Container orchestration
 Dockerfile                     # Custom PostgreSQL image (with pg_cron)
@@ -58,13 +59,13 @@ Dockerfile                     # Custom PostgreSQL image (with pg_cron)
 
 * **init.sql**
   Central script responsible for orchestrating the entire database creation.
-  It calls all other SQL files in the correct order.
+  It loads `03_Loaders` in order: extensions → **all tables** → **all foreign keys** → functions, triggers, indexes, procedures, jobs → data migration placeholder → **comments** (via `02_Comments/**`) → queries placeholder → sanity checks.
 
-* **00_Core/**
-  Contains shared elements (e.g., common functions, base structures).
+* **02_Comments/**
+  Houses `COMMENT ON` scripts grouped like `01_Modules` (including `00_Core` for shared documentation notes). Cross-module foreign keys remain defined only under each module’s `01_ForeignKeys_ModX.sql`; their descriptions live in the matching `01_ForeignKeys_ModX_Comments.sql` files.
 
 * **01_Modules/**
-  Contains modularized database logic (tables, functions, triggers, procedures, jobs).
+  Each module uses a fixed layout: `00_Tables`, `01_ForeignKeys`, `02_Functions`, `03_Triggers`, `04_Indexes`, `05_Procedures`, `06_Jobs` (module 4 also ships `07_Tests_Mod4.sql` for ad hoc checks).
 
 ---
 
@@ -95,7 +96,8 @@ During the first execution:
 * The script `init.sql` is executed
 * All modules are loaded:
 
-  * Tables
+  * Tables (all modules)
+  * Foreign keys (all modules)
   * Functions
   * Triggers
   * Indexes

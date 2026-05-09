@@ -9,6 +9,7 @@
 -- - extension availability
 -- - structural readiness
 -- - integrity readiness
+-- - comments layer reachability (indirectly, via prior \i success)
 -- =========================================================
 
 \echo '========================================'
@@ -161,8 +162,12 @@ select
 from information_schema.routines
 where routine_schema = 'public'
 and routine_type = 'FUNCTION'
-order by routine_name;
 
+-- excludes internal extension helper functions
+and routine_name not like 'gbt_%'
+and routine_name not like '%_dist'
+
+order by routine_name;
 
 
 -- =========================================================

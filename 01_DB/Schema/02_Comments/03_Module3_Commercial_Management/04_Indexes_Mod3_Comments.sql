@@ -1,0 +1,9 @@
+-- =========================================================
+-- comments: indexes - module 3
+-- =========================================================
+-- 04_Indexes_Mod3.sql currently carries no btree or gist
+-- objects beyond placeholder commentary.
+--
+-- keep this file so the comments loader mirrors the modular
+-- layout; extend here when new indexes land in module 3.
+-- =========================================================

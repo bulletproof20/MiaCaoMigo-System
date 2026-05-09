@@ -1,146 +1,212 @@
 --=========================================================
--- COMMENTS: TABLES - MODULE 4
+-- types
 --=========================================================
+
+comment on type appointment_status is
+'finite state machine for appointment lifecycle values';
+
+comment on type invoice_status is
+'reserved billing status enumeration for future invoice workflows';
+
 
 --=========================================================
 -- 1. appointment
 --=========================================================
 
-COMMENT ON TABLE appointment IS
-'Stores all data related to veterinary appointments, from scheduling to completion.';
+comment on table appointment is
+'scheduling and consultation session for a client animal with assigned veterinarian';
 
-COMMENT ON COLUMN appointment.id_app IS
-'Unique identifier for the appointment.';
-COMMENT ON COLUMN appointment.id_cli IS
-'Foreign key referencing the client associated with the appointment.';
-COMMENT ON COLUMN appointment.id_animal IS
-'Foreign key referencing the animal patient for the appointment.';
-COMMENT ON COLUMN appointment.id_emp IS
-'Foreign key referencing the veterinarian assigned to the appointment.';
-COMMENT ON COLUMN appointment.sch_dat_app IS
-'The scheduled date and time for the appointment.';
-COMMENT ON COLUMN appointment.sta_dat_app IS
-'Timestamp marking the actual start of the appointment.';
-COMMENT ON COLUMN appointment.end_dat_app IS
-'Timestamp marking the end of the appointment.';
-COMMENT ON COLUMN appointment.status_app IS
-'Current status of the appointment (e.g., Scheduled, In Progress, Completed, Cancelled, No-Show).';
-COMMENT ON COLUMN appointment.dia_app IS
-'Clinical diagnosis determined by the veterinarian during the appointment.';
-COMMENT ON COLUMN appointment.com_app IS
-'General comments or observations from the veterinarian.';
+comment on column appointment.id_app is
+'unique appointment identifier';
 
-COMMENT ON CONSTRAINT pk_appointment ON appointment IS
-'Ensures unique identification for each appointment.';
-COMMENT ON CONSTRAINT fk_appointment_client ON appointment IS
-'Links the appointment to a valid client.';
-COMMENT ON CONSTRAINT fk_appointment_animal ON appointment IS
-'Links the appointment to a valid animal.';
-COMMENT ON CONSTRAINT fk_appointment_employee ON appointment IS
-'Links the appointment to a valid employee (veterinarian).';
-COMMENT ON CONSTRAINT chk_appointment_status ON appointment IS
-'Ensures the appointment status is one of the predefined valid values.';
-COMMENT ON CONSTRAINT chk_appointment_flow ON appointment IS
-'Ensures the temporal consistency of appointment timestamps (start must be before end).';
+comment on column appointment.id_animal is
+'animal receiving care';
+
+comment on column appointment.id_emp is
+'assigned employee (veterinarian)';
+
+comment on column appointment.id_cli is
+'client responsible for the visit';
+
+comment on column appointment.sch_dat_app is
+'scheduled start timestamp';
+
+comment on column appointment.sta_dat_app is
+'actual consultation start timestamp';
+
+comment on column appointment.end_dat_app is
+'actual consultation end timestamp';
+
+comment on column appointment.status_app is
+'workflow status using appointment_status enum';
+
+comment on column appointment.dia_app is
+'diagnosis captured when closing the visit';
+
+comment on column appointment.com_app is
+'free-form clinical or operational notes';
+
+comment on constraint pk_appointment on appointment is
+'primary key for appointment rows';
+
+comment on constraint chk_app_time on appointment is
+'ensures recorded end time is strictly after start time when both present';
 
 
 --=========================================================
 -- 2. overall_assessment
 --=========================================================
 
-COMMENT ON TABLE overall_assessment IS
-'Stores the objective clinical assessment data collected during an appointment.';
+comment on table overall_assessment is
+'structured vitals captured during an appointment';
 
-COMMENT ON COLUMN overall_assessment.id_ass IS
-'Unique identifier for the assessment.';
-COMMENT ON COLUMN overall_assessment.id_app IS
-'Foreign key linking the assessment to a specific appointment.';
-COMMENT ON COLUMN overall_assessment.body_temp IS
-'Animal''s body temperature in Celsius.';
-COMMENT ON COLUMN overall_assessment.weight IS
-'Animal''s weight in kilograms.';
-COMMENT ON COLUMN overall_assessment.hrt_rate IS
-'Animal''s heart rate in beats per minute.';
-COMMENT ON COLUMN overall_assessment.resp_rate IS
-'Animal''s respiratory rate in breaths per minute.';
-COMMENT ON COLUMN overall_assessment.general_status IS
-'A textual description of the animal''s overall condition.';
+comment on column overall_assessment.id_app is
+'primary key and foreign key to appointment';
 
-COMMENT ON CONSTRAINT pk_overall_assessment ON overall_assessment IS
-'Ensures unique identification for each assessment record.';
-COMMENT ON CONSTRAINT uq_assessment_per_appointment ON overall_assessment IS
-'Ensures only one overall assessment can be registered per appointment.';
-COMMENT ON CONSTRAINT fk_assessment_appointment ON overall_assessment IS
-'Links the assessment to a valid appointment.';
+comment on column overall_assessment.body_temp is
+'body temperature in degrees celsius';
+
+comment on column overall_assessment.weight is
+'weight measurement in kilograms';
+
+comment on column overall_assessment.hrt_rate is
+'heart rate in beats per minute';
+
+comment on column overall_assessment.resp_rate is
+'respiratory rate in breaths per minute';
+
+comment on column overall_assessment.general_status is
+'qualitative assessment narrative';
+
+comment on constraint pk_overall_assessment on overall_assessment is
+'primary key for overall_assessment rows';
+
+comment on constraint chk_body_temp on overall_assessment is
+'keeps temperature within plausible veterinary bounds';
+
+comment on constraint chk_weight on overall_assessment is
+'requires positive weight measurements';
 
 
 --=========================================================
 -- 3. anamnesis
 --=========================================================
 
-COMMENT ON TABLE anamnesis IS
-'Stores the anamnesis (patient''s medical history) information provided by the client.';
+comment on table anamnesis is
+'client-reported history snippets tied to appointments';
 
-COMMENT ON COLUMN anamnesis.id_ana IS
-'Unique identifier for the anamnesis record.';
-COMMENT ON COLUMN anamnesis.id_app IS
-'Foreign key linking the anamnesis to a specific appointment.';
-COMMENT ON COLUMN anamnesis.des_ana IS
-'Detailed description of the patient''s history and symptoms as reported by the client.';
+comment on column anamnesis.id_ana is
+'unique anamnesis identifier';
 
-COMMENT ON CONSTRAINT pk_anamnesis ON anamnesis IS
-'Ensures unique identification for each anamnesis record.';
-COMMENT ON CONSTRAINT uq_anamnesis_per_appointment ON anamnesis IS
-'Ensures only one anamnesis can be registered per appointment.';
-COMMENT ON CONSTRAINT fk_anamnesis_appointment ON anamnesis IS
-'Links the anamnesis to a valid appointment.';
+comment on column anamnesis.id_app is
+'related appointment';
+
+comment on column anamnesis.reg_dat_ana is
+'capture timestamp';
+
+comment on column anamnesis.des_ana is
+'detailed history narrative';
+
+comment on constraint pk_anamnesis on anamnesis is
+'primary key for anamnesis rows';
 
 
 --=========================================================
 -- 4. prescription
 --=========================================================
 
-COMMENT ON TABLE prescription IS
-'Stores the medical prescription issued during an appointment.';
+comment on table prescription is
+'prescription metadata issued during a consultation';
 
-COMMENT ON COLUMN prescription.id_pre IS
-'Unique identifier for the prescription.';
-COMMENT ON COLUMN prescription.id_app IS
-'Foreign key linking the prescription to a specific appointment.';
-COMMENT ON COLUMN prescription.des_pre IS
-'Detailed description of the prescribed treatment, medication, and instructions.';
+comment on column prescription.id_pre is
+'unique prescription identifier';
 
-COMMENT ON CONSTRAINT pk_prescription ON prescription IS
-'Ensures unique identification for each prescription record.';
-COMMENT ON CONSTRAINT uq_prescription_per_appointment ON prescription IS
-'Ensures only one prescription can be registered per appointment.';
-COMMENT ON CONSTRAINT fk_prescription_appointment ON prescription IS
-'Links the prescription to a valid appointment.';
+comment on column prescription.id_app is
+'parent appointment';
+
+comment on column prescription.reg_dat_pre is
+'issuance timestamp';
+
+comment on column prescription.des_pre is
+'instructions or pharmaceutical narrative';
+
+comment on constraint pk_prescription on prescription is
+'primary key for prescription rows';
 
 
 --=========================================================
--- 5. appointment_notification
+-- 5. rel_app_product
 --=========================================================
 
-COMMENT ON TABLE appointment_notification IS
-'Stores notifications sent to clients regarding their appointments (e.g., reminders, confirmations).';
+comment on table rel_app_product is
+'products consumed or billed directly through an appointment';
 
-COMMENT ON COLUMN appointment_notification.id_not IS
-'Unique identifier for the notification.';
-COMMENT ON COLUMN appointment_notification.id_cli IS
-'Foreign key referencing the client who received the notification.';
-COMMENT ON COLUMN appointment_notification.id_app IS
-'Foreign key referencing the appointment related to the notification.';
-COMMENT ON COLUMN appointment_notification.message IS
-'The content of the notification message.';
-COMMENT ON COLUMN appointment_notification.is_read IS
-'Flag indicating whether the client has read the notification.';
-COMMENT ON COLUMN appointment_notification.created_at IS
-'Timestamp when the notification was created.';
+comment on column rel_app_product.id_app is
+'appointment reference';
 
-COMMENT ON CONSTRAINT pk_appointment_notification ON appointment_notification IS
-'Ensures unique identification for each notification.';
-COMMENT ON CONSTRAINT fk_notification_client ON appointment_notification IS
-'Links the notification to a valid client.';
-COMMENT ON CONSTRAINT fk_notification_appointment ON appointment_notification IS
-'Links the notification to a valid appointment.';
+comment on column rel_app_product.id_pro is
+'product reference';
+
+comment on column rel_app_product.qty_pre_pro is
+'quantity associated with the appointment usage';
+
+comment on column rel_app_product.dos_pre_pro is
+'dosage or administration instructions';
+
+comment on constraint pk_appointment_product on rel_app_product is
+'composite primary key';
+
+comment on constraint chk_qty_rel_app_product on rel_app_product is
+'requires strictly positive quantities';
+
+
+--=========================================================
+-- 6. rel_pre_prod
+--=========================================================
+
+comment on table rel_pre_prod is
+'line items that materialize a prescription into catalog skus';
+
+comment on column rel_pre_prod.id_pre is
+'prescription reference';
+
+comment on column rel_pre_prod.id_pro is
+'product reference';
+
+comment on column rel_pre_prod.qty_pre_pro is
+'prescribed quantity';
+
+comment on column rel_pre_prod.dos_pre_pro is
+'dosage instructions';
+
+comment on constraint pk_prescription_product on rel_pre_prod is
+'composite primary key';
+
+comment on constraint chk_qty_rel_pre_prod on rel_pre_prod is
+'requires strictly positive quantities';
+
+
+--=========================================================
+-- 7. appointment_notification
+--=========================================================
+
+comment on table appointment_notification is
+'client notifications such as reminders generated by jobs or procedures';
+
+comment on column appointment_notification.id_not is
+'unique notification identifier';
+
+comment on column appointment_notification.id_cli is
+'target client';
+
+comment on column appointment_notification.message is
+'human-readable notification body';
+
+comment on column appointment_notification.created_at is
+'creation timestamp';
+
+comment on column appointment_notification.is_read is
+'read/unread flag for client portals';
+
+comment on constraint pk_appointment_notification on appointment_notification is
+'primary key for appointment_notification rows';

@@ -1,0 +1,12 @@
+-- =========================================================
+-- comments: jobs - module 2
+-- =========================================================
+-- metadata documentation for scheduled automation related to
+-- animal management.
+--
+-- important:
+-- pg_cron jobs are not native relational schema objects.
+-- postgresql does not support comment on job entries, so any
+-- future cron wiring should document intent beside the
+-- cron.schedule call inside 06_Jobs_Mod2.sql.
+-- =========================================================

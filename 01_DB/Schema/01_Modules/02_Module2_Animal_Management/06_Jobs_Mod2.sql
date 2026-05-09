@@ -1,0 +1,6 @@
+--=========================================================
+-- MODULE 2: SCHEDULED JOBS (ANIMAL MANAGEMENT)
+--=========================================================
+-- No pg_cron jobs are defined for this module at present.
+-- This file preserves the uniform modular layout (00–06).
+--=========================================================

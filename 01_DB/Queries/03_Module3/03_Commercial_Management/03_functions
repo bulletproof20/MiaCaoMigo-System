@@ -149,4 +149,4 @@ GRANT EXECUTE ON FUNCTION get_user_credentials TO anon;
 
 
 
-select * from InvoiceLine;
+-- select * from invoice_line;

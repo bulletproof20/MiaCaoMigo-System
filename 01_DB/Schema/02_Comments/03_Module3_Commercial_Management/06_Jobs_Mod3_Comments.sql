@@ -1,0 +1,11 @@
+-- =========================================================
+-- comments: jobs - module 3
+-- =========================================================
+-- metadata documentation for scheduled automation related to
+-- commercial management.
+--
+-- important:
+-- pg_cron jobs are not native relational schema objects.
+-- document future schedules next to cron.schedule calls inside
+-- 06_Jobs_Mod3.sql.
+-- =========================================================

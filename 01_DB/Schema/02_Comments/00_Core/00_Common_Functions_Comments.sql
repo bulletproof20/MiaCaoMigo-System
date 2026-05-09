@@ -1,0 +1,11 @@
+-- =========================================================
+-- comments: core (shared utilities)
+-- =========================================================
+-- Cross-cutting SQL objects are not maintained under a separate
+-- 01_Modules/00_* tree; shared extensions load in 00_Extensions.sql
+-- and behavioral objects live in numbered module files.
+--
+-- This placeholder keeps the comments loader layout stable and
+-- documents that no standalone “common function” catalog exists
+-- beyond module ownership in 01_Modules.
+-- =========================================================

@@ -1,22 +1,33 @@
 -- =========================================================
 -- init: database setup (miacaomigo)
 -- =========================================================
--- central orchestration script responsible for
--- loading the complete database architecture.
+-- central orchestration script responsible for loading the
+-- complete database architecture inside the docker init hook.
 --
+-- pipeline overview:
+--   00_Extensions   → enable pg_cron, btree_gist, etc.
+--   01_Structure    → 00_Tables_Mod*.sql (tables only)
+--   02_ForeignKeys  → 01_ForeignKeys_Mod*.sql (cross-module safe phase)
+--   03_Integrity    → functions, triggers, indexes, procedures, jobs
+--   04_Data_Migration → reserved for seed / etl scripts
+--   05_Comments     → 02_Comments/** mirrors 01_Modules/** layout
+--   06_Queries      → reserved for views / reporting scripts
+--   07_Sanity_Check → lightweight catalog validation
+--
+-- the comments layer intentionally runs after behavioral objects
+-- so COMMENT ON targets always resolve.
+-- =========================================================
 
 
 \echo '========================================'
 \echo 'MIACAOMIGO DATABASE INITIALIZATION'
 \echo '========================================'
 
-
+\set QUIET 1
+set client_min_messages to warning;
 
 -- =========================================================
 -- extensions layer
--- =========================================================
--- loads required postgresql extensions used
--- across the database infrastructure.
 -- =========================================================
 
 \echo '>>> loading extensions layer'
@@ -26,101 +37,84 @@
 
 
 -- =========================================================
--- structure layer
--- =========================================================
--- loads physical relational structures such as:
--- - core entities
--- - tables
--- - indexes
--- - foreign keys
+-- structure layer (tables only)
 -- =========================================================
 
-\echo '>>> loading structure layer'
+\echo '>>> loading structure layer (tables)'
 
 \i /docker-entrypoint-initdb.d/03_Loaders/01_Structure.sql
 
 
 
 -- =========================================================
+-- foreign keys layer
+-- =========================================================
+-- all 01_ForeignKeys_ModX.sql files (after tables exist)
+-- =========================================================
+
+\echo '>>> loading foreign keys layer'
+
+\i /docker-entrypoint-initdb.d/03_Loaders/02_ForeignKeys.sql
+
+
+
+-- =========================================================
 -- integrity layer
 -- =========================================================
--- loads executable integrity and behavioral
--- components such as:
--- - functions
--- - triggers
--- - procedures
--- - jobs
+-- functions, triggers, indexes, procedures, jobs
 -- =========================================================
 
 \echo '>>> loading integrity layer'
 
-\i /docker-entrypoint-initdb.d/03_Loaders/02_Integrity.sql
+\i /docker-entrypoint-initdb.d/03_Loaders/03_Integrity.sql
 
 
 
 -- =========================================================
 -- data migration layer
 -- =========================================================
--- loads master and reference data required
--- for stable system operation.
---
--- includes:
--- - permissions
--- - profiles
--- - specialties
--- - default configurations
--- - controlled reference entities
--- =========================================================
 
 \echo '>>> loading data migration layer'
 
-\i /docker-entrypoint-initdb.d/03_Loaders/03_Data_Migration.sql
+\i /docker-entrypoint-initdb.d/03_Loaders/04_Data_Migration.sql
 
 
 
 -- =========================================================
 -- comments layer
 -- =========================================================
--- loads metadata documentation and descriptive
--- annotations for:
--- - schemaspy
--- - pgadmin
--- - introspection tooling
--- - future maintainability
+-- 02_Comments/<module>/NN_*_Comments.sql follows the same
+-- ordering as 01_Modules/<module>/NN_*.sql (tables → fks → …).
 -- =========================================================
 
 \echo '>>> loading comments layer'
 
-\i /docker-entrypoint-initdb.d/03_Loaders/04_Comments.sql
+\i /docker-entrypoint-initdb.d/03_Loaders/05_Comments.sql
 
 
 
 -- =========================================================
 -- queries layer
 -- =========================================================
--- loads reusable query definitions consumed
--- by the application and reporting layers.
--- =========================================================
 
 \echo '>>> loading queries layer'
 
-\i /docker-entrypoint-initdb.d/03_Loaders/05_Queries.sql
+\i /docker-entrypoint-initdb.d/03_Loaders/06_Queries.sql
 
 
 
 -- =========================================================
 -- sanity check layer
 -- =========================================================
--- performs final validation checks after all
--- database layers are fully loaded.
--- =========================================================
 
 \echo '>>> loading sanity check layer'
 
-\i /docker-entrypoint-initdb.d/03_Loaders/06_Sanity_Check.sql
+\i /docker-entrypoint-initdb.d/03_Loaders/07_Sanity_Check.sql
 
 
 
 -- =========================================================
 -- initialization completed
 -- =========================================================
+
+\set QUIET 0

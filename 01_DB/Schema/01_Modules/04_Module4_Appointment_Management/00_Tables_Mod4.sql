@@ -15,6 +15,8 @@
 -- - Prescription management
 -- - Association of employees, clients and animals to appointments
 -- - Billing through invoices with status tracking
+--
+-- Foreign keys: 01_ForeignKeys_Mod4.sql (after all module tables exist).
 
 --=========================================================
 -- 0. CLEANUP
@@ -92,24 +94,6 @@ create table appointment (
     constraint pk_appointment primary key (id_app),
     -- Unique identifier
 
-    -- -- Foreign Key linkage to animal
-    -- CONSTRAINT fk_animal 
-    --     FOREIGN KEY (id_animal)
-    --     REFERENCES animal(id_ani)
-    --     on delete cascade,
-        
-    -- Foreign Key linkage to employee (veterinarian)
-    CONSTRAINT fk_appointment_employee
-        FOREIGN KEY (id_emp)
-        REFERENCES employee(id_emp)
-        on delete restrict, -- Prevent deleting employee with active appointments
-
-    -- Foreign Key linkage to client
-    CONSTRAINT fk_client 
-        FOREIGN KEY (id_cli)
-        REFERENCES client(id_cli)
-        on delete cascade,
-
     constraint chk_app_time
     check (sta_dat_app < end_dat_app)
     -- Ensures the end time is after the start time
@@ -129,12 +113,6 @@ CREATE TABLE overall_assessment (
     
     -- Defining the Primary Key
     CONSTRAINT pk_overall_assessment PRIMARY KEY (id_app),
-    
-    -- Foreign Key linkage
-    CONSTRAINT fk_appointment 
-        FOREIGN KEY (id_app)
-        REFERENCES appointment(id_app)
-        on delete cascade,
         
     -- Safety checks to prevent impossible medical data
     CONSTRAINT chk_body_temp CHECK (body_temp > 0 AND body_temp < 50),
@@ -158,14 +136,8 @@ create table anamnesis (
     des_ana text,
     -- Detailed description of the patient's history and symptoms
 
-    constraint pk_anamnesis primary key (id_ana),
+    constraint pk_anamnesis primary key (id_ana)
     -- Unique identifier
-
-    constraint fk_anamnesis_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade
-    -- Links to appointment. If appointment is deleted, this record is also deleted.
 );
 
 --=========================================================
@@ -185,14 +157,8 @@ create table prescription (
     des_pre text,
     -- General instructions or description for the prescription
 
-    constraint pk_prescription primary key (id_pre),
+    constraint pk_prescription primary key (id_pre)
     -- Unique identifier
-
-    constraint fk_prescription_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade
-    -- Links to appointment. If appointment is deleted, this record is also deleted.
 );
 
 --=========================================================
@@ -213,17 +179,7 @@ create table rel_app_product (
 
     constraint pk_appointment_product primary key (id_app, id_pro),
 
-    constraint fk_app_pro_appointment 
-        foreign key (id_app)
-        references appointment(id_app)
-        on delete cascade,
-
-    constraint fk_pre_pro_product 
-        foreign key (id_pro)
-        references product(id_pro)
-        on delete restrict,
-
-    constraint chk_qty_pre
+    constraint chk_qty_rel_app_product
     check (qty_pre_pro > 0)
     -- Ensures valid quantity
 );
@@ -246,18 +202,7 @@ create table rel_pre_prod (
 
     constraint pk_prescription_product primary key (id_pre, id_pro),
 
-    constraint fk_pre_pro_prescription 
-        foreign key (id_pre)
-        references prescription(id_pre)
-        on delete cascade,
-
-    constraint fk_pre_pro_product 
-        foreign key (id_pro)
-        references product(id_pro)
-        on delete restrict,
-    -- Prevents deleting a product that is part of an existing prescription.
-
-    constraint chk_qty_pre
+    constraint chk_qty_rel_pre_prod
     check (qty_pre_pro > 0)
     -- Ensures valid quantity
 );
@@ -282,7 +227,6 @@ create table appointment_notification (
     is_read boolean default false,
     -- Flag to indicate if the client has read the notification
 
-    constraint pk_appointment_notification primary key (id_not),
-    constraint fk_appointment_notification_client foreign key (id_cli) references client(id_cli) on delete cascade
+    constraint pk_appointment_notification primary key (id_not)
 );
 
