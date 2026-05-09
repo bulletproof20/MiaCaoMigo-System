@@ -24,7 +24,6 @@
 -- Drops only tables related to this module in reverse dependency order
 
 
-drop table if exists appointment_specialty cascade;
 drop table if exists appointment cascade;
 drop table if exists overall_assessment cascade;
 drop table if exists anamnesis cascade;
@@ -59,25 +58,6 @@ create type invoice_status as enum (
 
 --=========================================================
 -- 2. APPOINTMENT
--- 2. APPOINTMENT SPECIALTY
---=========================================================
--- Stores the different types of appointment specialties available.
--- This promotes data consistency over a free-text field.
-create table appointment_specialty (
-    id_spec int generated always as identity,
-    -- Specialty identifier
-
-    name_spec varchar(100) not null unique,
-    -- Name of the specialty (e.g., 'General Checkup', 'Surgery', 'Vaccination')
-
-    description_spec text,
-    -- Optional description of the specialty.
-
-    constraint pk_appointment_specialty primary key (id_spec)
-);
-
---=========================================================
--- 3. APPOINTMENT
 --=========================================================
 -- Stores appointment scheduling, status, and general information.
 create table appointment (
@@ -95,8 +75,6 @@ create table appointment (
 
     -- Specialty of the appointment (e.g., General Checkup, Surgery)
     spec_app varchar(100) not null,
-    -- Foreign key to the appointment_specialty table
-    id_spec int not null,
 
     sch_dat_app timestamp NOT NULL,
     -- Scheduled datetime
@@ -125,8 +103,7 @@ create table appointment (
 );
 
 --=========================================================
--- 2. Overall Assessment
--- 4. Overall Assessment
+-- 3. Overall Assessment
 --=========================================================
 -- Stores clinical history collected during appointment
 CREATE TABLE overall_assessment (
@@ -146,8 +123,7 @@ CREATE TABLE overall_assessment (
 );
 
 --=========================================================
--- 3. ANAMNESIS
--- 5. ANAMNESIS
+-- 4. ANAMNESIS
 --=========================================================
 -- Stores patient history collected during appointment
 create table anamnesis (
@@ -168,8 +144,7 @@ create table anamnesis (
 );
 
 --=========================================================
--- 4. PRESCRIPTION
--- 6. PRESCRIPTION
+-- 5. PRESCRIPTION
 --=========================================================
 -- Stores prescriptions issued during appointment
 create table prescription (
@@ -190,8 +165,7 @@ create table prescription (
 );
 
 --=========================================================
--- 5. ASSOCIATIVE TABLE BETWEEN APPOINTMENT AND PRODUCTS
--- 7. ASSOCIATIVE TABLE BETWEEN APPOINTMENT AND PRODUCTS
+-- 6. ASSOCIATIVE TABLE BETWEEN APPOINTMENT AND PRODUCTS
 --=========================================================
 create table rel_app_product (
     id_app int not null,
@@ -214,8 +188,7 @@ create table rel_app_product (
 );
 
 --=========================================================
--- 6. ASSOCIATIVE TABLE BETWEEN PRESCRIPTION AND PRODUCTS
--- 8. ASSOCIATIVE TABLE BETWEEN PRESCRIPTION AND PRODUCTS
+-- 7. ASSOCIATIVE TABLE BETWEEN PRESCRIPTION AND PRODUCTS
 --=========================================================
 create table rel_pre_prod (
     id_pre int not null,
@@ -238,8 +211,7 @@ create table rel_pre_prod (
 );
 
 --=========================================================
--- 7. APPOINTMENT NOTIFICATIONS
--- 9. APPOINTMENT NOTIFICATIONS
+-- 8. APPOINTMENT NOTIFICATIONS
 --=========================================================
 -- Stores notifications generated for clients
 create table appointment_notification (
