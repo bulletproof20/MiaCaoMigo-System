@@ -97,37 +97,37 @@
 -- table comments
 \echo '--- module 2 | table comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/00_Tables_Mod2_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/00_Tables_Mod2_Comments.sql
 
 
 -- function comments
 \echo '--- module 2 | function comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/01_Functions_Mod2_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/01_Functions_Mod2_Comments.sql
 
 
 -- trigger comments
 \echo '--- module 2 | trigger comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/02_Triggers_Mod2_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/02_Triggers_Mod2_Comments.sql
 
 
 -- index comments
 \echo '--- module 2 | index comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/03_Indexes_Mod2_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/03_Indexes_Mod2_Comments.sql
 
 
 -- procedure comments
 \echo '--- module 2 | procedure comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/04_Procedures_Mod2_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/04_Procedures_Mod2_Comments.sql
 
 
 -- job comments
 \echo '--- module 2 | job comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/05_Jobs_Mod2_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/02_Module2_Animal_Management/05_Jobs_Mod2_Comments.sql
 
 
 
@@ -141,37 +141,37 @@
 -- table comments
 \echo '--- module 3 | table comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/00_Tables_Mod3_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/00_Tables_Mod3_Comments.sql
 
 
 -- function comments
 \echo '--- module 3 | function comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/01_Functions_Mod3_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/01_Functions_Mod3_Comments.sql
 
 
 -- trigger comments
 \echo '--- module 3 | trigger comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/02_Triggers_Mod3_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/02_Triggers_Mod3_Comments.sql
 
 
 -- index comments
 \echo '--- module 3 | index comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/03_Indexes_Mod3_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/03_Indexes_Mod3_Comments.sql
 
 
 -- procedure comments
 \echo '--- module 3 | procedure comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/04_Procedures_Mod3_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/04_Procedures_Mod3_Comments.sql
 
 
 -- job comments
 \echo '--- module 3 | job comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/05_Jobs_Mod3_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/03_Module3_Commercial_Management/05_Jobs_Mod3_Comments.sql
 
 
 
@@ -185,34 +185,34 @@
 -- table comments
 \echo '--- module 4 | table comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/00_Tables_Mod4_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/00_Tables_Mod4_Comments.sql
 
 
 -- function comments
 \echo '--- module 4 | function comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/01_Functions_Mod4_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/01_Functions_Mod4_Comments.sql
 
 
 -- trigger comments
 \echo '--- module 4 | trigger comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/02_Triggers_Mod4_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/02_Triggers_Mod4_Comments.sql
 
 
 -- index comments
 \echo '--- module 4 | index comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/03_Indexes_Mod4_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/03_Indexes_Mod4_Comments.sql
 
 
 -- procedure comments
 \echo '--- module 4 | procedure comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/04_Procedures_Mod4_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/04_Procedures_Mod4_Comments.sql
 
 
 -- job comments
 \echo '--- module 4 | job comments'
 
--- \i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/05_Jobs_Mod4_Comments.sql
+\i /docker-entrypoint-initdb.d/02_Comments/04_Module4_Appointment_Management/05_Jobs_Mod4_Comments.sql

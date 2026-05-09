@@ -92,11 +92,11 @@ create table appointment (
     constraint pk_appointment primary key (id_app),
     -- Unique identifier
 
-    -- -- Foreign Key linkage to animal
-    -- CONSTRAINT fk_animal 
-    --     FOREIGN KEY (id_animal)
-    --     REFERENCES animal(id_ani)
-    --     on delete cascade,
+    -- Foreign Key linkage to animal
+    CONSTRAINT fk_appointment_animal
+        FOREIGN KEY (id_animal)
+        REFERENCES animal(id_ani)
+        on delete cascade,
         
     -- Foreign Key linkage to employee (veterinarian)
     CONSTRAINT fk_appointment_employee
@@ -105,12 +105,12 @@ create table appointment (
         on delete restrict, -- Prevent deleting employee with active appointments
 
     -- Foreign Key linkage to client
-    CONSTRAINT fk_client 
+    CONSTRAINT fk_appointment_client
         FOREIGN KEY (id_cli)
         REFERENCES client(id_cli)
         on delete cascade,
 
-    constraint chk_app_time
+    constraint chk_appointment_flow
     check (sta_dat_app < end_dat_app)
     -- Ensures the end time is after the start time
 );
@@ -131,7 +131,7 @@ CREATE TABLE overall_assessment (
     CONSTRAINT pk_overall_assessment PRIMARY KEY (id_app),
     
     -- Foreign Key linkage
-    CONSTRAINT fk_appointment 
+    CONSTRAINT fk_assessment_appointment
         FOREIGN KEY (id_app)
         REFERENCES appointment(id_app)
         on delete cascade,
@@ -161,6 +161,9 @@ create table anamnesis (
     constraint pk_anamnesis primary key (id_ana),
     -- Unique identifier
 
+    constraint uq_anamnesis_per_appointment unique (id_app),
+    -- Ensures only one anamnesis can be registered per appointment.
+
     constraint fk_anamnesis_appointment 
         foreign key (id_app)
         references appointment(id_app)
@@ -187,6 +190,9 @@ create table prescription (
 
     constraint pk_prescription primary key (id_pre),
     -- Unique identifier
+
+    constraint uq_prescription_per_appointment unique (id_app),
+    -- Ensures only one prescription can be registered per appointment.
 
     constraint fk_prescription_appointment 
         foreign key (id_app)
@@ -273,6 +279,9 @@ create table appointment_notification (
     id_cli int not null,
     -- Client associated with the notification
 
+    id_app int not null,
+    -- Appointment associated with the notification
+
     message text not null,
     -- The notification message
 
@@ -283,6 +292,6 @@ create table appointment_notification (
     -- Flag to indicate if the client has read the notification
 
     constraint pk_appointment_notification primary key (id_not),
-    constraint fk_appointment_notification_client foreign key (id_cli) references client(id_cli) on delete cascade
+    constraint fk_notification_client foreign key (id_cli) references client(id_cli) on delete cascade,
+    constraint fk_notification_appointment foreign key (id_app) references appointment(id_app) on delete cascade
 );
-

@@ -1,6 +1,6 @@
 # Docker-compose format version
 # (3.8 is stable and sufficient for this type of setup)
-version: '3.8'
+# version: '3.8'
 
 services:
   # Service name (you can call it "db", "postgres", etc.)

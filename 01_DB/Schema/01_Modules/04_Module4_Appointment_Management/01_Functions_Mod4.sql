@@ -5,28 +5,7 @@
 
 --=========================================================
 -- FUNCTION 1: fn_block_overlapping_appointments
--- Prevents scheduling of overlapping appointments for the same veterinarian.
---=========================================================
-create or replace function fn_block_overlapping_appointments()
-returns trigger as $$
-begin
-    -- Check for existing appointments that overlap with the new/updated one.
-    -- Assumes a fixed duration of 30 minutes for each appointment for scheduling purposes.
-    if exists (
-        select 1
-        from appointment a
-        where a.id_emp = new.id_emp -- Same veterinarian
-          and a.id_app != new.id_app -- Exclude the current appointment itself during updates
-          and a.status_app = 'Scheduled' -- Only check against other scheduled appointments
-          and (new.sch_dat_app, new.sch_dat_app + interval '30 minutes') OVERLAPS 
-              (a.sch_dat_app, a.sch_dat_app + interval '30 minutes')
-    ) then
-        raise exception 'O veterinário já tem uma consulta sobreposta agendada.';
-    end if;
-
-    return new;
-end;
-$$ language plpgsql;
+-- (This function was removed and replaced by an EXCLUDE constraint)
 
 --=========================================================
 -- FUNCTION 2: fn_block_appointment_if_vet_unavailable

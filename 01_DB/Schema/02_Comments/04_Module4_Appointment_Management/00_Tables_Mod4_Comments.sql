@@ -38,8 +38,6 @@ COMMENT ON CONSTRAINT fk_appointment_animal ON appointment IS
 'Links the appointment to a valid animal.';
 COMMENT ON CONSTRAINT fk_appointment_employee ON appointment IS
 'Links the appointment to a valid employee (veterinarian).';
-COMMENT ON CONSTRAINT chk_appointment_status ON appointment IS
-'Ensures the appointment status is one of the predefined valid values.';
 COMMENT ON CONSTRAINT chk_appointment_flow ON appointment IS
 'Ensures the temporal consistency of appointment timestamps (start must be before end).';
 
@@ -51,10 +49,8 @@ COMMENT ON CONSTRAINT chk_appointment_flow ON appointment IS
 COMMENT ON TABLE overall_assessment IS
 'Stores the objective clinical assessment data collected during an appointment.';
 
-COMMENT ON COLUMN overall_assessment.id_ass IS
-'Unique identifier for the assessment.';
 COMMENT ON COLUMN overall_assessment.id_app IS
-'Foreign key linking the assessment to a specific appointment.';
+'Unique identifier and foreign key linking the assessment to a specific appointment (1-to-1 relationship).';
 COMMENT ON COLUMN overall_assessment.body_temp IS
 'Animal''s body temperature in Celsius.';
 COMMENT ON COLUMN overall_assessment.weight IS
@@ -68,8 +64,6 @@ COMMENT ON COLUMN overall_assessment.general_status IS
 
 COMMENT ON CONSTRAINT pk_overall_assessment ON overall_assessment IS
 'Ensures unique identification for each assessment record.';
-COMMENT ON CONSTRAINT uq_assessment_per_appointment ON overall_assessment IS
-'Ensures only one overall assessment can be registered per appointment.';
 COMMENT ON CONSTRAINT fk_assessment_appointment ON overall_assessment IS
 'Links the assessment to a valid appointment.';
 

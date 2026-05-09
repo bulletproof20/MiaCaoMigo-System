@@ -33,3 +33,16 @@ create index idx_appointment_sch_dat_app on appointment (sch_dat_app);
 -- SELECT * FROM appointment_notification WHERE id_cli = X AND is_read = false;
 --=========================================================
 create index idx_notification_client_read_status on appointment_notification (id_cli, is_read);
+
+--=========================================================
+-- EXCLUSION CONSTRAINT 1: ex_appointment_vet_overlap
+-- Prevents overlapping scheduled appointments for the same veterinarian.
+-- This uses a GiST index on the veterinarian ID and the scheduled time range.
+-- The time range is assumed to be 30 minutes from the scheduled start time.
+--=========================================================
+ALTER TABLE appointment
+ADD CONSTRAINT ex_appointment_vet_overlap
+EXCLUDE USING gist (
+    id_emp WITH =, -- Ensure the same veterinarian, = means "where's equal" or same value
+    tsrange(sch_dat_app, sch_dat_app + interval '30 minutes') WITH && -- && means "overlaps"
+) WHERE (status_app = 'Scheduled');

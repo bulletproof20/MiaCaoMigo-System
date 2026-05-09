@@ -1,20 +1,20 @@
 --=========================================================
--- PROCEDURE: prc_auto_end_clsd_time_in_appointment
--- Closes open appointments by setting the end time to the current timestamp.
--- This procedure can be called by a scheduled job to ensure that
+-- PROCEDURE: prc_auto_update_no_show_appointments
+-- Automatically updates the status of past, scheduled appointments to 'No-Show'.
+-- This procedure is intended to be called by a scheduled job, typically
+-- running once per day after midnight.
 --=========================================================
-
-create or replace procedure prc_auto_close_clock_in_midnight()
+create or replace procedure prc_auto_update_no_show_appointments()
 language plpgsql
 as $$
 begin
-
-    -- Update all open clock-in records from previous days
-    update clock_in
-    set end_dat_clk = date_trunc('day', now())  -- current day at 00:00
-    where end_dat_clk is null
-      and sta_dat_clk < date_trunc('day', now()); -- started before today
-
+    -- Updates appointments that were scheduled for any time before the current moment
+    -- and are still in 'Scheduled' status.
+    update appointment
+    set status_app = 'No-Show'
+    where
+        status_app = 'Scheduled'
+        and sch_dat_app < now();
 end;
 $$;
 
@@ -31,19 +31,21 @@ declare
     v_aviso text;
 begin
     for consulta in (
-        select
-            a.id_cli,
-            c.nam_usr as nome_cliente,
-            e.nam_emp as nome_veterinario,
-            an.nam_ani as nome_animal
+        select a.id_app,
+               a.id_cli,
+               c.nam_usr as nome_cliente,
+               e.nam_emp as nome_veterinario,
+               an.nam_ani as nome_animal
         from appointment a
-        join client c on a.id_cli = c.id_cli
+        join user_account c on a.id_cli = c.id_usr -- Assuming client name is in user_account
         join animal an on a.id_animal = an.id_ani
         join employee e on a.id_emp = e.id_emp
         where a.sta_dat_app::date = current_date + interval '1 day' and a.status_app = 'Scheduled'
+        where a.sch_dat_app::date = current_date + interval '1 day' and a.status_app = 'Scheduled'
     ) loop
         v_aviso := format('Lembrete: Bom dia %s! A sua consulta para o animal %s com o/a Dr(a). %s está marcada para amanhã.', consulta.nome_cliente, consulta.nome_animal, consulta.nome_veterinario);
         insert into appointment_notification (id_cli, message) values (consulta.id_cli, v_aviso);
+        insert into appointment_notification (id_cli, id_app, message) values (consulta.id_cli, consulta.id_app, v_aviso);
     end loop;
 end;
 $$;
@@ -189,4 +191,3 @@ begin
     end if;
 end;
 $$;
-

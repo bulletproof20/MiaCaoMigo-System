@@ -63,19 +63,19 @@
 -- module 2 | animal management
 \echo '--- module 2 | tables'
 
--- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/00_Tables_Mod2.sql
+\i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/00_Tables_Mod2.sql
 
 
 -- module 3 | commercial management
 \echo '--- module 3 | tables'
 
--- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/00_Tables_Mod3.sql
+\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/00_Tables_Mod3.sql
 
 
 -- module 4 | appointment management
 \echo '--- module 4 | tables'
 
--- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Tables_Mod4.sql
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/00_Tables_Mod4.sql
 
 
 
@@ -97,19 +97,19 @@
 -- module 2 | animal management
 \echo '--- module 2 | indexes'
 
--- \i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/03_Indexes_Mod2.sql
+\i /docker-entrypoint-initdb.d/01_Modules/02_Module2_Animal_Management/03_Indexes_Mod2.sql
 
 
 -- module 3 | commercial management
 \echo '--- module 3 | indexes'
 
--- \i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Indexes_Mod3.sql
+\i /docker-entrypoint-initdb.d/01_Modules/03_Module3_Commercial_Management/03_Indexes_Mod3.sql
 
 
 -- module 4 | appointment management
 \echo '--- module 4 | indexes'
 
--- \i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Indexes_Mod4.sql
+\i /docker-entrypoint-initdb.d/01_Modules/04_Module4_Appointment_Management/03_Indexes_Mod4.sql
 
 -- =========================================================
 -- foreign keys

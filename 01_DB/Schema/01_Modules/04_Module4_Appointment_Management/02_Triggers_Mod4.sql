@@ -5,12 +5,7 @@
 
 --=========================================================
 -- TRIGGER 1: trg_block_overlapping_appointments
--- Prevents scheduling of overlapping appointments for the same veterinarian.
---=========================================================
-create or replace trigger trg_block_overlapping_appointments
-before insert or update on appointment
-for each row
-execute function fn_block_overlapping_appointments();
+-- (This trigger was removed and replaced by an EXCLUDE constraint)
 
 --=========================================================
 -- TRIGGER 2: trg_block_appointment_if_vet_unavailable
