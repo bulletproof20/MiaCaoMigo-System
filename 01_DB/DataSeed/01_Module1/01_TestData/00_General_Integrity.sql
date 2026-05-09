@@ -514,41 +514,68 @@ values
 
 insert into veterinarian (
     id_emp,
-    num_omv_vet,
-    id_spe
+    num_omv_vet
 )
 values
 
 -- ACTIVE VETERINARIANS
-(1,'OMV-1001',1),    -- Ricardo: cirurgia geral
-(2,'OMV-1002',2),    -- Ana: medicina geral
-(5,'OMV-1003',1),    -- Joao: cirurgia geral
-(6,'OMV-1004',2),    -- Sofia: medicina geral
-(9,'OMV-1005',3),    -- Pedro: dermatologia
-(10,'OMV-1006',4),   -- Ines: ortopedia
-(13,'OMV-1007',3),   -- Diana: dermatologia
-(14,'OMV-1008',4),   -- Bruno: ortopedia
+(1,'OMV-1001'),    -- Ricardo
+(2,'OMV-1002'),    -- Ana
+(5,'OMV-1003'),    -- Joao
+(6,'OMV-1004'),    -- Sofia
+(9,'OMV-1005'),    -- Pedro
+(10,'OMV-1006'),   -- Ines
+(13,'OMV-1007'),   -- Diana
+(14,'OMV-1008'),   -- Bruno
 
 -- INACTIVE VETERINARIANS - Specialization history
 
 -- Employee 17 (Antonio): Veterinarian - Orthopedics
-(17,'OMV-2001',4),   -- Antonio had ortopedia specialization
+(17,'OMV-2001'),   -- Antonio
 
 -- Employee 18 (Helena): Advanced to Veterinarian with Dermatology
-(18,'OMV-2002',3),   -- Helena: dermatologia
+(18,'OMV-2002'),   -- Helena
 
 -- Employee 20 (Filipa): Veterinarian - General Medicine (maternity leave)
-(20,'OMV-2003',2),   -- Filipa: medicina geral
+(20,'OMV-2003'),   -- Filipa
 
 -- Employee 21 (Dr. Eduardo): Lost Ortho specialization, only general practice recorded
 -- Note: No longer has specialty (lost certification during tenure)
-(21,'OMV-2004',2),   -- Eduardo: only general medicine left
+(21,'OMV-2004'),   -- Eduardo
 
 -- Employee 22 (Claudia): Advanced to Veterinarian with Surgery specialization
-(22,'OMV-2005',1),   -- Claudia: cirurgia geral
+(22,'OMV-2005'),   -- Claudia
 
 -- Employee 23 (Temporario): Temporary Veterinarian - Dermatology
-(23,'OMV-2006',3);   -- Temporario: dermatologia
+(23,'OMV-2006');   -- Temporario
+
+
+--=========================================================
+-- 10. EXPERT
+--=========================================================
+
+insert into expert (
+    id_emp,
+    id_spe
+)
+values
+-- ACTIVE VETERINARIANS
+(1,1),    -- Ricardo: cirurgia geral
+(2,2),    -- Ana: medicina geral
+(5,1),    -- Joao: cirurgia geral
+(6,2),    -- Sofia: medicina geral
+(9,3),    -- Pedro: dermatologia
+(10,4),   -- Ines: ortopedia
+(13,3),   -- Diana: dermatologia
+(14,4),   -- Bruno: ortopedia
+
+-- INACTIVE VETERINARIANS
+(17,4),   -- Antonio: ortopedia
+(18,3),   -- Helena: dermatologia
+(20,2),   -- Filipa: medicina geral
+(21,2),   -- Eduardo: only general medicine left
+(22,1),   -- Claudia: cirurgia geral
+(23,3);   -- Temporario: dermatologia
 
 
 insert into assistant (

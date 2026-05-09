@@ -17,6 +17,7 @@ truncate table
     have,
     occupies,
     assistant,
+    expert,
     veterinarian,
     schedule,
     absence,

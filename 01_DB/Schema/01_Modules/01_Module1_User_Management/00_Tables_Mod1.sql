@@ -17,6 +17,7 @@
 -- Associative tables
 drop table if exists occupies cascade;
 drop table if exists have cascade;
+drop table if exists expert cascade;
 
 -- Dependent entities
 drop table if exists assistant cascade;
@@ -172,7 +173,7 @@ create table specialty (
     nam_spe varchar(100) not null,
     -- Name
 
-    des_spe text,
+    des_spe text not null,
     -- Description
 
     constraint pk_specialty primary key (id_spe),
@@ -183,15 +184,15 @@ create table specialty (
 
     constraint chk_nam_spe_format
     check (
-        nam_spe = trim(nam_spe)
-        and length(nam_spe) > 3
-        and nam_spe ~ '^[A-Za-zÀ-ÿ\s]+$'
+        nam_spe = lower(trim(nam_spe))
+        and length(trim(nam_spe)) >= 5
+        and nam_spe ~ '^[a-zà-ÿ\\s]+$'
     ),
 
     constraint chk_des_spe_format
     check (
-        des_spe is null 
-        or length(trim(des_spe)) > 5
+        des_spe = trim(des_spe)
+        and length(trim(des_spe)) >= 5
     )
 );
 
@@ -336,9 +337,6 @@ create table veterinarian (
     num_omv_vet varchar(50) not null,
     -- Professional registration number (OMV)
 
-    id_spe int null,
-    -- Specialty
-
     constraint pk_veterinarian primary key (id_emp),
     -- One-to-one with employee
 
@@ -347,12 +345,6 @@ create table veterinarian (
         references employee(id_emp)
         on delete cascade,
     -- Links to employee
-
-    constraint fk_veterinarian_specialty 
-        foreign key (id_spe)
-        references specialty(id_spe)
-        on delete set null,
-    -- Links to specialty
 
     constraint uq_num_omv_vet unique (num_omv_vet),
     -- Prevents duplicate professional registrations
@@ -366,7 +358,34 @@ create table veterinarian (
 );
 
 --=========================================================
--- 8. CLIENT
+-- 8. EXPERT
+--=========================================================
+-- Associates veterinarians with specialties (many-to-many)
+create table expert (
+    id_emp int not null,
+    -- Veterinarian employee identifier
+
+    id_spe int not null,
+    -- Specialty identifier
+
+    constraint pk_expert primary key (id_emp, id_spe),
+    -- Composite unique assignment per veterinarian and specialty
+
+    constraint fk_expert_veterinarian
+        foreign key (id_emp)
+        references veterinarian(id_emp)
+        on delete cascade,
+    -- Links to veterinarian
+
+    constraint fk_expert_specialty
+        foreign key (id_spe)
+        references specialty(id_spe)
+        on delete cascade
+    -- Links to specialty
+);
+
+--=========================================================
+-- 9. CLIENT
 --=========================================================
 -- Represents system clients
 create table client (

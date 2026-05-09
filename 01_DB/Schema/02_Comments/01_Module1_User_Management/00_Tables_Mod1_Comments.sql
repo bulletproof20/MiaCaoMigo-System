@@ -120,7 +120,7 @@ comment on column specialty.nam_spe is
 'name of the specialty';
 
 comment on column specialty.des_spe is
-'description of specialty scope and responsibilities';
+'description of specialty scope and responsibilities (required)';
 
 comment on constraint pk_specialty on specialty is
 'ensures unique identification of each specialty';
@@ -132,7 +132,7 @@ comment on constraint chk_nam_spe_format on specialty is
 'validates specialty naming format';
 
 comment on constraint chk_des_spe_format on specialty is
-'validates minimum description length when provided';
+'prevents invalid specialty descriptions (non-empty and minimum length)';
 
 
 --=========================================================
@@ -239,17 +239,11 @@ comment on column veterinarian.id_emp is
 comment on column veterinarian.num_omv_vet is
 'official veterinarian professional registration number';
 
-comment on column veterinarian.id_spe is
-'associated veterinary specialty';
-
 comment on constraint pk_veterinarian on veterinarian is
 'ensures one-to-one relation with employee';
 
 comment on constraint fk_veterinarian_employee on veterinarian is
 'links veterinarian specialization to employee';
-
-comment on constraint fk_veterinarian_specialty on veterinarian is
-'links veterinarian to specialty';
 
 comment on constraint uq_num_omv_vet on veterinarian is
 'prevents duplicated veterinarian registrations';
@@ -259,7 +253,30 @@ comment on constraint chk_num_omv_vet_format on veterinarian is
 
 
 --=========================================================
--- 8. client
+-- 8. expert
+--=========================================================
+
+comment on table expert is
+'associates veterinarians with one or more specialties';
+
+comment on column expert.id_emp is
+'reference to veterinarian employee entity';
+
+comment on column expert.id_spe is
+'reference to specialty entity';
+
+comment on constraint pk_expert on expert is
+'ensures unique veterinarian-specialty assignment';
+
+comment on constraint fk_expert_veterinarian on expert is
+'links specialization assignment to a valid veterinarian';
+
+comment on constraint fk_expert_specialty on expert is
+'links specialization assignment to a valid specialty';
+
+
+--=========================================================
+-- 9. client
 --=========================================================
 
 comment on table client is
