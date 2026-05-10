@@ -98,9 +98,6 @@ comment on constraint chk_weight on overall_assessment is
 comment on table anamnesis is
 'client-reported history snippets tied to appointments';
 
-comment on column anamnesis.id_ana is
-'unique anamnesis identifier';
-
 comment on column anamnesis.id_app is
 'related appointment';
 
