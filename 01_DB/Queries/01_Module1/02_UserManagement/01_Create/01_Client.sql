@@ -1,3 +1,23 @@
+--=========================================================
+-- FUNCTION: FN_CREATE_CLIENT
+--=========================================================
+-- Purpose:
+-- Creates a new client account linked to a shared user identity.
+--
+-- Flow:
+-- 1. Normalize and validate identity data
+-- 2. Resolve existing identities using NIF and email
+-- 3. Prevent identity conflicts and duplicated clients
+-- 4. Validate ownership when identity already exists
+-- 5. Create user_account if necessary
+-- 6. Create client account
+--
+-- Notes:
+-- - One user_account may be shared across multiple roles
+-- - Existing identities require password validation
+-- - New identities automatically create setup data via trigger
+--=========================================================
+
 drop function if exists fn_create_client(
     varchar, text, varchar, varchar, varchar, varchar,
     varchar, varchar

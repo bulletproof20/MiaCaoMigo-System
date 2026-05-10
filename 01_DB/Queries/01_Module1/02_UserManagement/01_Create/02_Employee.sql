@@ -1,3 +1,25 @@
+--=========================================================
+-- FUNCTION: FN_CREATE_EMPLOYEE
+--=========================================================
+-- Purpose:
+-- Creates a new employee account linked to a shared user identity.
+--
+-- Flow:
+-- 1. Normalize and validate identity data
+-- 2. Validate the registering employee
+-- 3. Resolve existing identities using NIF and email
+-- 4. Prevent duplicated employee accounts
+-- 5. Create user_account if necessary
+-- 6. Generate corporate email automatically
+-- 7. Create employee account
+--
+-- Notes:
+-- - One user_account may be shared across multiple roles
+-- - Corporate email follows: {id_usr}@miacaomigo.pt
+-- - New identities automatically create setup data via trigger
+--=========================================================
+
+
 drop function if exists fn_create_employee(
     varchar, text, varchar, varchar, varchar, varchar,
     varchar, varchar, varchar,
