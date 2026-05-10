@@ -202,8 +202,7 @@ create table purchase (
     sta_pur varchar(50),
     -- Status
 
-    id_inv int,
-    -- Supplier
+   
 
     id_cli int,
     -- client
@@ -214,9 +213,6 @@ create table purchase (
     constraint pk_purchase primary key (id_pur),
     -- Unique identifier
 
-    constraint fk_invoice foreign key (id_inv) references invoice(id_inv)
-        on DELETE cascade,
-    -- Links to supplier
 
     constraint fk_client foreign key (id_cli) references client(id_cli)
         on DELETE set null,
