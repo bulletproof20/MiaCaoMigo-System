@@ -24,7 +24,7 @@
 drop table if exists employee_return cascade;
 drop table if exists employee_purchase cascade;
 drop table if exists return_product cascade;
-drop table if exists purchase_product cascade;
+--drop table if exists purchase_product cascade;
 
 -- Dependent entities
 drop table if exists return cascade;
@@ -118,9 +118,6 @@ create table product (
 
     id_pur int,
     -- Last purchase
-
-    id_sto int,
-    -- Current stock
 
     id_fam int NOT NULL,
     -- Family
@@ -262,6 +259,7 @@ create table return (
 --=========================================================
 -- Defines many-to-many relationships
 
+/*
 -- PURCHASE ↔ PRODUCT
 create table purchase_product (
     id_pur int not null,
@@ -291,6 +289,8 @@ create table purchase_product (
     -- Ensures valid quantity
 );
 
+*/
+
 -- RETURN ↔ PRODUCT
 create table return_product (
     id_ret int not null,
@@ -319,48 +319,6 @@ create table return_product (
     -- Ensures valid quantity
 );
 
--- EMPLOYEE ↔ PURCHASE
-create table employee_purchase (
-    id_emp int not null,
-    -- Employee
-
-    id_pur int not null,
-    -- Purchase
-
-    constraint pk_employee_purchase primary key (id_emp, id_pur),
-
-    constraint fk_emp_pur_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-
-    constraint fk_emp_pur_purchase 
-        foreign key (id_pur)
-        references purchase(id_pur)
-        on delete cascade
-);
-
--- EMPLOYEE ↔ RETURN
-create table employee_return (
-    id_emp int not null,
-    -- Employee
-
-    id_ret int not null,
-    -- Return
-
-    constraint pk_employee_return primary key (id_emp, id_ret),
-
-    constraint fk_emp_ret_employee 
-        foreign key (id_emp)
-        references employee(id_emp)
-        on delete cascade,
-
-    constraint fk_emp_ret_return 
-        foreign key (id_ret)
-        references return(id_ret)
-        on delete cascade
-);
-
 
 -- Linhas de compra (junta Product, Purchase, Stock)
 CREATE TABLE PurchaseLine (
@@ -387,23 +345,3 @@ ALTER TABLE "return" ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_IN
 ALTER TABLE "return" ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
 ALTER TABLE "return" DROP COLUMN reg_dat_ret; -- duplicado
 ALTER TABLE "return" RENAME COLUMN ina_dat_ret TO RETURN_DATE;
-
--- =========================================================
--- 8. ADICIONAR CONSTRAINTS ADIADAS
--- (Resolve as dependências circulares com a tabela 'product')
--- =========================================================
-
-ALTER TABLE product
-ADD CONSTRAINT fk_purchase_product
-FOREIGN KEY(id_pur) REFERENCES purchase(id_pur)
-ON DELETE SET NULL;
-
-ALTER TABLE product
-ADD CONSTRAINT fk_stock
-FOREIGN KEY(id_sto) REFERENCES stock(id_sto)
-ON DELETE SET NULL;
-
-ALTER TABLE product
-ADD CONSTRAINT fk_return
-FOREIGN KEY (id_ret) REFERENCES "return"(id_ret)
-ON DELETE SET NULL;
