@@ -1,5 +1,5 @@
 --=========================================================
--- MODULE 4: APPOINTMENT MANAGEMENT (Por retificar)
+-- MODULE 4: APPOINTMENT MANAGEMENT
 --=========================================================
 
 --=========================================================
@@ -23,14 +23,13 @@
 --=========================================================
 -- Drops only tables related to this module in reverse dependency order
 
-
-drop table if exists appointment cascade;
-drop table if exists overall_assessment cascade;
-drop table if exists anamnesis cascade;
-drop table if exists prescription cascade;
-drop table if exists rel_app_product cascade;
-drop table if exists appointment_notification cascade;
+drop table if exists rel_app_product cascade; -- This table will be removed
 drop table if exists rel_pre_prod cascade;
+drop table if exists prescription cascade;
+drop table if exists anamnesis cascade;
+drop table if exists overall_assessment cascade;
+drop table if exists appointment_notification cascade;
+drop table if exists appointment cascade;
 
 -- Custom types
 drop type if exists appointment_status cascade;
@@ -74,7 +73,10 @@ create table appointment (
     id_cli int NOT NULL,
 
     -- Specialty of the appointment (e.g., General Checkup, Surgery)
-    spec_app varchar(100) not null,
+    id_spe int NOT NULL,
+
+    -- Invoice identifier (nullable, as it may be generated after the appointment) 
+    id_inv int, 
 
     sch_dat_app timestamp NOT NULL,
     -- Scheduled datetime
@@ -88,14 +90,14 @@ create table appointment (
     status_app appointment_status not null default 'Scheduled',
     -- Current status of the appointment (e.g., Scheduled, Completed)
 
-    dia_app varchar(100),
+    dia_app text,
     -- Diagnosis resulting from the appointment. Filled upon completion.
 
     com_app text,
     -- General comments or observations about the appointment
 
     constraint pk_appointment primary key (id_app),
-    -- Unique identifier
+    -- Unique identifier. FKs are defined in 01_ForeignKeys_Mod4.sql
 
     constraint chk_app_time
     check (sta_dat_app < end_dat_app)
@@ -107,19 +109,21 @@ create table appointment (
 --=========================================================
 -- Stores clinical history collected during appointment
 CREATE TABLE overall_assessment (
-    id_app INT NOT NULL, -- PK and FK
-    body_temp FLOAT,     -- Body temperature in °C
-    weight FLOAT,        -- Weight in kg
-    hrt_rate FLOAT,      -- Heart rate (BPM)
-    resp_rate FLOAT,     -- Respiratory rate (MPM)
-    general_status TEXT, -- Notations about the animal
-    
+    id_app INT NOT NULL, -- PK and FK to appointment
+    body_temp NUMERIC(4,1),     -- Body temperature in °C (e.g., 38.5)
+    weight NUMERIC(6,2),        -- Weight in kg (e.g., 25.50)
+    hrt_rate INT,      -- Heart rate (beats per minute)
+    resp_rate INT,     -- Respiratory rate (breaths per minute)
+    general_status TEXT, -- General notations about the animal's condition
+
     -- Defining the Primary Key
     CONSTRAINT pk_overall_assessment PRIMARY KEY (id_app),
-        
+
     -- Safety checks to prevent impossible medical data
-    CONSTRAINT chk_body_temp CHECK (body_temp > 0 AND body_temp < 50),
-    CONSTRAINT chk_weight CHECK (weight > 0)
+    CONSTRAINT chk_body_temp CHECK (body_temp > 20 AND body_temp < 50), -- Realistic temperature range
+    CONSTRAINT chk_weight CHECK (weight > 0),
+    CONSTRAINT chk_hrt_rate CHECK (hrt_rate > 0),
+    CONSTRAINT chk_resp_rate CHECK (resp_rate > 0)
 );
 
 --=========================================================
@@ -127,20 +131,16 @@ CREATE TABLE overall_assessment (
 --=========================================================
 -- Stores patient history collected during appointment
 create table anamnesis (
-    id_ana int generated always as identity,
-    -- Anamnesis identifier
-
-    id_app int not null,
-    -- Foreign key to the related appointment
+    id_app int not null, -- PK and FK to appointment
+    -- Establishes a 1-to-1 relationship, as an anamnesis is unique to a consultation.
 
     reg_dat_ana timestamp not null default current_timestamp,
     -- Record date and time
 
     des_ana text,
-    -- Detailed description of the patient's history and symptoms
+    -- Detailed description of the patient's history and symptoms (reason for visit, etc.)
 
-    constraint pk_anamnesis primary key (id_ana)
-    -- Unique identifier
+    constraint pk_anamnesis primary key (id_app)
 );
 
 --=========================================================
@@ -232,4 +232,3 @@ create table appointment_notification (
 
     constraint pk_appointment_notification primary key (id_not)
 );
-
