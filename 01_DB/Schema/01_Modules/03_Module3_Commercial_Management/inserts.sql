@@ -1,5 +1,51 @@
+-- =========================================================
+-- 1. USER_ACCOUNT (Cria 80 utilizadores base: 40 para Empregados + 40 para Clientes)
+-- =========================================================
+WITH names AS (
+    SELECT
+        nome || ' ' || apelido as full_name,
+        row_number() over() as rn
+    FROM
+        unnest(ARRAY['Ana', 'Bruno', 'Carlos', 'Diana', 'Eduardo', 'Filipa', 'Goncalo', 'Helena', 'Ines', 'Joao']) as nome
+    CROSS JOIN
+        unnest(ARRAY['Silva', 'Santos', 'Ferreira', 'Pereira', 'Oliveira', 'Costa', 'Rodrigues', 'Martins', 'Gomes', 'Lopes']) as apelido
+    LIMIT 80
+)
+INSERT INTO user_account (nam_usr, add_usr, pos_usr, nif_usr, pho_usr, ema_usr)
+SELECT
+    full_name,
+    'Rua Principal de Espinho',
+    '4500-100', 
+    (100000000 + rn)::varchar, 
+    '+351910000' || lpad(rn::text, 3, '0'),
+    lower(replace(full_name, ' ', '.') || rn || '@pessoal.com')
+FROM names;
+
+-- =========================================================
+-- 2. EMPLOYEE (40 Registos)
+-- =========================================================
+INSERT INTO employee (id_usr, ema_emp, pas_emp, reg_dat_emp)
+SELECT
+    id_usr,
+    replace(ema_usr, '@pessoal.com', '@miacaomigo.pt'),
+    'hash_muito_seguro_e_longo_emp_' || id_usr,
+    current_timestamp
+FROM user_account
+WHERE id_usr <= 40;
+
+-- =========================================================
+-- 3. CLIENT (40 Registos)
+-- =========================================================
+INSERT INTO client (id_usr, pas_cli, reg_dat_cli)
+SELECT
+    id_usr,
+    'hash_muito_seguro_e_longo_cli_' || id_usr,
+    current_timestamp
+FROM user_account
+WHERE id_usr > 40 AND id_usr <= 80;
+
 -- ==========================================
--- 1. FAMILY (Categorias) - 8 Categorias realistas
+-- 4. FAMILY (Categorias)
 -- ==========================================
 INSERT INTO family (nam_fam, des_fam) VALUES 
 ('Rações Cão', 'Alimentação seca e húmida para cães'),
@@ -12,7 +58,7 @@ INSERT INTO family (nam_fam, des_fam) VALUES
 ('Suplementos', 'Vitaminas e suplementos articulares');
 
 -- ==========================================
--- 2. PRODUCT (30 Produtos Reais de Veterinária)
+-- 5. PRODUCT (30 Produtos Reais)
 -- ==========================================
 INSERT INTO product (ref_pro, bar_pro, nam_pro, des_pro, pri_pro, iva_pro, id_fam) VALUES 
 ('RAC-C01', '1000000000001', 'Royal Canin Mini Adult 8kg', 'Ração para cães pequenos adultos', 45.90, 23.00, 1),
@@ -46,74 +92,60 @@ INSERT INTO product (ref_pro, bar_pro, nam_pro, des_pro, pri_pro, iva_pro, id_fa
 ('SUP-001', '8000000000001', 'Condrovet Force HA', 'Protetor articular', 45.00, 6.00, 8),
 ('SUP-002', '8000000000002', 'Pasta Nutriplus Gel', 'Suplemento vitamínico e energético', 15.00, 6.00, 8);
 
+-- =========================================================
+-- 6. STOCK (40 Registos)
+-- Injeta 1000 unidades em formato TIMESTAMP
+-- =========================================================
+INSERT INTO stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
+SELECT
+    (i % 30) + 1, 
+    'LOTE-2026-' || lpad(i::text, 3, '0'),
+    1000,
+    current_timestamp,
+    current_timestamp + interval '1 year'
+FROM generate_series(1, 40) as i;
 
--- ==========================================
--- 3. LOOP AUTOMÁTICO (Gera 30 Stocks, Faturas, Compras, etc.)
--- ==========================================
-DO $$
-DECLARE
-    i INT;
-    v_id_stock INT;
-    v_id_invoice INT;
-    v_id_purchase INT;
-    v_id_return INT;
-    v_id_inv_line INT;
-    
-    -- Vamos assumir que os IDs Cliente 1, Empregado 1 e Consulta 1 existem.
-    -- (O script não falha se existirem na tua BD).
-    v_cli INT := 1; v_emp INT := 1; v_app INT := 1;
-    v_preco NUMERIC; v_iva NUMERIC;
-BEGIN
-    FOR i IN 1..30 LOOP
-    
-        -- -----------------------------------------------------
-        -- A) CRIAR 30 ENTRADAS DE STOCK (1 para cada produto)
-        -- -----------------------------------------------------
-        INSERT INTO stock (id_pro, bat_sto, qty_sto, val_dat_sto, ent_dat_sto) 
-        VALUES (i, 'LOTE-TESTE-' || i, 100 + (random() * 50)::INT, CURRENT_DATE + (random() * 365)::INT, CURRENT_DATE)
-        RETURNING id_sto INTO v_id_stock;
+-- =========================================================
+-- 7. PURCHASE (40 Registos)
+-- =========================================================
+INSERT INTO purchase (pur_dat_pur, sta_pur, id_cli, id_emp)
+SELECT
+    current_timestamp - (i || ' days')::interval,
+    'received',
+    (i % 40) + 1, 
+    (i % 40) + 1  
+FROM generate_series(1, 40) as i;
 
-        -- Pegar no preço e IVA do produto atual para fazer as contas
-        SELECT pri_pro, iva_pro INTO v_preco, v_iva FROM product WHERE id_pro = i;
+-- =========================================================
+-- 8. PURCHASELINE (40 Registos)
+-- =========================================================
+INSERT INTO PurchaseLine (ID_PURCHASE, ID_PRODUCT, BATCH, QUANTITY, UNIT_COST, ID_STOCK)
+SELECT
+    i, 
+    (i % 30) + 1, 
+    'LOTE-2026-' || lpad(i::text, 3, '0'),
+    2,
+    15.50,
+    i
+FROM generate_series(1, 40) as i;
 
-        -- -----------------------------------------------------
-        -- B) CRIAR 30 COMPRAS AOS FORNECEDORES (Reposição)
-        -- -----------------------------------------------------
-        INSERT INTO purchase (pur_dat_pur, tot_val_pur, ord_num_pur, pay_met_pur, sta_pur, id_cli, id_emp) 
-        VALUES (CURRENT_TIMESTAMP - (random() * 30 || ' days')::INTERVAL, 
-               (v_preco * 10), 'ORD-2026-' || i, 'Transferência', 'received', NULL, v_emp)
-        RETURNING id_pur INTO v_id_purchase;
+-- =========================================================
+-- 9. INVOICE (40 Registos)
+-- =========================================================
+INSERT INTO invoice (dat_inv, bod_inv)
+SELECT
+    current_timestamp - (i || ' hours')::interval,
+    'Fatura de venda direta #' || lpad(i::text, 3, '0')
+FROM generate_series(1, 40) as i;
 
-        INSERT INTO PurchaseLine (ID_PURCHASE, ID_PRODUCT, BATCH, QUANTITY, UNIT_COST, ID_STOCK) 
-        VALUES (v_id_purchase, i, 'LOTE-TESTE-' || i, 10, v_preco * 0.5, v_id_stock);
-
-        INSERT INTO purchase_product (id_pur, id_pro, qty_pur_pro) VALUES (v_id_purchase, i, 10);
-        INSERT INTO employee_purchase (id_emp, id_pur) VALUES (v_emp, v_id_purchase);
-
-
-        -- -----------------------------------------------------
-        -- C) CRIAR 30 FATURAS (Venda aos clientes)
-        -- -----------------------------------------------------
-        INSERT INTO invoice (val_inv, dat_inv, bod_inv, id_app) 
-        VALUES (v_preco + (v_preco * (v_iva/100)), CURRENT_TIMESTAMP - (random() * 15 || ' days')::INTERVAL, 'Fatura de Venda Nº' || i, v_app)
-        RETURNING id_inv INTO v_id_invoice;
-
-        INSERT INTO InvoiceLine (ID_INVOICE, ID_PRODUCT, QUANTITY, UNIT_PRICE, IVA) 
-        VALUES (v_id_invoice, i, 1, v_preco, v_iva)
-        RETURNING ID_INVOICE_LINE INTO v_id_inv_line;
-
-
-        -- -----------------------------------------------------
-        -- D) CRIAR DEVOLUÇÕES (Só cria 1 a cada 3 loops, senão era irreal)
-        -- -----------------------------------------------------
-        IF i % 3 = 0 THEN
-            INSERT INTO return (dat_ret, mot_ret, ID_INVOICE_LINE, QUANTITY_RETURNED, RETURN_DATE) 
-            VALUES (CURRENT_DATE, 'Motivo da devolução ' || i, v_id_inv_line, 1, CURRENT_TIMESTAMP)
-            RETURNING id_ret INTO v_id_return;
-
-            INSERT INTO return_product (id_ret, id_pro, qty_ret_pro) VALUES (v_id_return, i, 1);
-            INSERT INTO employee_return (id_emp, id_ret) VALUES (v_emp, v_id_return);
-        END IF;
-
-    END LOOP;
-END $$;
+-- =========================================================
+-- 10. INVOICELINE (40 Registos)
+-- =========================================================
+INSERT INTO InvoiceLine (ID_INVOICE, ID_PRODUCT, QUANTITY, UNIT_PRICE, IVA)
+SELECT
+    i, 
+    (i % 30) + 1, 
+    1, 
+    35.00, 
+    23.00
+FROM generate_series(1, 40) as i;
