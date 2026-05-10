@@ -14,10 +14,12 @@ SELECT
     a.id_app,
     a.sch_dat_app,
     c.nam_usr as client_name,
+    s.nam_spe as specialty_name,
     an.nam_ani as animal_name,
     a.status_app
 FROM appointment a
 JOIN client c ON a.id_cli = c.id_cli
+JOIN specialty s ON a.id_spe = s.id_spe
 JOIN animal an ON a.id_animal = an.id_ani
 WHERE a.id_emp = 1 -- << Substituir pelo ID do veterinário
   AND a.sch_dat_app >= current_date
@@ -35,11 +37,13 @@ SELECT
     a.id_app,
     a.sch_dat_app,
     e.nam_emp as vet_name,
+    s.nam_spe as specialty_name,
     a.status_app,
     a.dia_app as diagnosis,
     a.com_app as comments
 FROM appointment a
 JOIN employee e ON a.id_emp = e.id_emp
+JOIN specialty s ON a.id_spe = s.id_spe
 WHERE a.id_animal = 1 -- << Substituir pelo ID do animal
 ORDER BY a.sch_dat_app DESC;
 
@@ -58,6 +62,8 @@ SELECT
     c.nam_usr as client_name,
     an.nam_ani as animal_name,
     e.nam_emp as vet_name,
+    s.nam_spe as specialty_name,
+    i.id_inv as invoice_id,
     a.dia_app as diagnosis,
     a.com_app as comments,
     oa.body_temp,
@@ -71,9 +77,11 @@ FROM appointment a
 LEFT JOIN client c ON a.id_cli = c.id_cli
 LEFT JOIN animal an ON a.id_animal = an.id_ani
 LEFT JOIN employee e ON a.id_emp = e.id_emp
+LEFT JOIN specialty s ON a.id_spe = s.id_spe
 LEFT JOIN overall_assessment oa ON a.id_app = oa.id_app
 LEFT JOIN anamnesis anam ON a.id_app = anam.id_app
 LEFT JOIN prescription p ON a.id_app = p.id_app
+LEFT JOIN invoice i ON a.id_inv = i.id_inv
 WHERE a.id_app = 1; -- << Substituir pelo ID da consulta
 
 

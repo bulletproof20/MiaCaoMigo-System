@@ -99,7 +99,7 @@ set client_min_messages to warning;
 
 \echo '>>> loading queries layer'
 
-\i /docker-entrypoint-initdb.d/03_Loaders/06_Queries.sql
+-- \i /docker-entrypoint-initdb.d/03_Loaders/06_Queries.sql
 
 
 

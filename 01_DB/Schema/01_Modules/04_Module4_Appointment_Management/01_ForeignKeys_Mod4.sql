@@ -14,24 +14,31 @@ alter table appointment
         references animal(id_ani)
         on delete cascade;
 
+-- Add foreign key for employee in appointment table
 alter table appointment
     add constraint fk_appointment_employee
         foreign key (id_emp)
         references employee(id_emp)
         on delete restrict;
 
+-- Add foreign key for client in appointment table
 alter table appointment
     add constraint fk_client
         foreign key (id_cli)
         references client(id_cli)
         on delete cascade;
+    
+-- Add foreign key for specialty in appointment table
+ALTER TABLE appointment
+ADD CONSTRAINT fk_appointment_specialty
+FOREIGN KEY (id_spe) REFERENCES specialty(id_spe)
+ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- appointment → specialty (Module 1 catalog)
-alter table appointment
-    add constraint fk_appointment_specialty
-        foreign key (id_spe)
-        references specialty(id_spe)
-        on delete restrict;
+-- Add foreign key for invoice in appointment table
+ALTER TABLE appointment
+ADD CONSTRAINT fk_appointment_invoice
+FOREIGN KEY (id_inv) REFERENCES invoice(id_inv)
+ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- overall_assessment → appointment
 alter table overall_assessment

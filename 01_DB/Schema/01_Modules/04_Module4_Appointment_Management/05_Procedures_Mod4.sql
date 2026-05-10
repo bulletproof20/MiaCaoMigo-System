@@ -1,20 +1,22 @@
 --=========================================================
--- PROCEDURE: prc_auto_end_clsd_time_in_appointment
--- Closes open appointments by setting the end time to the current timestamp.
--- This procedure can be called by a scheduled job to ensure that
+-- PROCEDURE: prc_auto_complete_overdue_appointments
+-- Marks appointments as 'Completed' if they have been 'In Progress' for too long.
+-- This procedure can be called by a scheduled job to clean up stale appointment statuses.
 --=========================================================
-
-create or replace procedure prc_auto_close_clock_in_midnight()
+create or replace procedure prc_auto_complete_overdue_appointments()
 language plpgsql
 as $$
 begin
-
-    -- Update all open clock-in records from previous days
-    update clock_in
-    set end_dat_clk = date_trunc('day', now())  -- current day at 00:00
-    where end_dat_clk is null
-      and sta_dat_clk < date_trunc('day', now()); -- started before today
-
+    -- Find appointments that are 'In Progress' for more than a defined period (e.g., 4 hours)
+    -- and automatically complete them with a system note.
+    update appointment
+    set
+        status_app = 'Completed',
+        end_dat_app = now(),
+        com_app = coalesce(com_app, '') || ' [Aviso: Consulta fechada automaticamente pelo sistema por inatividade.]'
+    where
+        status_app = 'In Progress'
+        and sta_dat_app < (now() - interval '4 hours'); -- Timeout threshold
 end;
 $$;
 
@@ -201,4 +203,3 @@ begin
     end if;
 end;
 $$;
-
