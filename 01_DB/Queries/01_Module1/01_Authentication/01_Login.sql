@@ -1,57 +1,19 @@
--- =========================================================
--- Module: Authentication - Login
--- Function: login_user
--- =========================================================
--- Description:
--- Handles user login attempts by validating credentials and
--- enforcing session rules.
---
--- Responsibilities:
--- - Validates user existence
--- - Verifies password correctness
--- - Checks for active sessions (single-session policy)
--- - Registers all login attempts (successful and failed)
---
--- Behavior:
--- - Login fails if email does not exist
--- - Login fails if password is incorrect
--- - Login fails if there is an active session
--- - All attempts are recorded in login_record
---
--- Returns:
--- - email
--- - password_ok (boolean)
--- - has_active_session (boolean)
--- - user_id (integer)
--- - login_success (boolean)
---
--- Dependencies:
--- - user_exists(varchar)
--- - validate_password(varchar, varchar)
--- - get_user_by_email(varchar)
--- - has_active_sessions(varchar)
---
--- Notes:
--- - Implements single active session per user
--- - No password encryption applied (direct comparison)
---
--- Authors: Ivo Sá, João Ramalho, João Navarro, Tiago Mendes
--- Version: 1.2 (Login Logic Module)
--- Date: 2026-04-15
--- =========================================================
-
 --=========================================================
 -- function: login_user
 --=========================================================
 -- description:
--- validates login and determines success based on:
--- - valid email
--- - correct password
+-- validates login attempts based on:
+-- - existing account
+-- - valid password
+-- - active account
 -- - no active sessions
+--
+-- behavior:
+-- - all attempts are registered in login_record
+-- - only one active session allowed per user
 --=========================================================
-drop function if exists login_user(varchar, varchar, inet);
 
-create function login_user(
+create or replace function login_user(
     p_email varchar,
     p_password varchar,
     p_ip inet
@@ -59,24 +21,35 @@ create function login_user(
 returns table (
     email varchar,
     password_ok boolean,
+    account_active boolean,
     has_active_session boolean,
     user_id integer,
     login_success boolean
 ) as $$
+
 declare
+
     v_user_id integer;
     v_password_ok boolean;
+    v_account_active boolean;
     v_has_session boolean;
     v_login_success boolean;
+
 begin
 
+    --=====================================================
+    -- 1. NORMALIZE EMAIL
+    --=====================================================
+
     p_email := normalize_email(p_email);
+
     --=====================================================
-    -- 1. VALIDATE USER EXISTENCE
+    -- 2. VALIDATE USER EXISTENCE
     --=====================================================
 
-    if not user_exists(p_email) then
+    if not fn_user_exists_by_email(p_email) then
 
+        -- register failed attempt
         insert into login_record (
             sig_tim_log, suc_log, ip_add_log, eml_usr
         )
@@ -84,20 +57,32 @@ begin
             now(), false, p_ip, p_email
         );
 
+        -- return failed result
         return query
-        select null::varchar, false::boolean, false::boolean, null::integer, false::boolean;
+        select
+            null::varchar,
+            false::boolean,
+            false::boolean,
+            false::boolean,
+            null::integer,
+            false::boolean;
 
         return;
+
     end if;
 
     --=====================================================
-    -- 2. VALIDATE PASSWORD
+    -- 3. VALIDATE PASSWORD
     --=====================================================
 
-    v_password_ok := validate_password(p_email, p_password);
+    v_password_ok := validate_password(
+        p_email,
+        p_password
+    );
 
     if not v_password_ok then
 
+        -- register failed password attempt
         insert into login_record (
             sig_tim_log, suc_log, ip_add_log, eml_usr
         )
@@ -105,33 +90,78 @@ begin
             now(), false, p_ip, p_email
         );
 
+        -- return failed result
         return query
-        select p_email::varchar, false::boolean, false::boolean, null::integer, false::boolean;
+        select
+            p_email::varchar,
+            false::boolean,
+            false::boolean,
+            false::boolean,
+            null::integer,
+            false::boolean;
 
         return;
+
     end if;
 
     --=====================================================
-    -- 3. GET USER ID
+    -- 4. VALIDATE ACCOUNT STATUS
     --=====================================================
 
-    v_user_id := get_user_by_email(p_email);
+    v_account_active := fn_is_account_active(
+        p_email
+    );
+
+    -- retrieve associated user
+    v_user_id := get_user_by_email(
+        p_email
+    );
+
+    if not v_account_active then
+
+        -- register inactive account attempt
+        insert into login_record (
+            sig_tim_log,
+            suc_log,
+            ip_add_log,
+            eml_usr,
+            id_usr
+        )
+        values (
+            now(),
+            false,
+            p_ip,
+            p_email,
+            v_user_id
+        );
+
+        -- return inactive account result
+        return query
+        select
+            p_email::varchar,
+            true::boolean,
+            false::boolean,
+            false::boolean,
+            v_user_id::integer,
+            false::boolean;
+
+        return;
+
+    end if;
 
     --=====================================================
-    -- 4. CHECK ACTIVE SESSION
+    -- 5. VALIDATE ACTIVE SESSION
     --=====================================================
 
-    v_has_session := has_active_sessions(p_email);
+    v_has_session := has_active_sessions(
+        p_email
+    );
 
-    --=====================================================
-    -- 5. DETERMINE LOGIN SUCCESS
-    --=====================================================
-
-    -- success only if NO active sessions
+    -- login only succeeds without active session
     v_login_success := not v_has_session;
 
     --=====================================================
-    -- 6. REGISTER ATTEMPT
+    -- 6. REGISTER LOGIN ATTEMPT
     --=====================================================
 
     insert into login_record (
@@ -143,7 +173,7 @@ begin
     )
     values (
         now(),
-        v_login_success, -- only true if no active session
+        v_login_success,
         p_ip,
         p_email,
         v_user_id
@@ -154,14 +184,14 @@ begin
     --=====================================================
 
     return query
-    select 
+    select
         p_email::varchar,
+        true::boolean,
         true::boolean,
         v_has_session::boolean,
         v_user_id::integer,
         v_login_success::boolean;
 
 end;
+
 $$ language plpgsql;
-
-

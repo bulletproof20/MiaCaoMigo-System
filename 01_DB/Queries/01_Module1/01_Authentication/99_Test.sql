@@ -8,84 +8,207 @@
 --==============================
 
 -- 1. login with non-existent email
--- expected: login_success = false
+-- expected:
+-- - login_success = false
+-- - password_ok = false
+-- - user_id = null
+
 select * 
-from login_user('naoexiste@email.com', 'hashed_password_1234567890', '127.0.0.1');
+from login_user(
+    'naoexiste@email.com',
+    '$2b$12$fakepasswordhash000000000',
+    '127.0.0.1'
+);
 
 
 -- 2. login with incorrect password (existing client)
--- expected: password_ok = false
+-- helena exists as client
+-- expected:
+-- - password_ok = false
+-- - login_success = false
+
 select * 
-from login_user('maria@email.pt', 'wrong_password_1234567890', '127.0.0.1');
+from login_user(
+    'helena1@gmail.com',
+    'wrong_password_hash',
+    '127.0.0.1'
+);
 
 
 -- 3. login client WITH active session
--- seed tem sessão ativa para maria → deve falhar
--- expected: login_success = false, has_active_session = true
+-- miguel already has active session in seed
+-- expected:
+-- - login_success = false
+-- - has_active_session = true
+
 select * 
-from login_user('maria@email.pt', 'hashed_password_1234567890', '127.0.0.1');
+from login_user(
+    'miguel1@gmail.com',
+    '$2b$12$hash_miguel',
+    '127.0.0.1'
+);
 
 
 -- 4. login employee WITHOUT active session
--- emp1 tem sessão fechada → deve dar sucesso
--- expected: login_success = true
+-- carlos has only closed sessions
+-- expected:
+-- - login_success = true
+
 select * 
-from login_user('emp1@miacaomigo.pt', 'hashed_password_1234567890', '127.0.0.1');
+from login_user(
+    'carlos1@miacaomigo.pt',
+    '$2b$12$hash_carlos_secure',
+    '127.0.0.1'
+);
 
 
 -- 5. login employee WITH active session
--- emp2 tem sessão ativa → deve falhar
--- expected: login_success = false
+-- sofia already has active session
+-- expected:
+-- - login_success = false
+-- - has_active_session = true
+
 select * 
-from login_user('emp2@miacaomigo.pt', 'hashed_password_1234567890', '127.0.0.1');
+from login_user(
+    'sofia1@miacaomigo.pt',
+    '$2b$12$hash_sofia_secure',
+    '127.0.0.1'
+);
+
+
+-- 6. login inactive employee
+-- employee exists but employment is inactive
+-- expected:
+-- - login_success = false
+
+select * 
+from login_user(
+    'pedro1@miacaomigo.pt',
+    '$2b$12$hash_pedro_secure',
+    '127.0.0.1'
+);
 
 
 --==============================
 -- LOGOUT TESTS
 --==============================
 
--- 6. logout non-existent user
+-- 7. logout non-existent user
 -- expected: false
-select logout_user('naoexiste@email.com');
+
+select logout_user(
+    'naoexiste@email.com'
+);
 
 
--- 7. logout client (tem sessão ativa)
+-- 8. logout client with active session
+-- miguel has active session
 -- expected: true
-select logout_user('maria@email.pt');
+
+select logout_user(
+    'miguel1@gmail.com'
+);
 
 
--- 8. logout employee (tem sessão ativa)
+-- 9. logout employee with active session
+-- sofia has active session
 -- expected: true
-select logout_user('emp1@miacaomigo.pt');
+
+select logout_user(
+    'sofia1@miacaomigo.pt'
+);
 
 
--- 9. logout again (já não tem sessão)
+-- 10. logout again (already closed)
 -- expected: false
-select logout_user('maria@email.pt');
+
+select logout_user(
+    'miguel1@gmail.com'
+);
 
 
 --==============================
--- EXTRA TEST (APÓS LOGOUT)
+-- EXTRA TESTS
 --==============================
 
--- 10. login após logout (client)
--- agora deve conseguir entrar
--- expected: login_success = true
+-- 11. login after logout
+-- miguel session was closed in previous test
+-- expected:
+-- - login_success = true
+
 select * 
-from login_user('maria@email.pt', 'hashed_password_1234567890', '127.0.0.1');
+from login_user(
+    'miguel1@gmail.com',
+    '$2b$12$hash_miguel',
+    '127.0.0.1'
+);
+
+
+-- 12. brute-force simulation
+-- repeated invalid attempts
+
+select * 
+from login_user(
+    'ana1@miacaomigo.pt',
+    'wrong_hash_1',
+    '192.168.50.10'
+);
+
+select * 
+from login_user(
+    'ana1@miacaomigo.pt',
+    'wrong_hash_2',
+    '192.168.50.10'
+);
+
+select * 
+from login_user(
+    'ana1@miacaomigo.pt',
+    'wrong_hash_3',
+    '192.168.50.10'
+);
 
 
 --==============================
 -- DEBUG / VALIDATION
 --==============================
 
--- sessões ativas
+-- active sessions
+
 select *
 from login_record
 where sou_tim_log is null
   and suc_log = true;
 
--- histórico completo
+
+-- authentication history
+
 select *
 from login_record
 order by sig_tim_log desc;
+
+
+-- active employee records
+
+select
+    id_emp,
+    id_usr,
+    ema_emp,
+    reg_dat_emp,
+    dea_dat_emp
+from employee
+where dea_dat_emp is null
+order by id_usr;
+
+
+-- inactive employee records
+
+select
+    id_emp,
+    id_usr,
+    ema_emp,
+    reg_dat_emp,
+    dea_dat_emp
+from employee
+where dea_dat_emp is not null
+order by id_usr;

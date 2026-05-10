@@ -154,20 +154,20 @@ values
 -- LOGIN_RECORD
 --=========================================================
 
-insert into login_record (sig_tim_log, sou_tim_log, suc_log, ip_add_log, eml_usr, id_usr)
+insert into login_record (sig_tim_log,sou_tim_log,suc_log,ip_add_log,eml_usr,id_usr)
 values
 
 -- successful employee sessions
 (current_timestamp - interval '10 hours',current_timestamp - interval '6 hours',true,'192.168.1.10','ricardo1@miacaomigo.pt',1),
 (current_timestamp - interval '9 hours',current_timestamp - interval '5 hours',true,'192.168.1.11','ana1@miacaomigo.pt',2),
 (current_timestamp - interval '8 hours',current_timestamp - interval '4 hours',true,'192.168.1.12','carlos1@miacaomigo.pt',3),
-(current_timestamp - interval '7 hours',null,true,'192.168.1.13','sofia1@miacaomigo.pt',4),
+(current_timestamp - interval '7 hours',current_timestamp - interval '2 hours',true,'192.168.1.13','sofia1@miacaomigo.pt',4),
 (current_timestamp - interval '6 hours',null,true,'192.168.1.14','tiago1@miacaomigo.pt',5),
 
 -- successful client sessions
 (current_timestamp - interval '5 hours',null,true,'192.168.1.20','miguel1@gmail.com',11),
 (current_timestamp - interval '4 hours',null,true,'192.168.1.21','andre1@gmail.com',12),
-(current_timestamp - interval '3 hours',null,true,'192.168.1.22','carla1@gmail.com',13),
+(current_timestamp - interval '3 hours',current_timestamp - interval '1 hour',true,'192.168.1.22','carla1@gmail.com',13),
 
 -- failed unknown users
 (current_timestamp - interval '2 hours',null,false,'192.168.1.100','intruder1@gmail.com',null),
@@ -183,9 +183,9 @@ values
 
 -- mixed authentication activity
 (current_timestamp - interval '80 minutes',null,false,'10.0.0.20','pedro1@miacaomigo.pt',9),
-(current_timestamp - interval '75 minutes',null,true,'10.0.0.20','pedro1@miacaomigo.pt',9),
+(current_timestamp - interval '75 minutes',current_timestamp - interval '70 minutes',true,'10.0.0.20','pedro1@miacaomigo.pt',9),
 (current_timestamp - interval '70 minutes',null,false,'10.0.0.21','filipa1@miacaomigo.pt',10),
-(current_timestamp - interval '65 minutes',null,true,'10.0.0.21','filipa1@miacaomigo.pt',10),
+(current_timestamp - interval '65 minutes',current_timestamp - interval '60 minutes',true,'10.0.0.21','filipa1@miacaomigo.pt',10),
 
 -- historical sessions
 (current_timestamp - interval '20 days',current_timestamp - interval '20 days' + interval '8 hours',true,'172.16.1.1','ricardo1@miacaomigo.pt',1),
@@ -207,8 +207,6 @@ values
 (current_timestamp - interval '8 minutes',null,false,'192.168.60.10','rita1@gmail.com',14),
 
 -- failed logins on inactive employee accounts
--- credentials/email correct but account already inactive
-
 (current_timestamp - interval '50 days',null,false,'185.10.10.10','pedro1@miacaomigo.pt',9),
 (current_timestamp - interval '40 days',null,false,'185.10.10.11','pedro1@miacaomigo.pt',9),
 (current_timestamp - interval '30 days',null,false,'185.10.10.12','pedro1@miacaomigo.pt',9),
@@ -229,34 +227,26 @@ values
 (current_timestamp - interval '200 days',null,false,'10.10.10.11','filipa.old5@miacaomigo.pt',10),
 
 -- latest successful authentications
-
 (current_timestamp - interval '5 minutes',null,true,'192.168.1.200','sofia1@miacaomigo.pt',4),
 (current_timestamp - interval '3 minutes',null,true,'192.168.1.201','mariana1@gmail.com',7),
 (current_timestamp - interval '1 minute',null,true,'192.168.1.202','helena1@gmail.com',20),
 
 -- reconnect after explicit logout
-
 (current_timestamp - interval '55 minutes',current_timestamp - interval '30 minutes',true,'192.168.10.10','ricardo1@miacaomigo.pt',1),
 (current_timestamp - interval '25 minutes',null,true,'192.168.10.11','ricardo1@miacaomigo.pt',1),
 
 (current_timestamp - interval '4 hours',current_timestamp - interval '2 hours',true,'10.1.1.10','ana1@miacaomigo.pt',2),
 (current_timestamp - interval '90 minutes',null,true,'10.1.1.11','ana1@miacaomigo.pt',2),
 
-(current_timestamp - interval '3 hours',current_timestamp - interval '1 hour',true,'192.168.88.10','carla1@gmail.com',13),
 (current_timestamp - interval '40 minutes',null,true,'192.168.88.11','carla1@gmail.com',13),
 
 -- blocked login attempts because active session already exists
-
 (current_timestamp - interval '20 minutes',null,false,'192.168.10.12','ricardo1@miacaomigo.pt',1),
 (current_timestamp - interval '18 minutes',null,false,'192.168.10.13','ricardo1@miacaomigo.pt',1),
-
 (current_timestamp - interval '70 minutes',null,false,'10.1.1.12','ana1@miacaomigo.pt',2),
-
 (current_timestamp - interval '15 minutes',null,false,'172.20.1.12','miguel1@gmail.com',11),
-
 (current_timestamp - interval '25 minutes',null,false,'192.168.88.12','carla1@gmail.com',13),
 
 -- session terminated before inactive account access attempts
-
 (current_timestamp - interval '5 months',current_timestamp - interval '5 months' + interval '3 hours',true,'185.10.10.1','pedro1@miacaomigo.pt',9),
 (current_timestamp - interval '4 months',current_timestamp - interval '4 months' + interval '2 hours',true,'185.20.20.1','filipa1@miacaomigo.pt',10);

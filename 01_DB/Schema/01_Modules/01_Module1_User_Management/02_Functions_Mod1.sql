@@ -181,3 +181,39 @@ end;
 $$ language plpgsql;
 
 
+
+--=========================================================
+-- function: fn_create_default_setup
+--=========================================================
+-- description:
+-- automatically creates a default setup record whenever
+-- a new user_account is created.
+--
+-- purpose:
+-- - enforce automatic user initialization
+-- - guarantee 1:1 setup existence
+-- - centralize default setup creation logic
+--=========================================================
+
+drop function if exists fn_create_default_setup();
+
+create function fn_create_default_setup()
+returns trigger as $$
+begin
+
+    --=====================================================
+    -- 1. CREATE DEFAULT SETUP
+    --=====================================================
+
+    insert into setup ( id_usr)
+    values ( new.id_usr );
+
+    --=====================================================
+    -- 2. RETURN NEW ROW
+    --=====================================================
+
+    return new;
+
+end;
+$$ language plpgsql;
+

@@ -65,3 +65,15 @@ for each row                           -- executes once per affected row
 execute function fn_block_absence_overlap_by_user(); -- calls validation
 
 
+ --=========================================================
+-- trigger: trg_create_default_setup
+--=========================================================
+-- description:
+-- automatically creates a setup record after a new
+-- user_account is inserted.
+--=========================================================
+
+create or replace trigger trg_create_default_setup
+after insert on user_account
+for each row
+execute function fn_create_default_setup();

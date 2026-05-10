@@ -189,7 +189,7 @@ create table specialty (
     check (
         nam_spe = lower(trim(nam_spe))
         and length(trim(nam_spe)) >= 5
-        and nam_spe ~ '^[a-zà-ÿ\\s]+$'
+        and nam_spe ~ '^[a-zà-ÿ\s]+$'
     ),
 
     constraint chk_des_spe_format
@@ -620,7 +620,7 @@ create table setup (
     ),
     -- Restricts theme to valid values
 
-    constraint chk_lan_set_format
+    constraint chk_lan_set_format 
     check (
         lan_set = lower(trim(lan_set))
         and lan_set ~ '^[a-z]{2}-[a-z]{2}$'
