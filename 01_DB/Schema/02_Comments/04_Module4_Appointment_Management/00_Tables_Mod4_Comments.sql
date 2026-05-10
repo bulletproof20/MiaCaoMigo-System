@@ -14,7 +14,7 @@ comment on type invoice_status is
 --=========================================================
 
 comment on table appointment is
-'scheduling and consultation session for a client animal with assigned veterinarian';
+'scheduling and consultation session for a client animal with assigned veterinarian and declared clinical specialty';
 
 comment on column appointment.id_app is
 'unique appointment identifier';
@@ -27,6 +27,9 @@ comment on column appointment.id_emp is
 
 comment on column appointment.id_cli is
 'client responsible for the visit';
+
+comment on column appointment.id_spe is
+'clinical specialty requested for this consultation; FK to module 1 specialty catalog; must match an expert(id_emp,id_spe) assignment for the veterinarian';
 
 comment on column appointment.sch_dat_app is
 'scheduled start timestamp';

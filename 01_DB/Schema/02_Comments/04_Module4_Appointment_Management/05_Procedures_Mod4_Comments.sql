@@ -10,7 +10,7 @@ comment on procedure prc_auto_close_clock_in_midnight() is
 'closes stale attendance rows by backfilling midnight end timestamps';
 
 comment on procedure prc_generate_appointment_warnings() is
-'creates next-day reminder notifications for scheduled clients';
+'creates next-day reminder notifications for scheduled clients including specialty label in message text';
 
 comment on procedure prc_cancel_appointment(integer) is
 'cancels future appointments subject to the 24-hour policy window';
@@ -18,8 +18,8 @@ comment on procedure prc_cancel_appointment(integer) is
 comment on procedure prc_reschedule_appointment(integer, timestamp without time zone) is
 'updates scheduled times when advance-notice rules pass';
 
-comment on procedure prc_create_appointment(integer, integer, integer, timestamp without time zone) is
-'inserts a scheduled appointment with default status handling';
+comment on procedure prc_create_appointment(integer, integer, integer, integer, timestamp without time zone) is
+'inserts a scheduled appointment with explicit consultation specialty and default scheduled status';
 
 comment on procedure prc_start_appointment(integer) is
 'marks a visit as in progress and stamps the start time';

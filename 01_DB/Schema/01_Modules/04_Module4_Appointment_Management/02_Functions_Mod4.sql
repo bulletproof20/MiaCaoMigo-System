@@ -16,8 +16,8 @@ begin
         select 1
         from appointment a
         where a.id_emp = new.id_emp -- Same veterinarian
-          and a.id_app != new.id_app -- Exclude the current appointment itself during updates
           and a.status_app = 'Scheduled' -- Only check against other scheduled appointments
+          and (tg_op = 'INSERT' or a.id_app <> new.id_app) -- Exclude self on updates only
           and (new.sch_dat_app, new.sch_dat_app + interval '30 minutes') OVERLAPS 
               (a.sch_dat_app, a.sch_dat_app + interval '30 minutes')
     ) then
@@ -48,9 +48,6 @@ begin
         raise exception 'O veterinário está indisponível devido a uma ausência durante este período de consulta.';
     end if;
 
-    -- Optionally, you could also check for clock-in status if it's a strict requirement
-    -- For example, if an employee *must* be clocked in to have an appointment.
-    -- This would depend on business rules. For now, we focus on explicit absences.
     return new;
 end;
 $$ language plpgsql;
@@ -65,11 +62,12 @@ returns trigger as $$
 declare
     v_appointment_start_time timestamp;
 begin
-    select sta_dat_app into v_appointment_start_time
+    select coalesce(sta_dat_app, sch_dat_app)
+      into v_appointment_start_time
     from appointment
     where id_app = new.id_app;
 
-    if new.reg_dat_pre < v_appointment_start_time then
+    if v_appointment_start_time is not null and new.reg_dat_pre < v_appointment_start_time then
         raise exception 'A data de emissão da prescrição não pode ser anterior à data de início da consulta.';
     end if;
 
@@ -138,6 +136,29 @@ $$ language plpgsql;
 
 
 --=========================================================
+-- FUNCTION 7: fn_validate_appointment_vet_specialty
+-- Ensures the assigned veterinarian is credentialed for the
+-- consultation specialty via Module 1 expert (vet × specialty).
+--=========================================================
+create or replace function fn_validate_appointment_vet_specialty()
+returns trigger as $$
+begin
+    if not exists (
+        select 1
+        from expert x
+        where x.id_emp = new.id_emp
+          and x.id_spe = new.id_spe
+    ) then
+        raise exception
+            'O médico veterinário selecionado não está associado à especialidade indicada para esta consulta.';
+    end if;
+
+    return new;
+end;
+$$ language plpgsql;
+
+
+--=========================================================
 -- FUNCTION 8: fn_appointment_see_app_clt
 -- Allows clients to see their appointments
 -- Returns a table with key details of all appointments for a given client ID.
@@ -147,29 +168,32 @@ returns table(
     appointment_id int,
     scheduled_date timestamp,
     status appointment_status,
-    vet_name varchar(100),
-    animal_name varchar(100)
+    vet_name varchar(250),
+    animal_name varchar(100),
+    specialty_id int,
+    specialty_name varchar(100)
 ) language plpgsql
 as $$
 begin
     return query
     select
-        a.id_app,
-        a.sch_dat_app,      
-        -- Derive the status on-the-fly for real-time accuracy
+        a.id_app as appointment_id,
+        a.sch_dat_app as scheduled_date,
         case
             when a.status_app = 'Scheduled' and a.sch_dat_app < now() then 'Late'::appointment_status
             else a.status_app
-            -- If the time has passed and it's still marked as 'Scheduled', we consider it 'Late' for client visibility, but we don't update the actual status in the database here.
-            -- The real status update would be handled by a scheduled job or trigger that runs periodically to update statuses based on time. - not incorporated 
         end as status,
-        e.nam_emp,
-        an.nam_ani
+        ua.nam_usr as vet_name,
+        an.nam_ani as animal_name,
+        s.id_spe as specialty_id,
+        s.nam_spe as specialty_name
     from appointment a
     join employee e on a.id_emp = e.id_emp
+    join user_account ua on e.id_usr = ua.id_usr
     join animal an on a.id_animal = an.id_ani
+    join specialty s on a.id_spe = s.id_spe
     where a.id_cli = p_client_id
-    order by a.sta_dat_app desc;
+    order by a.sta_dat_app desc nulls last, a.sch_dat_app desc;
 end;
 $$;
 
@@ -181,12 +205,10 @@ $$;
 create or replace function fn_validate_animal_client_relationship()
 returns trigger as $$
 begin
-    -- This assumes an 'ownership' table exists linking clients and animals.
-    -- It checks for an active ownership record (end_dat_own IS NULL).
     if not exists (
         select 1
         from ownership o
-        where o.id_animal = new.id_animal
+        where o.id_ani = new.id_animal
           and o.id_cli = new.id_cli
           and o.end_dat_own is null
     ) then

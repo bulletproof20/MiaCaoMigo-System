@@ -12,7 +12,7 @@ comment on function fn_block_appointment_if_vet_unavailable() is
 'blocks scheduling when absence records intersect the proposed slot';
 
 comment on function fn_validate_prescription_timing() is
-'ensures prescription timestamps are not earlier than consultation start';
+'ensures prescription issue time is not earlier than coalesce(actual start, scheduled start) on the parent appointment';
 
 comment on function fn_deduct_product_stock() is
 'validates and decrements inventory for appointment product usage';
@@ -24,7 +24,10 @@ comment on function fn_appointment_duration_check() is
 'validates that completed visits end after they start';
 
 comment on function fn_appointment_see_app_clt(integer) is
-'returns appointment projections for client self-service views';
+'returns appointment projections for client self-service views including veterinarian display name and specialty metadata';
+
+comment on function fn_validate_appointment_vet_specialty() is
+'enforces that appointment.id_spe matches an expert row for the assigned veterinarian';
 
 comment on function fn_validate_animal_client_relationship() is
 'ensures the scheduled animal is actively owned by the client';

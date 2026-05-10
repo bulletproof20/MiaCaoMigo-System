@@ -11,7 +11,7 @@
 --   03_Integrity    → functions, triggers, indexes, procedures, jobs
 --   04_Data_Migration → reserved for seed / etl scripts
 --   05_Comments     → 02_Comments/** mirrors 01_Modules/** layout
---   06_Queries      → reserved for views / reporting scripts
+--   06_Queries      → 04_Queries/** reporting views (post-comments)
 --   07_Sanity_Check → lightweight catalog validation
 --
 -- the comments layer intentionally runs after behavioral objects

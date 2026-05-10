@@ -60,7 +60,16 @@ before insert or update of id_animal, id_cli on appointment
 for each row
 execute function fn_validate_animal_client_relationship();
 
---================================="========================
+--=========================================================
+-- TRIGGER 8: trg_validate_appointment_vet_specialty
+-- Ensures the consultation specialty matches veterinarian expert credentials.
+--=========================================================
+create or replace trigger trg_validate_appointment_vet_specialty
+before insert or update of id_emp, id_spe on appointment
+for each row
+execute function fn_validate_appointment_vet_specialty();
+
+--=========================================================
 -- TRIGGER 7: trg_prevent_completed_appointment_modification
 -- Prevents modification of appointments that are in a terminal state.
 --=========================================================

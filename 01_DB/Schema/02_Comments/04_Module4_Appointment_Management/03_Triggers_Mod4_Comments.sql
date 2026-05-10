@@ -22,5 +22,8 @@ comment on trigger trg_block_past_appointments on appointment is
 comment on trigger trg_validate_animal_client_relationship on appointment is
 'fires before insert/update of client or animal to validate ownership';
 
+comment on trigger trg_validate_appointment_vet_specialty on appointment is
+'fires before insert/update of veterinarian or specialty to align consultation specialty with expert credentials';
+
 comment on trigger trg_prevent_completed_appointment_modification on appointment is
 'fires before update to freeze terminal appointments';

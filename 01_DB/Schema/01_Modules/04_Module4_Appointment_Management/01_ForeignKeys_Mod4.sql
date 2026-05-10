@@ -41,6 +41,13 @@ ADD CONSTRAINT fk_appointment_invoice
 FOREIGN KEY (id_inv) REFERENCES invoice(id_inv)
 ON DELETE SET NULL ON UPDATE CASCADE;
 
+-- appointment → specialty (Module 1 catalog)
+alter table appointment
+    add constraint fk_appointment_specialty
+        foreign key (id_spe)
+        references specialty(id_spe)
+        on delete restrict;
+
 -- overall_assessment → appointment
 alter table overall_assessment
     add constraint fk_appointment

@@ -14,6 +14,9 @@ comment on constraint fk_appointment_employee on appointment is
 comment on constraint fk_client on appointment is
 'binds the visit to the owning client';
 
+comment on constraint fk_appointment_specialty on appointment is
+'binds the consultation to the catalog specialty that drives reporting and workload metrics';
+
 comment on constraint fk_appointment on overall_assessment is
 'vitals row references its appointment';
 

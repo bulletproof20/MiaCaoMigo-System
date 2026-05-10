@@ -18,6 +18,7 @@ where status_app = 'Scheduled';
 create index idx_appointment_id_cli on appointment (id_cli);
 create index idx_appointment_id_emp on appointment (id_emp);
 create index idx_appointment_id_animal on appointment (id_animal);
+create index idx_appointment_id_spe on appointment (id_spe);
 
 --=========================================================
 -- INDEX 3: idx_appointment_sch_dat_app

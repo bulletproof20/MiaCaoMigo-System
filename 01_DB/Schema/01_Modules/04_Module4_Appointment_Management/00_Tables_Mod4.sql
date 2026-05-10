@@ -11,6 +11,7 @@
 --
 -- The module supports:
 -- - Appointment scheduling and tracking with status management
+-- - Clinical specialty declared per consultation (cross-module link to specialty)
 -- - Clinical records (anamnesis and assessment)
 -- - Prescription management
 -- - Association of employees, clients and animals to appointments
@@ -59,6 +60,8 @@ create type invoice_status as enum (
 -- 2. APPOINTMENT
 --=========================================================
 -- Stores appointment scheduling, status, and general information.
+-- id_spe: clinical nature of the consultation (Module 1 specialty catalog),
+--         distinct from the veterinarian's full qualification set (expert).
 create table appointment (
     id_app int generated always as identity,
     -- Appointment identifier

@@ -33,16 +33,27 @@ begin
     for consulta in (
         select
             a.id_cli,
-            c.nam_usr as nome_cliente,
-            e.nam_emp as nome_veterinario,
-            an.nam_ani as nome_animal
+            uc.nam_usr as nome_cliente,
+            ua.nam_usr as nome_veterinario,
+            an.nam_ani as nome_animal,
+            sp.nam_spe as nome_especialidade
         from appointment a
         join client c on a.id_cli = c.id_cli
+        join user_account uc on c.id_usr = uc.id_usr
         join animal an on a.id_animal = an.id_ani
         join employee e on a.id_emp = e.id_emp
-        where a.sta_dat_app::date = current_date + interval '1 day' and a.status_app = 'Scheduled'
+        join user_account ua on e.id_usr = ua.id_usr
+        join specialty sp on a.id_spe = sp.id_spe
+        where a.sch_dat_app::date = current_date + interval '1 day'
+          and a.status_app = 'Scheduled'
     ) loop
-        v_aviso := format('Lembrete: Bom dia %s! A sua consulta para o animal %s com o/a Dr(a). %s está marcada para amanhã.', consulta.nome_cliente, consulta.nome_animal, consulta.nome_veterinario);
+        v_aviso := format(
+            'Lembrete: Bom dia %s! Consulta de %s para o animal %s com %s está marcada para amanhã.',
+            consulta.nome_cliente,
+            consulta.nome_especialidade,
+            consulta.nome_animal,
+            consulta.nome_veterinario
+        );
         insert into appointment_notification (id_cli, message) values (consulta.id_cli, v_aviso);
     end loop;
 end;
@@ -125,6 +136,7 @@ create or replace procedure prc_create_appointment(
     p_id_cli int,
     p_id_animal int,
     p_id_emp int,
+    p_id_spe int,
     p_scheduled_time timestamp
 )
 language plpgsql
@@ -132,9 +144,9 @@ as $$
 begin
     -- Creates an appointment with a 'Scheduled' status.
     -- The sta_dat_app and end_dat_app fields are left NULL, to be filled in by the vet later.
-    -- The existing triggers for validation (e.g., past dates) will be fired upon insertion.
-    insert into appointment (id_cli, id_animal, id_emp, sch_dat_app, status_app)
-    values (p_id_cli, p_id_animal, p_id_emp, p_scheduled_time, 'Scheduled');
+    -- Triggers enforce: past dates, overlaps, absences, ownership, vet × specialty (expert).
+    insert into appointment (id_cli, id_animal, id_emp, id_spe, sch_dat_app, status_app)
+    values (p_id_cli, p_id_animal, p_id_emp, p_id_spe, p_scheduled_time, 'Scheduled');
 end;
 $$;
 
