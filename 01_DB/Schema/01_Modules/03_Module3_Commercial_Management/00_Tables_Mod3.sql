@@ -351,7 +351,7 @@ create table employee_purchase (
 );
 
 -- EMPLOYEE ↔ RETURN
-create table Makes(
+create table employee_return (
     id_emp int not null,
     -- Employee
 
