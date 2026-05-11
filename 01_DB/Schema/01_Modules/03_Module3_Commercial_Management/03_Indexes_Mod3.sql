@@ -18,7 +18,7 @@ VALUES (41, 1, 10, 40.00, 23.00);
 SELECT id_inv, val_inv FROM invoice WHERE id_inv = 41;
 
 -- 5. VERIFICAÇÃO DO STOCK (Tem de ter descido exatamente 10 unidades)
-SELECT fn_get_available_stock(1) AS stock_depois;
+SELECT fn_get_available_stock(2) AS stock_depois;
 
 
 

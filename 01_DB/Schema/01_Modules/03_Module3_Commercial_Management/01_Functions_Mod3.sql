@@ -10,6 +10,33 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+--function that is called by the trigger that checks for low stock 
+--after a sale and raises a notice if the stock is below the minimum
+
+CREATE OR REPLACE FUNCTION trg_warn_low_stock_func()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_stock_atual INT;
+    v_min_sto INT;
+    v_nam_pro VARCHAR;
+BEGIN
+    -- 1. Ver stock após abate
+    SELECT fn_get_available_stock(NEW.ID_PRODUCT) INTO v_stock_atual;
+    
+    -- 2. Buscar dados do produto específico
+    SELECT min_sto, nam_pro INTO v_min_sto, v_nam_pro
+    FROM Product 
+    WHERE id_pro = NEW.ID_PRODUCT;
+    
+    -- 3. Aviso se atingir o limite individual
+    IF v_stock_atual <= v_min_sto THEN
+        RAISE NOTICE ' STOCK BAIXO: O produto "%" (ID: %) tem apenas % unidades. (Mínimo: %). Consulte a View vw_produtos_para_encomendar.', 
+                     v_nam_pro, NEW.ID_PRODUCT, v_stock_atual, v_min_sto;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 
 

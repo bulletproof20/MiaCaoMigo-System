@@ -22,3 +22,24 @@ BEGIN
     END LOOP;
 END;
 $$;
+
+
+
+CREATE OR REPLACE PROCEDURE sp_check_restock_needs()
+LANGUAGE plpgsql AS $$
+DECLARE
+    v_total_produtos INT;
+BEGIN
+    -- 1. Contar quantos produtos estão na View de reposição
+    SELECT COUNT(*) INTO v_total_produtos 
+    FROM vw_produtos_para_encomendar;
+
+    -- 2. Verificar se o contador é maior que zero
+    IF v_total_produtos > 0 THEN
+        RAISE NOTICE 'ATENÇÃO: Existem % produtos que atingiram o stock mínimo e precisam de reposição!', v_total_produtos;
+        RAISE NOTICE 'Consulte a View "vw_produtos_para_encomendar" para ver a lista detalhada.';
+    ELSE
+        RAISE NOTICE 'Stock em conformidade: Nenhum produto necessita de encomenda no momento.';
+    END IF;
+END;
+$$;

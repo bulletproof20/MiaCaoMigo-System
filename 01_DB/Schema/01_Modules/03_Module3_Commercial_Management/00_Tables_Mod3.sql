@@ -112,14 +112,15 @@ create table product (
     ina_dat_pro timestamp,
     -- Inactivation date
 
-    id_pur int,
-    -- Last purchase
-
     id_fam int NOT NULL,
     -- Family
 
     id_ret int,
     -- Last return
+
+    min_sto INT NOT NULL DEFAULT 5,
+    -- Minimum stock level,
+
 
     constraint pk_product primary key (id_pro),
     -- Unique identifier
@@ -128,6 +129,7 @@ create table product (
     -- Links product to family. Outras FKs serão adicionadas no final.
 
 );
+
 
 --=========================================================
 -- 4. STOCK
@@ -198,8 +200,6 @@ create table purchase (
     sta_pur varchar(50),
     -- Status
 
-   
-
     id_cli int,
     -- client
 
@@ -245,43 +245,6 @@ create table return (
     constraint pk_return primary key (id_ret)
     -- Unique identifier
 );
-
---=========================================================
--- 7. ASSOCIATIVE TABLES
---=========================================================
--- Defines many-to-many relationships
-
-/*
--- PURCHASE ↔ PRODUCT
-create table purchase_product (
-    id_pur int not null,
-    -- Purchase
-
-    id_pro int not null,
-    -- Product
-
-    qty_pur_pro int not null,
-    -- Quantity
-
-    constraint pk_purchase_product primary key (id_pur, id_pro),
-    -- Composite identifier
-
-    constraint fk_pur_pro_purchase 
-        foreign key (id_pur)
-        references purchase(id_pur)
-        on delete cascade,
-
-    constraint fk_pur_pro_product 
-        foreign key (id_pro)
-        references product(id_pro)
-        on delete restrict,
-
-    constraint chk_qty_purchase
-    check (qty_pur_pro > 0)
-    -- Ensures valid quantity
-);
-
-*/
 
 
 

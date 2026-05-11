@@ -17,6 +17,7 @@ FOR EACH ROW
 EXECUTE FUNCTION trg_stock_after_sale_func();
 
 
+
 -- calls function that updates invoice total after inserting/updating/deleting an invoice line
 
 CREATE TRIGGER trg_update_invoice_total
