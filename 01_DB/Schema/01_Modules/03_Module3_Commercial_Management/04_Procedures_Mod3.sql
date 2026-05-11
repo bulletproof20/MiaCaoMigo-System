@@ -24,7 +24,6 @@ END;
 $$;
 
 
-
 CREATE OR REPLACE PROCEDURE sp_check_restock_needs()
 LANGUAGE plpgsql AS $$
 DECLARE
@@ -43,3 +42,4 @@ BEGIN
     END IF;
 END;
 $$;
+
