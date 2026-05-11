@@ -189,7 +189,6 @@ create table specialty (
     check (
         nam_spe = lower(trim(nam_spe))
         and length(trim(nam_spe)) >= 5
-        and nam_spe ~ '^[a-zà-ÿ\s]+$'
     ),
 
     constraint chk_des_spe_format

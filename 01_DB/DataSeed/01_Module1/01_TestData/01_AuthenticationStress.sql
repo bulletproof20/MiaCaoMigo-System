@@ -250,3 +250,19 @@ values
 -- session terminated before inactive account access attempts
 (current_timestamp - interval '5 months',current_timestamp - interval '5 months' + interval '3 hours',true,'185.10.10.1','pedro1@miacaomigo.pt',9),
 (current_timestamp - interval '4 months',current_timestamp - interval '4 months' + interval '2 hours',true,'185.20.20.1','filipa1@miacaomigo.pt',10);
+
+
+insert into login_record (
+    sig_tim_log,
+    sou_tim_log,
+    suc_log,
+    ip_add_log,
+    eml_usr,
+    id_usr
+)
+values
+
+-- invalid / malformed authentication attempts
+(current_timestamp - interval '14 minutes',null,false,'45.83.120.10',null,null),
+(current_timestamp - interval '13 minutes',null,false,'45.83.120.11',null,null),
+(current_timestamp - interval '5 minutes',null,false,'177.200.10.10',null,null);

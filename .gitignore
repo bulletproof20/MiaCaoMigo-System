@@ -1,3 +1,26 @@
-.vscode/
-*.log
+# Ignorar dependências do Node.js
+node_modules/
+
+# Ignorar ficheiros de variáveis de ambiente
 .env
+
+# Ignorar configurações do VS Code
+.vscode/
+
+# Ignorar ficheiro workspace pessoal
+MiaCaoMigo_website.code-workspace
+
+# Ignorar ficheiros do sistema operativo
+.DS_Store
+desktop.ini
+Thumbs.db
+
+# Ignorar logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignorar ficheiros de build/cache
+dist/
+build/
+.cache/
