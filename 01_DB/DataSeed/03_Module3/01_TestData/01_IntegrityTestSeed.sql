@@ -92,18 +92,36 @@ INSERT INTO product (ref_pro, bar_pro, nam_pro, des_pro, pri_pro, iva_pro, id_fa
 ('SUP-001', '8000000000001', 'Condrovet Force HA', 'Protetor articular', 45.00, 6.00, 8),
 ('SUP-002', '8000000000002', 'Pasta Nutriplus Gel', 'Suplemento vitamínico e energético', 15.00, 6.00, 8);
 
+
+
+
+UPDATE product SET min_sto = 15 WHERE id_fam = 1 OR id_fam = 2; -- Food
+UPDATE product SET min_sto = 20 WHERE id_fam = 3; -- Medicines
+UPDATE product SET min_sto = 15 WHERE id_fam = 4; -- Desparasitants
+UPDATE product SET min_sto = 30 WHERE id_fam = 5; -- Vaccines
+UPDATE product SET min_sto = 10 WHERE id_fam = 6; -- Hygiene
+UPDATE product SET min_sto = 10 WHERE id_fam = 7; -- Accessories
+UPDATE product SET min_sto = 15 WHERE id_fam = 8; -- Supplements
+
+
+
+
 -- =========================================================
 -- 6. STOCK (40 Registos)
 -- Injeta 1000 unidades em formato TIMESTAMP
 -- =========================================================
+-- Injeta 40 lotes distribuídos pelos teus 30 produtos
 INSERT INTO stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
 SELECT
-    (i % 30) + 1, 
+    (i % 30) + 1, -- Garante que distribui pelos IDs 1 a 30
     'LOTE-2026-' || lpad(i::text, 3, '0'),
-    1000,
-    current_timestamp,
-    current_timestamp + interval '1 year'
+    floor(random() * 31 + 2)::int, -- Quantidade aleatória entre 2 e 32
+    current_date,
+    current_date + (random() * 730 || ' days')::interval -- Validade aleatória até 2 anos
 FROM generate_series(1, 40) as i;
+
+
+
 
 -- =========================================================
 -- 7. PURCHASE (40 Registos)
@@ -115,6 +133,10 @@ SELECT
     (i % 40) + 1, 
     (i % 40) + 1  
 FROM generate_series(1, 40) as i;
+
+
+
+
 
 -- =========================================================
 -- 8. PURCHASELINE (40 Registos)
@@ -128,6 +150,8 @@ SELECT
     15.50,
     i
 FROM generate_series(1, 40) as i;
+
+
 
 -- =========================================================
 -- 9. INVOICE (40 Registos)
@@ -149,3 +173,5 @@ SELECT
     35.00, 
     23.00
 FROM generate_series(1, 40) as i;
+
+
