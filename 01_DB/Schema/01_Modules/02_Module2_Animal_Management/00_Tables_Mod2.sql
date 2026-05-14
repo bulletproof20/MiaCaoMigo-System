@@ -119,8 +119,6 @@ create table animal (
     constraint uq_reg_id_ani unique (reg_id_ani),
     -- Prevents duplicate registrations
 
-<<<<<<< HEAD
-=======
     constraint fk_animal_client 
         foreign key (id_cli)
         references client(id_cli)
@@ -138,7 +136,6 @@ create table animal (
         on delete set null,
     -- Links to breed
 
->>>>>>> main
     constraint chk_gen_ani
     check (gen_ani in ('M','F') or gen_ani is null)
     -- Validates gender
