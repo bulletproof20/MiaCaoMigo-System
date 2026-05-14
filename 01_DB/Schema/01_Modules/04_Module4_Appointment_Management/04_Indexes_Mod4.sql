@@ -18,12 +18,7 @@ where status_app = 'Scheduled';
 create index idx_appointment_id_cli on appointment (id_cli);
 create index idx_appointment_id_emp on appointment (id_emp);
 create index idx_appointment_id_animal on appointment (id_animal);
-<<<<<<< HEAD:01_DB/Schema/01_Modules/04_Module4_Appointment_Management/04_Indexes_Mod4.sql
-create index idx_appointment_id_spe on appointment (id_spe);
-
-=======
 create index idx_appointment_vet_schedule on appointment(id_emp, sch_dat_app) where status_app = 'Scheduled';
->>>>>>> main:01_DB/Schema/01_Modules/04_Module4_Appointment_Management/03_Indexes_Mod4.sql
 --=========================================================
 -- INDEX 3: idx_appointment_sch_dat_app
 -- Speeds up general queries filtering or ordering by scheduled date,

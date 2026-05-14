@@ -19,7 +19,6 @@ comment on table appointment is
 comment on column appointment.id_app is
 'unique appointment identifier';
 
-<<<<<<< HEAD
 comment on column appointment.id_animal is
 'animal receiving care';
 
@@ -55,18 +54,6 @@ comment on constraint pk_appointment on appointment is
 
 comment on constraint chk_app_time on appointment is
 'ensures recorded end time is strictly after start time when both present';
-=======
-COMMENT ON CONSTRAINT pk_appointment ON appointment IS
-'Ensures unique identification for each appointment.';
-COMMENT ON CONSTRAINT fk_appointment_client ON appointment IS
-'Links the appointment to a valid client.';
-COMMENT ON CONSTRAINT fk_appointment_animal ON appointment IS
-'Links the appointment to a valid animal.';
-COMMENT ON CONSTRAINT fk_appointment_employee ON appointment IS
-'Links the appointment to a valid employee (veterinarian).';
-COMMENT ON CONSTRAINT chk_appointment_flow ON appointment IS
-'Ensures the temporal consistency of appointment timestamps (start must be before end).';
->>>>>>> main
 
 
 --=========================================================
@@ -76,7 +63,6 @@ COMMENT ON CONSTRAINT chk_appointment_flow ON appointment IS
 comment on table overall_assessment is
 'structured vitals captured during an appointment';
 
-<<<<<<< HEAD
 comment on column overall_assessment.id_app is
 'primary key and foreign key to appointment';
 
@@ -103,25 +89,6 @@ comment on constraint chk_body_temp on overall_assessment is
 
 comment on constraint chk_weight on overall_assessment is
 'requires positive weight measurements';
-=======
-COMMENT ON COLUMN overall_assessment.id_app IS
-'Unique identifier and foreign key linking the assessment to a specific appointment (1-to-1 relationship).';
-COMMENT ON COLUMN overall_assessment.body_temp IS
-'Animal''s body temperature in Celsius.';
-COMMENT ON COLUMN overall_assessment.weight IS
-'Animal''s weight in kilograms.';
-COMMENT ON COLUMN overall_assessment.hrt_rate IS
-'Animal''s heart rate in beats per minute.';
-COMMENT ON COLUMN overall_assessment.resp_rate IS
-'Animal''s respiratory rate in breaths per minute.';
-COMMENT ON COLUMN overall_assessment.general_status IS
-'A textual description of the animal''s overall condition.';
-
-COMMENT ON CONSTRAINT pk_overall_assessment ON overall_assessment IS
-'Ensures unique identification for each assessment record.';
-COMMENT ON CONSTRAINT fk_assessment_appointment ON overall_assessment IS
-'Links the assessment to a valid appointment.';
->>>>>>> main
 
 
 --=========================================================

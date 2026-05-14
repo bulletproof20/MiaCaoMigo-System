@@ -101,9 +101,6 @@ create table appointment (
     -- General comments or observations about the appointment
 
     constraint pk_appointment primary key (id_app),
-<<<<<<< HEAD
-    -- Unique identifier. FKs are defined in 01_ForeignKeys_Mod4.sql
-=======
     -- Unique identifier
 
     -- Foreign Key linkage to animal
@@ -123,7 +120,6 @@ create table appointment (
         FOREIGN KEY (id_cli)
         REFERENCES client(id_cli)
         on delete cascade,
->>>>>>> main
 
     constraint chk_appointment_flow
     check (sta_dat_app < end_dat_app)
@@ -144,9 +140,6 @@ CREATE TABLE overall_assessment (
 
     -- Defining the Primary Key
     CONSTRAINT pk_overall_assessment PRIMARY KEY (id_app),
-<<<<<<< HEAD
-
-=======
     
     -- Foreign Key linkage
     CONSTRAINT fk_assessment_appointment
@@ -154,7 +147,6 @@ CREATE TABLE overall_assessment (
         REFERENCES appointment(id_app)
         on delete cascade,
         
->>>>>>> main
     -- Safety checks to prevent impossible medical data
     CONSTRAINT chk_body_temp CHECK (body_temp > 20 AND body_temp < 50), -- Realistic temperature range
     CONSTRAINT chk_weight CHECK (weight > 0),
@@ -176,9 +168,6 @@ create table anamnesis (
     des_ana text,
     -- Detailed description of the patient's history and symptoms (reason for visit, etc.)
 
-<<<<<<< HEAD
-    constraint pk_anamnesis primary key (id_app)
-=======
     constraint pk_anamnesis primary key (id_ana),
     -- Unique identifier
 
@@ -190,7 +179,6 @@ create table anamnesis (
         references appointment(id_app)
         on delete cascade
     -- Links to appointment. If appointment is deleted, this record is also deleted.
->>>>>>> main
 );
 
 --=========================================================
@@ -212,8 +200,6 @@ create table prescription (
 
     constraint pk_prescription primary key (id_pre)
     -- Unique identifier
-<<<<<<< HEAD
-=======
 
     constraint uq_prescription_per_appointment unique (id_app),
     -- Ensures only one prescription can be registered per appointment.
@@ -223,7 +209,6 @@ create table prescription (
         references appointment(id_app)
         on delete cascade
     -- Links to appointment. If appointment is deleted, this record is also deleted.
->>>>>>> main
 );
 
 --=========================================================
@@ -296,11 +281,7 @@ create table appointment_notification (
     is_read boolean default false,
     -- Flag to indicate if the client has read the notification
 
-<<<<<<< HEAD
-    constraint pk_appointment_notification primary key (id_not)
-=======
     constraint pk_appointment_notification primary key (id_not),
     constraint fk_notification_client foreign key (id_cli) references client(id_cli) on delete cascade,
     constraint fk_notification_appointment foreign key (id_app) references appointment(id_app) on delete cascade
->>>>>>> main
 );

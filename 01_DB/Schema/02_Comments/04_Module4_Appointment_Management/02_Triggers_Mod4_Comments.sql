@@ -1,9 +1,0 @@
--- =========================================================
--- COMMENTS: TRIGGERS - MODULE 4
--- =========================================================
--- Metadata documentation for trigger-based
--- integrity enforcement related to:
--- - Appointment scheduling conflicts
--- - Automatic status updates
--- - Notification generation
--- =========================================================
