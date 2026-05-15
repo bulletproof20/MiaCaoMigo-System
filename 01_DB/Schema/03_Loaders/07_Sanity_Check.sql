@@ -1,15 +1,13 @@
 -- =========================================================
--- sanity check loader
+-- SANITY CHECK LAYER (03_Loaders/07_Sanity_Check.sql)
 -- =========================================================
--- performs final validation checks after all
--- database layers are loaded.
 --
--- validates:
--- - successful initialization
--- - extension availability
--- - structural readiness
--- - integrity readiness
--- - comments layer reachability (indirectly, via prior \i success)
+-- DESCRIPTION
+-- Post-init smoke tests: extensions, central ENUM types, table
+-- catalog, triggers, functions (excluding extension internals).
+--
+-- PURPOSE
+-- Catch missing objects after pipeline changes.
 -- =========================================================
 
 \echo '========================================'

@@ -1,27 +1,42 @@
---=========================================================
--- INDEXES - MODULE 1
--- Ensures older indexes get droped before new ones
--- avoids conflit
---=========================================================
+-- =========================================================
+-- MODULE 1 — USER MANAGEMENT
+-- =========================================================
+-- FILE: 04_Indexes_Mod1.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Partial unique indexes and exclusion constraints enforcing
+-- operational uniqueness for logins, employees, clock-ins, and schedules.
+--
+-- This file contains:
+-- - Partial UNIQUE indexes on hot tables
+-- - GiST-backed schedule overlap protection
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - Module 1 tables created and typed
+-- - GiST exclusion support (install btree_gist where the instance requires it)
+--
+-- Must load before:
+-- - Data seeding relying on uniqueness guarantees
+-- =========================================================
+
+-- =========================================================
+-- Drops legacy objects before recreating module indexes
+-- =========================================================
+
 drop index if exists uq_login_single_active_session_email;
 drop index if exists uq_employee_active_per_user;
 drop index if exists uq_clock_in_active_per_employee;
 alter table schedule drop constraint if exists ex_schedule_overlap;
 
 
---=========================================================
--- INDEXES - MODULE 1
--- Ensures data integrity and operational consistency
--- through partial unique indexes.
---=========================================================
-
-
-
---=========================================================
--- INDEX 1: uq_login_single_active_session_email
--- Ensures that each email can only have one active
--- successful login session at a time.
---=========================================================
+-- =========================================================
+-- Enforces a single active successful login session per email
+-- =========================================================
 
 create unique index uq_login_single_active_session_email
 on login_record(ema_log)
@@ -30,51 +45,27 @@ where sou_tim_log is null
   and ema_log is not null;
 
 
-
---=========================================================
--- INDEX 2: uq_employee_active_per_user
--- Ensures that each user can have only one active
--- employee record (i.e., not deactivated).
---=========================================================
+-- =========================================================
+-- Enforces a single active employee profile per user account
+-- =========================================================
 
 create unique index uq_employee_active_per_user
 on employee(id_usr)
 where dea_dat_emp is null;
 
 
-
---=========================================================
--- INDEX 3: uq_clock_in_active_per_employee
--- Ensures that each employee can have only one
--- active clock-in record (without end time).
---=========================================================
+-- =========================================================
+-- Enforces a single open clock-in row per employee
+-- =========================================================
 
 create unique index uq_clock_in_active_per_employee
 on clock_in(id_emp)
 where end_dat_clk is null;
 
 
-
-
-
-
-
---=========================================================
--- EXCLUSION CONSTRAINTS - MODULE 1
--- Ensures temporal integrity and prevents overlapping
--- operational intervals through GiST exclusion constraints.
---=========================================================
-
-
-
---=========================================================
--- EXCLUDE CONSTRAINT 1: ex_schedule_overlap
--- Prevents overlapping schedule periods for the same
--- employee on the same weekday.
---
--- Uses GiST indexing with timestamp ranges to enforce
--- temporal integrity and avoid conflicting work shifts.
---=========================================================
+-- =========================================================
+-- Prevents overlapping weekly schedule windows per employee
+-- =========================================================
 
 alter table schedule
 add constraint ex_schedule_overlap

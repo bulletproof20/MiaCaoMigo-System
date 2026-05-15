@@ -1,9 +1,34 @@
---=========================================================
--- PROCEDURE: sp_auto_update_no_show_appointments
--- Automatically updates the status of past, scheduled appointments to 'no_show'.
--- This procedure is intended to be called by a scheduled job, typically
--- running once per day after midnight.
---=========================================================86
+-- =========================================================
+-- MODULE 4 — APPOINTMENT MANAGEMENT
+-- =========================================================
+-- FILE: 05_Procedures_Mod4.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Procedures orchestrating appointment lifecycle operations,
+-- client communications, and prescription capture.
+--
+-- This file contains:
+-- - Scheduling, cancellation, and rescheduling guards
+-- - Clinical start/end transitions
+-- - Notification generation and prescription inserts
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - Appointment triggers (03_Triggers_Mod4.sql) for validation hooks
+-- - Supporting tables (appointment, appointment_notification, prescription)
+--
+-- Must load before:
+-- - 06_Jobs_Mod4.sql (cron wrappers)
+-- =========================================================
+
+-- =========================================================
+-- Marks overdue scheduled appointments as no-shows
+-- =========================================================
+
 create or replace procedure sp_auto_update_no_show_appointments()
 language plpgsql
 as $$
@@ -18,11 +43,10 @@ begin
 end;
 $$;
 
---=========================================================
--- PROCEDURE: sp_generate_appointment_warnings
--- Generates a warning message for clients who have an appointment the next day.
--- This procedure is intended to be called by a scheduled job.
---=========================================================
+-- =========================================================
+-- Queues reminder notifications for next-day appointments
+-- =========================================================
+
 create or replace procedure sp_generate_appointment_warnings()
 language plpgsql
 as $$
@@ -48,12 +72,10 @@ begin
 end;
 $$;
 
---=========================================================
--- PROCEDURE: sp_cancel_appointment
--- Cancels an appointment by setting its status to 'cancelled'.
--- The cancellation is only allowed if done more than 24 hours
--- before the appointment's start time.
---=========================================================
+-- =========================================================
+-- Cancels appointments outside the 24-hour change window
+-- =========================================================
+
 create or replace procedure sp_cancel_appointment(p_app_id int)
 language plpgsql
 as $$
@@ -78,12 +100,10 @@ begin
 end;
 $$;
 
---=========================================================
--- PROCEDURE: sp_reschedule_appointment
--- Updates the scheduled time (sch_dat_app) of an existing appointment.
--- The update is only allowed if done more than 24 hours
--- before the original appointment's start time.
---=========================================================
+-- =========================================================
+-- Moves appointments to a new slot when policy allows
+-- =========================================================
+
 create or replace procedure sp_reschedule_appointment(
     p_app_id int,
     p_new_scheduled_time timestamp
@@ -115,12 +135,10 @@ begin
 end;
 $$;
 
---=========================================================
--- PROCEDURE: sp_create_appointment
--- Creates a new appointment in the system.
--- This procedure centralizes the logic for creating an appointment,
--- based on the initial scheduling data.
---=========================================================
+-- =========================================================
+-- Inserts a freshly scheduled appointment row
+-- =========================================================
+
 create or replace procedure sp_create_appointment(
     p_id_cli int,
     p_id_ani int,
@@ -139,11 +157,10 @@ begin
 end;
 $$;
 
---=========================================================
--- PROCEDURE: sp_start_appointment
--- Marks an appointment as 'in_progress' and sets its start time.
--- To be called by the veterinarian when the consultation begins.
---=========================================================
+-- =========================================================
+-- Transitions an appointment into in-progress clinical state
+-- =========================================================
+
 create or replace procedure sp_start_appointment(p_app_id int)
 language plpgsql
 as $$
@@ -162,11 +179,10 @@ begin
 end;
 $$;
 
---=========================================================
--- PROCEDURE: sp_end_appointment
--- Marks an appointment as 'completed', sets its end time, and records diagnosis/comments.
--- To be called by the veterinarian when the consultation ends.
---=========================================================
+-- =========================================================
+-- Finalizes consult details and marks completion
+-- =========================================================
+
 create or replace procedure sp_end_appointment(
     p_app_id int,
     p_diagnosis varchar(100),
@@ -192,11 +208,10 @@ end;
 $$;
 
 
---=========================================================
--- PROCEDURE: sp_prescription_for_appointment
--- Creates a prescription record linked to a specific appointment.
--- This procedure is intended to be called after the appointment is completed.
---=========================================================
+-- =========================================================
+-- Inserts prescription narrative linked to a completed appointment
+-- =========================================================
+
 create or replace procedure sp_prescription_for_appointment(
     p_id_app int,
     p_des_pre text

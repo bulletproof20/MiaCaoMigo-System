@@ -1,12 +1,35 @@
---=========================================================
--- FUNCTIONS - MODULE 4 (APPOINTMENT MANAGEMENT)
--- Contains trigger-support functions and business logic
---=========================================================
+-- =========================================================
+-- MODULE 4 — APPOINTMENT MANAGEMENT
+-- =========================================================
+-- FILE: 02_Functions_Mod4.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Database functions for appointment scheduling, clinical workflow,
+-- prescriptions, stock usage, and client visibility helpers.
+--
+-- This file contains:
+-- - Overlap, absence, and ownership guards
+-- - Prescription timing and duration checks
+-- - Stock deduction for appointment products
+-- - Read-side helpers for client appointment lists
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - Module 4 tables plus cross-module references (expert, stock, ownership)
+-- - appointment_status enum (00_Core/01_Types.sql)
+--
+-- Must load before:
+-- - 03_Triggers_Mod4.sql
+-- =========================================================
 
---=========================================================
--- FUNCTION 1: fn_block_overlapping_appointments
--- Prevents scheduling of overlapping appointments for the same veterinarian.
---=========================================================
+-- =========================================================
+-- Blocks overlapping scheduled slots for the same veterinarian
+-- =========================================================
+
 create or replace function fn_block_overlapping_appointments()
 returns trigger as $$
 begin
@@ -28,11 +51,10 @@ begin
 end;
 $$ language plpgsql;
 
---=========================================================
--- FUNCTION 2: fn_block_appointment_if_vet_unavailable
--- Prevents scheduling an appointment if the assigned veterinarian
--- is marked as absent during the appointment period.
---=========================================================
+-- =========================================================
+-- Blocks scheduling when the veterinarian is absent in the appointment window
+-- =========================================================
+
 create or replace function fn_block_appointment_if_vet_unavailable()
 returns trigger as $$
 begin
@@ -52,11 +74,11 @@ begin
 end;
 $$ language plpgsql;
 
---=========================================================
--- FUNCTION 3: fn_validate_prescription_timing
--- Ensures a prescription's issue date is not before the
--- associated appointment's start date.
---=========================================================
+
+-- =========================================================
+-- Ensures prescription issue time is not before the appointment start
+-- =========================================================
+
 create or replace function fn_validate_prescription_timing()
 returns trigger as $$
 declare
@@ -80,11 +102,10 @@ begin
 end;
 $$ language plpgsql;
 
---=========================================================
--- FUNCTION 4: fn_deduct_product_stock
--- Deducts the quantity of products used in an appointment
--- from the stock. Checks for sufficient stock before deduction.
---=========================================================
+-- =========================================================
+-- Validates and decrements stock when appointment products are recorded
+-- =========================================================
+
 create or replace function fn_deduct_product_stock()
 returns trigger as $$
 declare
@@ -110,10 +131,10 @@ begin
 end;
 $$ language plpgsql;
 
---=========================================================
--- FUNCTION 5: fn_block_past_appointments
--- Prevents scheduling appointments with a start date in the past.
---=========================================================
+-- =========================================================
+-- Blocks appointments scheduled in the past
+-- =========================================================
+
 create or replace function fn_block_past_appointments()
 returns trigger as $$
 begin
@@ -125,10 +146,10 @@ begin
 end;
 $$ language plpgsql;
 
---=========================================================
--- FUNCTION 6: fn_appointment_duration_check
--- Ensures the appointment duration is valid.
---=========================================================
+-- =========================================================
+-- Ensures appointment end time is strictly after start time
+-- =========================================================
+
 create or replace function fn_appointment_duration_check()
 returns trigger as $$
 begin
@@ -140,11 +161,10 @@ end;
 $$ language plpgsql;
 
 
---=========================================================
--- FUNCTION 7: fn_validate_appointment_vet_specialty
--- Ensures the assigned veterinarian is credentialed for the
--- consultation specialty via Module 1 expert (vet × specialty).
---=========================================================
+-- =========================================================
+-- Ensures the veterinarian is credentialed for the appointment specialty
+-- =========================================================
+
 create or replace function fn_validate_appointment_vet_specialty()
 returns trigger as $$
 begin
@@ -163,11 +183,10 @@ end;
 $$ language plpgsql;
 
 
---=========================================================
--- FUNCTION 8: fn_appointment_see_app_clt
--- Allows clients to see their appointments
--- Returns a table with key details of all appointments for a given client ID.
---=========================================================
+-- =========================================================
+-- Returns upcoming and historical appointments for a client profile
+-- =========================================================
+
 create or replace function fn_appointment_see_app_clt(p_client_id int)
 returns table(
     appointment_id int,
@@ -202,11 +221,10 @@ begin
 end;
 $$;
 
---=========================================================
--- FUNCTION 9: fn_validate_animal_client_relationship
--- Ensures that the animal being scheduled for an appointment
--- actually belongs to the client.
---=========================================================
+-- =========================================================
+-- Ensures the animal is actively owned by the scheduling client
+-- =========================================================
+
 create or replace function fn_validate_animal_client_relationship()
 returns trigger as $$
 begin
@@ -224,11 +242,10 @@ begin
 end;
 $$ language plpgsql;
 
---=========================================================
--- FUNCTION 10: fn_prevent_completed_appointment_modification
--- Prevents any modification to an appointment that is already
--- in a terminal state (Completed, Cancelled, No-Show).
---=========================================================
+-- =========================================================
+-- Blocks updates to appointments already in a terminal state
+-- =========================================================
+
 create or replace function fn_prevent_completed_appointment_modification()
 returns trigger as $$
 begin
@@ -238,4 +255,3 @@ begin
     return new;
 end;
 $$ language plpgsql;
-

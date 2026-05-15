@@ -1,20 +1,18 @@
 -- =========================================================
--- comments loader
+-- COMMENTS LAYER (03_Loaders/05_Comments.sql)
 -- =========================================================
--- applies COMMENT ON metadata after structural and behavioral
--- objects exist (post 03_Integrity.sql).
 --
--- layout mirrors 01_Modules:
---   00_Tables → 01_ForeignKeys → 02_Functions → 03_Triggers
---   → 04_Indexes → 05_Procedures → 06_Jobs
+-- DESCRIPTION
+-- Applies COMMENT ON metadata after structural and behavioral
+-- DDL so all targets exist.
 --
--- each module under 02_Comments uses the same folder names and
--- numbering as 01_Modules, with the _Comments.sql suffix.
+-- ORDER (mirrors 01_Modules)
+-- Core types → per module: tables, FKs, functions, triggers,
+-- indexes, procedures, jobs.
 --
--- supports:
--- - schemaspy / pgadmin introspection
--- - operator documentation
--- - future tooling that reads pg_catalog descriptions
+-- PURPOSE
+-- Documentation for operators, SchemaSpy, and tooling reading
+-- pg_catalog descriptions.
 -- =========================================================
 
 \echo '========================================'

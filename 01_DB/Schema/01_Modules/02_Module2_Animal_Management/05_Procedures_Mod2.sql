@@ -1,15 +1,33 @@
---=========================================================
--- PROCEDURES - MODULE 2 (ANIMAL MANAGEMENT)
---=========================================================
--- Purpose: Provides stored procedures for common business
--- operations related to animal management, simplifying data
--- manipulation and enforcing business logic.
---=========================================================
+-- =========================================================
+-- MODULE 2 — ANIMAL MANAGEMENT
+-- =========================================================
+-- FILE: 05_Procedures_Mod2.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Stored procedures encapsulating animal intake, adoption, delivery,
+-- concession, and ownership lifecycle transitions.
+--
+-- This file contains:
+-- - Animal registration and status transitions
+-- - Ownership begin/end flows
+-- - Delivery capture with optional employee linkage
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - Module 2 tables, triggers, and validation functions online
+--
+-- Must load before:
+-- - Application layers calling these entry points
+-- =========================================================
 
---=========================================================
--- PROCEDURE 1: sp_register_animal
--- Registers a new animal in the system.
---=========================================================
+-- =========================================================
+-- Inserts a new animal catalog row with species/breed linkage
+-- =========================================================
+
 create or replace procedure sp_register_animal( p_reg_id_ani varchar, p_nam_ani varchar, p_dat_bir_ani date, p_gen_ani char, p_ori_ani varchar, p_sta_ani varchar, p_id_spc int, p_id_bre int default null ) language plpgsql as $$ begin
 insert into animal (
     reg_id_ani,
@@ -35,11 +53,10 @@ values
 end;
 $$;
 
---=========================================================
--- PROCEDURE 2: sp_assign_ownership
--- Assigns an animal to a client, creating an ownership record
--- and updating the animal's status to 'Adotado'.
---=========================================================
+-- =========================================================
+-- Creates ownership and marks the animal as adopted
+-- =========================================================
+
 create or replace procedure sp_assign_ownership( p_id_ani int, p_id_cli int, p_id_emp int, p_mot_own varchar ) language plpgsql as $$
 declare
     v_animal_status varchar;
@@ -77,11 +94,10 @@ begin
 end;
 $$;
 
---=========================================================
--- PROCEDURE 3: sp_end_ownership
--- Ends an active ownership for an animal, setting the end date
--- and changing the animal's status back to 'Interno'.
---=========================================================
+-- =========================================================
+-- Closes the open ownership interval and returns animal to internal status
+-- =========================================================
+
 create or replace procedure sp_end_ownership(p_id_ani int, p_reason varchar) language plpgsql as $$
 declare
     v_ownership_id int;
@@ -118,11 +134,10 @@ begin
 end;
 $$;
 
---=========================================================
--- PROCEDURE 4: sp_record_delivery
--- Records the delivery (rescue/arrival) of an animal,
--- creating a delivery record and linking employees.
---=========================================================
+-- =========================================================
+-- Records intake/rescue metadata and reuses employee witness list
+-- =========================================================
+
 create or replace procedure sp_record_delivery( p_id_ani int, p_res_dat_del timestamp, p_res_loc_del varchar, p_cli_sta_del varchar, p_id_ext_ent int, p_employee_ids int[] ) language plpgsql as $$
 declare
     v_id_del int;
@@ -172,10 +187,10 @@ where
 end;
 $$;
 
---=========================================================
--- PROCEDURE 5: sp_process_concession
--- Processes the transfer of an animal to an external entity.
---=========================================================
+-- =========================================================
+-- Transfers animals to external entities when not adopted
+-- =========================================================
+
 create or replace procedure sp_process_concession( p_id_ani int, p_id_ext_ent int, p_id_emp int, p_mot_con varchar, p_cli_sta_con varchar ) language plpgsql as $$
 declare
     v_animal_status varchar;

@@ -1,3 +1,28 @@
+-- =========================================================
+-- MODULE 3 — COMMERCIAL MANAGEMENT
+-- =========================================================
+-- FILE: 04_Indexes_Mod3.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Commented manual verification scripts used during trigger and
+-- procedure development (no DDL objects are defined here).
+--
+-- This file contains:
+-- - Sample INSERT/SELECT snippets for stock, invoicing, returns,
+--   and purchase receiving workflows
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - Optional: review after 02_Functions_Mod3.sql / 03_Triggers_Mod3.sql
+--
+-- Note:
+-- Entire file is comments-only; safe to load in documentation-aware runs.
+-- =========================================================
+
 -- --teste
 
 -- -- 1. Verificamos quanto stock temos do Produto 1 (Royal Canin Mini)
@@ -49,7 +74,6 @@
 
 
 
-
 -- -- 1. Criar a encomenda (Gera ID 41) e fica 'pending'
 -- INSERT INTO purchase (pur_dat_pur, sta_pur) VALUES (CURRENT_TIMESTAMP, 'pending');
 
@@ -70,13 +94,12 @@
 
 
 
-
-
 -- -- 1. No Teste 1, vendemos apenas 2 unidades do Produto 1 na Fatura 41.
 -- -- Vamos tentar devolver 50 unidades usando o mesmo id_inv_lin (41)!
 -- -- O PostgreSQL TEM de dar ERRO: "Quantidade devolvida (50) excede a quantidade vendida (2)"
 -- INSERT INTO "return" (mot_ret, id_inv_lin, qty_ret)
 -- VALUES ('Tentativa de burla', 41, 50);
+
 
 
 

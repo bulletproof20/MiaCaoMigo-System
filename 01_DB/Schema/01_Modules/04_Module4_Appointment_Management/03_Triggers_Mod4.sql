@@ -1,73 +1,92 @@
---=========================================================
--- TRIGGERS - MODULE 4
--- Enforces business rules and data integrity through table events
---=========================================================
+-- =========================================================
+-- MODULE 4 — APPOINTMENT MANAGEMENT
+-- =========================================================
+-- FILE: 03_Triggers_Mod4.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Table-level triggers enforcing scheduling, clinical, prescription,
+-- and lifecycle rules for appointments and related entities.
+--
+-- Note:
+-- Overlapping veterinarian appointments are enforced primarily via
+-- GiST exclusion (see 04_Indexes_Mod4.sql); related function hooks
+-- remain for documentation symmetry with historical layouts.
+--
+-- This file contains:
+-- - Appointment scheduling and lifecycle guards
+-- - Prescription and product-usage hooks
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - 02_Functions_Mod4.sql
+-- - Cross-module tables (absence, expert, ownership, stock)
+--
+-- Must load before:
+-- - 05_Procedures_Mod4.sql / 06_Jobs_Mod4.sql (operational callers)
+-- =========================================================
 
---=========================================================
--- TRIGGER 1: trg_block_overlapping_appointments
--- (This trigger was removed and replaced by an EXCLUDE constraint)
+-- =========================================================
+-- Prevents scheduling when the veterinarian is unavailable
+-- =========================================================
 
---=========================================================
--- TRIGGER 2: trg_block_appointment_if_vet_unavailable
--- Prevents scheduling an appointment if the assigned veterinarian
--- is marked as absent during the appointment period.
---=========================================================
 create or replace trigger trg_block_appointment_if_vet_unavailable
 before insert or update on appointment
 for each row
 execute function fn_block_appointment_if_vet_unavailable();
 
---=========================================================
--- TRIGGER 3: trg_validate_prescription_timing
--- Ensures a prescription's issue date is not before the
--- associated appointment's start date.
---=========================================================
+-- =========================================================
+-- Validates prescription registration timing vs appointment start
+-- =========================================================
+
 create or replace trigger trg_validate_prescription_timing
 before insert on prescription
 for each row
 execute function fn_validate_prescription_timing();
 
---=========================================================
--- TRIGGER 4: trg_deduct_product_stock
--- Deducts the quantity of products used in an appointment
--- from the stock. Checks for sufficient stock before deduction.
---=========================================================
+-- =========================================================
+-- Deducts inventory when appointment products are consumed
+-- =========================================================
+
 create or replace trigger trg_deduct_product_stock
 before insert on rel_app_product
 for each row
 execute function fn_deduct_product_stock();
 
---=========================================================
--- TRIGGER 5: trg_block_past_appointments
--- Prevents scheduling appointments with a start date in the past.
---=========================================================
+-- =========================================================
+-- Blocks past-dated scheduling attempts
+-- =========================================================
+
 create or replace trigger trg_block_past_appointments
 before insert or update on appointment
 for each row
 execute function fn_block_past_appointments();
 
---=========================================================
--- TRIGGER 6: trg_validate_animal_client_relationship
--- Ensures the animal belongs to the client before creating/updating an appointment.
---=========================================================
+-- =========================================================
+-- Ensures the animal belongs to the client owning the appointment
+-- =========================================================
+
 create or replace trigger trg_validate_animal_client_relationship
 before insert or update of id_ani, id_cli on appointment
 for each row
 execute function fn_validate_animal_client_relationship();
 
---=========================================================
--- TRIGGER 8: trg_validate_appointment_vet_specialty
--- Ensures the consultation specialty matches veterinarian expert credentials.
---=========================================================
+-- =========================================================
+-- Ensures veterinarian credentials cover the requested specialty
+-- =========================================================
+
 create or replace trigger trg_validate_appointment_vet_specialty
 before insert or update of id_emp, id_spe on appointment
 for each row
 execute function fn_validate_appointment_vet_specialty();
 
---=========================================================
--- TRIGGER 7: trg_prevent_completed_appointment_modification
--- Prevents modification of appointments that are in a terminal state.
---=========================================================
+-- =========================================================
+-- Prevents edits to appointments already in terminal states
+-- =========================================================
+
 create or replace trigger trg_prevent_completed_appointment_modification
 before update on appointment
 for each row

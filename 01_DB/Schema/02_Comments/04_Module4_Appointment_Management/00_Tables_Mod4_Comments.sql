@@ -1,7 +1,12 @@
---=========================================================
--- 1. appointment
---=========================================================
+-- =========================================================
+-- MODULE 4 — APPOINTMENT MANAGEMENT (TABLE COMMENTS)
+-- Mirrors: 01_Modules/04_*/00_Tables_Mod4.sql
 -- ENUM metadata: 02_Comments/00_Core/02_Types_Comments.sql
+-- =========================================================
+
+-- ---------------------------------------------------------
+-- 1. appointment
+-- ---------------------------------------------------------
 
 comment on table appointment is
 'scheduling and consultation session for a client animal with assigned veterinarian and declared clinical specialty';
@@ -20,8 +25,6 @@ comment on column appointment.id_cli is
 
 comment on column appointment.id_spe is
 'clinical specialty requested for this consultation; FK to module 1 specialty catalog; must match an expert(id_emp,id_spe) assignment for the veterinarian';
-
-comment on column appointment.sch_dat_app is
 'scheduled start timestamp';
 
 comment on column appointment.sta_dat_app is

@@ -1,18 +1,19 @@
 -- =========================================================
--- structure loader
+-- STRUCTURE LAYER (03_Loaders/01_Structure.sql)
 -- =========================================================
--- Creates physical tables only (00_Tables_ModX.sql).
--- Requires 00_Core/02_Types.sql to be loaded first (see init.sql).
 --
--- Foreign keys are NOT declared here; they load in
--- 02_ForeignKeys.sql after every module's tables exist.
+-- DESCRIPTION
+-- Loads module table scripts (00_Tables_Mod*.sql), then
+-- index scripts bundled per module (04_Indexes_Mod*.sql) as
+-- defined in this file. Foreign keys are applied separately
+-- via 02_ForeignKeys.sql.
 --
--- Indexes / exclusion constraints load later in the
--- integrity layer (04_Indexes_ModX.sql) so GiST/btree
--- objects attach to stable tables and FK-backed columns.
+-- PREREQUISITE
+-- 00_Core/01_Types.sql must run first (see init.sql) so ENUM
+-- columns resolve.
 --
--- descriptive metadata for these tables is applied later via
--- 02_Comments/<module>/00_Tables_ModX_Comments.sql (see 05_Comments.sql).
+-- METADATA
+-- Table/column COMMENT ON lives in 02_Comments (05_Comments.sql).
 -- =========================================================
 
 \echo '========================================'

@@ -1,3 +1,33 @@
+-- =========================================================
+-- MODULE 3 — COMMERCIAL MANAGEMENT
+-- =========================================================
+-- FILE: 05_Procedures_Mod3.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Procedures supporting procurement receiving and consolidated
+-- low-stock monitoring notices.
+--
+-- This file contains:
+-- - Purchase-to-stock materialization
+-- - Advisory scan of reorder candidates
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - purchase / purchase_line / stock schema
+-- - vw_produtos_para_encomendar view
+--
+-- Must load before:
+-- - Manual or scheduled inventory review jobs
+-- =========================================================
+
+-- =========================================================
+-- Marks a purchase as received and mirrors lines into stock rows
+-- =========================================================
+
 create or replace procedure sp_receive_purchase(p_id_pur int)
 language plpgsql
 as $$
@@ -24,6 +54,10 @@ begin
     end loop;
 end;
 $$;
+
+-- =========================================================
+-- Emits notices when products fall below minimum stock thresholds
+-- =========================================================
 
 create or replace procedure sp_check_restock_needs()
 language plpgsql

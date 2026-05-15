@@ -1,4 +1,33 @@
--- Stock disponível de um produto (todos os lotes juntos)
+-- =========================================================
+-- MODULE 3 — COMMERCIAL MANAGEMENT
+-- =========================================================
+-- FILE: 02_Functions_Mod3.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Database functions for stock, invoicing, returns, and sales validation.
+--
+-- This file contains:
+-- - Available stock calculations and FIFO consumption
+-- - Invoice total maintenance
+-- - Sale and return guards
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - Module 3 tables (product, stock, invoice, invoice_line, return)
+-- - fn_get_available_stock before triggers that reference it
+--
+-- Must load before:
+-- - 03_Triggers_Mod3.sql
+-- =========================================================
+
+-- =========================================================
+-- Returns total available units for a product across stock rows
+-- =========================================================
+
 create or replace function fn_get_available_stock(p_id_pro int)
 returns int
 language plpgsql
@@ -16,7 +45,10 @@ begin
 end;
 $$;
 
--- Aviso de stock baixo após venda
+-- =========================================================
+-- Raises a notice when post-sale stock falls at or below minimum
+-- =========================================================
+
 create or replace function fn_warn_low_stock()
 returns trigger
 language plpgsql
@@ -43,7 +75,10 @@ begin
 end;
 $$;
 
--- Impede venda acima do stock disponível
+-- =========================================================
+-- Blocks invoice lines when requested quantity exceeds available stock
+-- =========================================================
+
 create or replace function fn_check_stock_before_sale()
 returns trigger
 language plpgsql
@@ -63,7 +98,10 @@ begin
 end;
 $$;
 
--- Abate stock após venda (FIFO por validade)
+-- =========================================================
+-- Applies FIFO stock reductions after an invoice line insert
+-- =========================================================
+
 create or replace function fn_stock_after_sale()
 returns trigger
 language plpgsql
@@ -98,7 +136,10 @@ begin
 end;
 $$;
 
--- Atualiza total da fatura após alteração de linhas
+-- =========================================================
+-- Recalculates invoice total from persisted invoice lines
+-- =========================================================
+
 create or replace function fn_update_invoice_total()
 returns trigger
 language plpgsql
@@ -123,7 +164,10 @@ begin
 end;
 $$;
 
--- Repõe stock após devolução
+-- =========================================================
+-- Restocks inventory when a return row is recorded
+-- =========================================================
+
 create or replace function fn_return_restock()
 returns trigger
 language plpgsql
@@ -162,7 +206,10 @@ begin
 end;
 $$;
 
--- Impede venda de produto inativo
+-- =========================================================
+-- Blocks sales lines targeting inactive products
+-- =========================================================
+
 create or replace function fn_prevent_inactive_product_sale()
 returns trigger
 language plpgsql
@@ -183,7 +230,10 @@ begin
 end;
 $$;
 
--- Preenche data de inativação da devolução quando omitida
+-- =========================================================
+-- Defaults return inactivation timestamp when omitted on insert
+-- =========================================================
+
 create or replace function fn_set_return_inactivation_date()
 returns trigger
 language plpgsql

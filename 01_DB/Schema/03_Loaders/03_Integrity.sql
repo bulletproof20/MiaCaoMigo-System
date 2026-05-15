@@ -1,14 +1,15 @@
 -- =========================================================
--- integrity loader
+-- INTEGRITY LAYER (03_Loaders/03_Integrity.sql)
 -- =========================================================
--- Behavioral and non-FK structural objects:
---   02_Functions → 03_Triggers → 04_Indexes → 05_Procedures → 06_Jobs
 --
--- Foreign keys are applied earlier (02_ForeignKeys.sql).
+-- DESCRIPTION
+-- Loads behavioral DDL in module order: functions, triggers,
+-- indexes (second pass where applicable), procedures, jobs.
 --
--- paired documentation files (functions → jobs) live under
--- 02_Comments/<module>/02–06_*_Comments.sql and execute from
--- 05_Comments.sql once this layer finishes.
+-- PREREQUISITE
+-- 02_ForeignKeys.sql must have run so relationship targets exist.
+--
+-- Metadata: 02_Comments parallels 01_Modules (02–06_*_Comments.sql).
 -- =========================================================
 
 \echo '========================================'

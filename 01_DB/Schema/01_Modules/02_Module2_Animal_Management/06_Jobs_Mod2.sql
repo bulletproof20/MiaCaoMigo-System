@@ -1,6 +1,22 @@
---=========================================================
--- MODULE 2: SCHEDULED JOBS (ANIMAL MANAGEMENT)
---=========================================================
--- No pg_cron jobs are defined for this module at present.
--- This file preserves the uniform modular layout (00–06).
---=========================================================
+-- =========================================================
+-- MODULE 2 — ANIMAL MANAGEMENT
+-- =========================================================
+-- FILE: 06_Jobs_Mod2.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Placeholder module job list (no pg_cron definitions yet).
+--
+-- This file contains:
+-- - Reserved slot for future animal-centric batch work
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - None (commentary only)
+--
+-- Must load before:
+-- - N/A
+-- =========================================================

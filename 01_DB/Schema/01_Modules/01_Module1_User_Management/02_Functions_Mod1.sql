@@ -1,13 +1,33 @@
---=========================================================
--- FUNCTIONS - MODULE 1 (USER MANAGEMENT / ATTENDANCE)
--- Contains trigger-support functions and business logic
---=========================================================
+-- =========================================================
+-- MODULE 1 — USER MANAGEMENT
+-- =========================================================
+-- FILE: 02_Functions_Mod1.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Database functions for validation, automation support, and
+-- business-rule encapsulation (attendance, roles, absences).
+--
+-- This file contains:
+-- - Clock-in and absence overlap guards
+-- - Employee / role disjunction checks
+-- - Default setup provisioning for new accounts
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - Module 1 tables and foreign keys
+-- - Central types (00_Core/01_Types.sql) where referenced
+--
+-- Must load before:
+-- - 03_Triggers_Mod1.sql
+-- =========================================================
 
---=========================================================
--- FUNCTION 1: fn_block_clock_in_if_absent
--- Prevents clock-in during absence by blocking inserts
--- that overlap with an absence period.
---=========================================================
+-- =========================================================
+-- Blocks clock-in when the timestamp falls inside an absence window
+-- =========================================================
 
 create or replace function fn_block_clock_in_if_absent()
 returns trigger as $$
@@ -30,12 +50,9 @@ end;
 $$ language plpgsql;
 
 
-
---=========================================================
--- FUNCTION 2: fn_block_inactivate_if_clock_active
--- Prevents employee inactivation if there is an active
--- clock-in record (without end time).
---=========================================================
+-- =========================================================
+-- Blocks employee inactivation while an open clock-in exists
+-- =========================================================
 
 create or replace function fn_block_inactivate_if_clock_active()
 returns trigger as $$
@@ -62,11 +79,9 @@ end;
 $$ language plpgsql;
 
 
---=========================================================
--- FUNCTION 3: fn_block_assistant_if_veterinarian_exists
--- Ensures role disjunction by preventing assignment as
--- assistant when the employee is already a veterinarian.
---=========================================================
+-- =========================================================
+-- Blocks assistant assignment when the employee is already a veterinarian
+-- =========================================================
 
 create or replace function fn_block_assistant_if_veterinarian_exists()
 returns trigger as $$
@@ -89,11 +104,9 @@ end;
 $$ language plpgsql;
 
 
---=========================================================
--- FUNCTION 4: fn_block_veterinarian_if_assistant_exists
--- Ensures role disjunction by preventing assignment as
--- veterinarian when the employee is already an assistant.
---=========================================================
+-- =========================================================
+-- Blocks veterinarian assignment when the employee is already an assistant
+-- =========================================================
 
 create or replace function fn_block_veterinarian_if_assistant_exists()
 returns trigger as $$
@@ -116,12 +129,9 @@ end;
 $$ language plpgsql;
 
 
---=========================================================
--- FUNCTION 5: fn_block_absence_overlap_by_user
--- Prevents overlapping absences for the same user,
--- even across multiple employee records associated
--- with that user.
---=========================================================
+-- =========================================================
+-- Prevents overlapping absences for the same user across employee rows
+-- =========================================================
 
 create or replace function fn_block_absence_overlap_by_user()
 returns trigger as $$
@@ -181,19 +191,9 @@ end;
 $$ language plpgsql;
 
 
-
---=========================================================
--- function: fn_create_default_setup
---=========================================================
--- description:
--- automatically creates a default setup record whenever
--- a new user_account is created.
---
--- purpose:
--- - enforce automatic user initialization
--- - guarantee 1:1 setup existence
--- - centralize default setup creation logic
---=========================================================
+-- =========================================================
+-- Creates default setup row after user_account insert (1:1 initialization)
+-- =========================================================
 
 drop function if exists fn_create_default_setup();
 
@@ -216,4 +216,3 @@ begin
 
 end;
 $$ language plpgsql;
-

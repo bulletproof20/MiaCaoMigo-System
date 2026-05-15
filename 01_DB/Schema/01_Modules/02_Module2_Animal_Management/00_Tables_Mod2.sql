@@ -1,24 +1,16 @@
---=========================================================
--- MODULE 2: ANIMAL MANAGEMENT 
---=========================================================
-
---=========================================================
+-- =========================================================
+-- MODULE 2 — ANIMAL MANAGEMENT
+-- File: 00_Tables_Mod2.sql (tables only)
+-- =========================================================
+--
 -- DESCRIPTION
---=========================================================
--- This module defines the structure responsible for animal management.
--- It includes species classification, animal records, ownership,
--- and interactions with external entities such as suppliers or shelters.
+-- Species, breeds, animals, ownership, external entities,
+-- deliveries, and concessions. Status-like free text (e.g. animal
+-- clinical state) remains VARCHAR where values are not a fixed enum.
 --
--- The module supports:
--- - Animal identification and classification
--- - Ownership tracking
--- - Interaction with external entities
--- - Operational processes such as delivery and concession
---
--- Foreign keys: 01_ForeignKeys_Mod2.sql (after all module tables exist).
-
-
-
+-- FOREIGN KEYS
+-- Applied in 01_ForeignKeys_Mod2.sql after all module tables exist.
+-- =========================================================
 --=========================================================
 -- 1. SPECIES
 --=========================================================
@@ -85,8 +77,7 @@ create table animal (
     -- Origin
 
     sta_ani varchar(50),
-    -- Status
-
+    -- Free-text clinical or operational state (not a fixed enum)
     id_spc int not null,
     -- Species
 

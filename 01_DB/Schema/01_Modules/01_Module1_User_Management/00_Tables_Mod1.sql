@@ -1,19 +1,15 @@
---=========================================================
--- MODULE 1: USER MANAGEMENT
---=========================================================
-
---=========================================================
--- DESCRIPTION
---=========================================================
--- This module defines the structure responsible for user management.
--- It includes user data, authentication, roles, permissions,
--- and operational records associated with system usage.
+-- =========================================================
+-- MODULE 1 — USER & EMPLOYEE MANAGEMENT
+-- File: 00_Tables_Mod1.sql (tables only)
+-- =========================================================
 --
--- Foreign keys are applied in 01_ForeignKeys_Mod1.sql (after all
--- module tables are created) to simplify init order and dependency control.
-
-
-
+-- DESCRIPTION
+-- Accounts, roles, attendance, absences, and related entities.
+-- Absence workflow uses absence_status (see 00_Core/01_Types.sql).
+--
+-- FOREIGN KEYS
+-- Applied in 01_ForeignKeys_Mod1.sql after all module tables exist.
+-- =========================================================
 --=========================================================
 -- 1. USER_ACCOUNT
 --=========================================================

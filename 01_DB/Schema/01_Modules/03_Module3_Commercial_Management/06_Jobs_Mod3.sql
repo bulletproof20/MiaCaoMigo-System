@@ -1,6 +1,22 @@
---=========================================================
--- MODULE 3: SCHEDULED JOBS (COMMERCIAL MANAGEMENT)
---=========================================================
--- No pg_cron jobs are defined for this module at present.
--- This file preserves the uniform modular layout (00–06).
---=========================================================
+-- =========================================================
+-- MODULE 3 — COMMERCIAL MANAGEMENT
+-- =========================================================
+-- FILE: 06_Jobs_Mod3.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Placeholder module job list (no pg_cron definitions yet).
+--
+-- This file contains:
+-- - Reserved slot for future commercial batch automation
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - None (commentary only)
+--
+-- Must load before:
+-- - N/A
+-- =========================================================

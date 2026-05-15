@@ -24,7 +24,7 @@
 --
 -- Recommended execution order:
 -- 1. Run this cleanup script
--- 2. Recreate ENUM types
+-- 2. Recreate custom types (00_Core/01_Types.sql)
 -- 3. Recreate tables
 -- 4. Apply foreign keys
 -- 5. Apply triggers and procedures

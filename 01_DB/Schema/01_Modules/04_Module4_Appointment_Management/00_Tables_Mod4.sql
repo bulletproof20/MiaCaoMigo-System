@@ -1,29 +1,19 @@
---=========================================================
--- MODULE 4: APPOINTMENT MANAGEMENT
---=========================================================
-
---=========================================================
+-- =========================================================
+-- MODULE 4 — APPOINTMENT MANAGEMENT
+-- File: 00_Tables_Mod4.sql (tables only)
+-- =========================================================
+--
 -- DESCRIPTION
---=========================================================
--- This module defines the structure responsible for appointment
--- and clinical management. It includes scheduling, medical records,
--- prescriptions, and billing associated with consultations.
+-- Consultations, clinical notes, prescriptions, product usage,
+-- and client notifications. Workflow fields use appointment_status
+-- and invoice_status from 00_Core/01_Types.sql.
 --
--- The module supports:
--- - Appointment scheduling and tracking with status management
--- - Clinical specialty declared per consultation (cross-module link to specialty)
--- - Clinical records (anamnesis and assessment)
--- - Prescription management
--- - Association of employees, clients and animals to appointments
--- - Billing through invoices with status tracking
---
--- Foreign keys: 01_ForeignKeys_Mod4.sql (after all module tables exist).
--- Status ENUM types: 00_Core/02_Types.sql (appointment_status, invoice_status).
+-- FOREIGN KEYS: 01_ForeignKeys_Mod4.sql (after all module tables exist).
+-- =========================================================
 
-
---=========================================================
+-- =========================================================
 -- 1. APPOINTMENT
---=========================================================
+-- =========================================================
 -- Stores appointment scheduling, status, and general information.
 -- id_spe: clinical nature of the consultation (Module 1 specialty catalog),
 --         distinct from the veterinarian's full qualification set (expert).

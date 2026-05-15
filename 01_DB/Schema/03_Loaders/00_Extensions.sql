@@ -1,19 +1,16 @@
 -- =========================================================
--- extensions loader
+-- EXTENSIONS LAYER (03_Loaders/00_Extensions.sql)
 -- =========================================================
--- enables required postgresql extensions used
--- across the database infrastructure.
 --
--- extensions expand native postgresql
--- capabilities and provide support for:
--- - scheduling
--- - advanced indexing
--- - exclusion constraints
--- - automation
+-- DESCRIPTION
+-- Enables PostgreSQL extensions required by scheduling, GiST
+-- exclusion constraints, and related features.
 --
--- extension-specific COMMENT ON statements (if any) should stay
--- beside the objects that depend on them or in 02_Comments when
--- the described object is created during init.
+-- PURPOSE
+-- Run before custom types and table DDL.
+--
+-- Notes: Extension-specific COMMENT ON belongs in 02_Comments
+-- or next to dependent objects.
 -- =========================================================
 
 \echo '========================================'

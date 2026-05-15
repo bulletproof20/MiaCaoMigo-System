@@ -1,16 +1,16 @@
 -- =========================================================
--- foreign keys loader
+-- FOREIGN KEYS LAYER (03_Loaders/02_ForeignKeys.sql)
 -- =========================================================
--- Runs after all module table scripts (00_Tables_ModX.sql).
 --
--- Rationale:
---   * every module keeps FK definitions in 01_ForeignKeys_ModX.sql;
---   * init order stays predictable (tables → FKs → behavior);
---   * avoids circular CREATE TABLE dependency issues;
---   * matches the uniform per-module file numbering.
+-- DESCRIPTION
+-- Applies deferred foreign keys after all 00_Tables_Mod*.sql
+-- scripts. One file per module: 01_ForeignKeys_Mod*.sql.
 --
--- comment metadata: 02_Comments/<module>/01_ForeignKeys_ModX_Comments.sql
--- (loaded in 05_Comments.sql after integrity objects exist).
+-- PURPOSE
+-- Avoids circular CREATE TABLE ordering; keeps FK phase explicit
+-- for CI and reviews.
+--
+-- Metadata: 02_Comments/**/01_ForeignKeys_*_Comments.sql
 -- =========================================================
 
 \echo '========================================'

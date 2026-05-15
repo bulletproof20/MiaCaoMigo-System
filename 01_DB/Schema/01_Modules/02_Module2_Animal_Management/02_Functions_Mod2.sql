@@ -1,16 +1,36 @@
---=========================================================
--- FUNCTIONS - MODULE 2 (ANIMAL MANAGEMENT)
--- Contains trigger-support functions and business logic
---=========================================================
+-- =========================================================
+-- MODULE 2 — ANIMAL MANAGEMENT
+-- =========================================================
+-- FILE: 02_Functions_Mod2.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Database functions for validation, automation support, and
+-- business-rule encapsulation for animals, ownership, and delivery.
+--
+-- This file contains:
+-- - Ownership and adoption guards
+-- - Temporal checks on delivery vs rescue
+-- - Breed/species consistency validation
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - Module 2 tables and foreign keys
+--
+-- Must load before:
+-- - 03_Triggers_Mod2.sql
+-- =========================================================
 
---=========================================================
--- FUNCTION 1: fn_block_ownership_if_animal_inactive
--- Impede que um animal seja adotado/possuído se ele
--- estiver marcado como inativo (ex: falecido ou removido).
---=========================================================
- create or replace function fn_block_ownership_if_animal_inactive()
- returns trigger as $$
-  begin
+-- =========================================================
+-- Validates ownership insert against the referenced animal record
+-- =========================================================
+
+create or replace function fn_block_ownership_if_animal_inactive()
+returns trigger as $$
+begin
      
      if exists (
          select 1 
@@ -21,15 +41,13 @@
          raise exception 'Cannot assign ownership: Animal is inactive/deceased.';
      end if;
      return new;
- end;
- $$ language plpgsql;
+end;
+$$ language plpgsql;
 
 
---=========================================================
--- FUNCTION 2: fn_check_delivery_date_after_rescue
--- Garante a lógica temporal: a entrega (delivery) não
--- pode ser feita antes da data de resgate (rescue).
---=========================================================
+-- =========================================================
+-- Ensures delivery date is not earlier than rescue date
+-- =========================================================
 
 create or replace function fn_check_delivery_date_after_rescue()
 returns trigger as $$
@@ -44,11 +62,9 @@ end;
 $$ language plpgsql;
 
 
---=========================================================
--- FUNCTION 3: fn_prevent_overlapping_ownership
--- Impede que um animal tenha dois donos ao mesmo tempo.
--- Uma nova posse só pode começar se a anterior tiver terminado.
---=========================================================
+-- =========================================================
+-- Prevents a second active ownership while another remains open
+-- =========================================================
 
 create or replace function fn_prevent_overlapping_ownership()
 returns trigger as $$
@@ -68,11 +84,9 @@ end;
 $$ language plpgsql;
 
 
---=========================================================
--- FUNCTION 4: fn_validate_breed_species_consistency
--- Garante que a raça (Breed) escolhida pertence de facto 
--- à espécie (Species) indicada no registo do animal.
---=========================================================
+-- =========================================================
+-- Ensures the animal breed belongs to the selected species
+-- =========================================================
 
 create or replace function fn_validate_breed_species_consistency()
 returns trigger as $$

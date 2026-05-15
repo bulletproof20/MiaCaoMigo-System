@@ -1,14 +1,31 @@
---=========================================================
--- PROCEDURES - MODULE 1
--- Contains automated operational maintenance procedures
---=========================================================
+-- =========================================================
+-- MODULE 1 — USER MANAGEMENT
+-- =========================================================
+-- FILE: 05_Procedures_Mod1.sql
+-- =========================================================
+--
+-- DESCRIPTION
+-- ---------------------------------------------------------
+-- Operational procedures supporting HR attendance hygiene and
+-- absence lifecycle automation.
+--
+-- This file contains:
+-- - Midnight closure for dangling clock-ins
+-- - Automatic cancellation of stale pending absences
+-- ---------------------------------------------------------
+--
+-- LOAD ORDER
+-- ---------------------------------------------------------
+-- Requires:
+-- - 02_Functions_Mod1.sql / related tables populated
+--
+-- Must load before:
+-- - 06_Jobs_Mod1.sql (pg_cron call targets)
+-- =========================================================
 
-
---=========================================================
--- PROCEDURE 1: sp_auto_close_clock_in_midnight
--- Closes open clock-in records from previous days by setting
--- the end time to midnight (00:00) of the current day.
---=========================================================
+-- =========================================================
+-- Closes overnight clock-ins still missing an end timestamp
+-- =========================================================
 
 create or replace procedure sp_auto_close_clock_in_midnight()
 language plpgsql
@@ -25,12 +42,9 @@ end;
 $$;
 
 
-
---=========================================================
--- PROCEDURE 2: sp_auto_cancel_expired_absences
--- Automatically cancels pending absences whose end date
--- has already passed, preserving historical records.
---=========================================================
+-- =========================================================
+-- Marks expired pending absences as cancelled
+-- =========================================================
 
 create or replace procedure sp_auto_cancel_expired_absences()
 language plpgsql

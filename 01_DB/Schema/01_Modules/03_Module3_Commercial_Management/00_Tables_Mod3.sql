@@ -1,21 +1,16 @@
---=========================================================
--- MODULE 3: COMMERCIAL MANAGEMENT (Por retificar)
---=========================================================
-
---=========================================================
+-- =========================================================
+-- MODULE 3 — COMMERCIAL MANAGEMENT
+-- File: 00_Tables_Mod3.sql (tables only)
+-- =========================================================
+--
 -- DESCRIPTION
---=========================================================
--- This module defines the structure responsible for commercial management.
--- It includes product catalog, stock control, purchases and returns,
--- as well as relationships between employees and commercial operations.
+-- Product catalog, stock, purchases, returns, and associative
+-- links to employees. Purchase workflow state uses purchase_status
+-- (see 00_Core/01_Types.sql).
 --
--- The module supports:
--- - Product and family classification
--- - Stock management and tracking
--- - Purchase and return processes
--- - Employee participation in commercial activities
---
--- Foreign keys: 01_ForeignKeys_Mod3.sql (after all module tables exist).
+-- FOREIGN KEYS
+-- Deferred to 01_ForeignKeys_Mod3.sql after all module tables exist.
+-- =========================================================
 
 
 

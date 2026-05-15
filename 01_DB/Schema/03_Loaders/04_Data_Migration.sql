@@ -1,12 +1,13 @@
 -- =========================================================
--- data migration loader
+-- DATA MIGRATION LAYER (03_Loaders/04_Data_Migration.sql)
 -- =========================================================
--- reserved for deterministic seed data, reference imports, or
--- etl staging scripts that must run after the schema is fully
--- wired (including integrity objects) but before optional
--- reporting assets.
 --
--- intentionally a no-op until migration scripts are added.
+-- DESCRIPTION
+-- Placeholder for deterministic seeds, ETL, or reference imports
+-- that must run after integrity objects exist.
+--
+-- STATUS
+-- No scripts wired yet (no-op).
 -- =========================================================
 
 \echo '========================================'

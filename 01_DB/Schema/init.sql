@@ -1,22 +1,26 @@
 -- =========================================================
--- init: database setup (miacaomigo)
+-- MIACAOMIGO — DATABASE INITIALIZATION (init.sql)
 -- =========================================================
--- central orchestration script responsible for loading the
--- complete database architecture inside the docker init hook.
 --
--- pipeline overview:
---   00_Extensions   → enable pg_cron, btree_gist, etc.
---   02_Types        → centralized ENUM types (00_Core/02_Types.sql)
---   01_Structure    → 00_Tables_Mod*.sql (tables only)
---   02_ForeignKeys  → 01_ForeignKeys_Mod*.sql (cross-module safe phase)
---   03_Integrity    → functions, triggers, indexes, procedures, jobs
---   04_Data_Migration → reserved for seed / etl scripts
---   05_Comments     → 02_Comments/** mirrors 01_Modules/** layout
---   06_Queries      → 04_Queries/** reporting views (post-comments)
---   07_Sanity_Check → lightweight catalog validation
+-- DESCRIPTION
+-- Orchestrates full schema creation for Docker/CI init. Loads
+-- extensions, centralized ENUM types, table DDL, foreign keys,
+-- integrity objects, optional migration hooks, catalog comments,
+-- and sanity checks.
 --
--- the comments layer intentionally runs after behavioral objects
--- so COMMENT ON targets always resolve.
+-- LOAD ORDER (pipeline)
+--   00_Extensions.sql     — pg_cron, btree_gist, …
+--   00_Core/01_Types.sql  — absence_status, purchase_status,
+--                           appointment_status, invoice_status
+--   01_Structure.sql      — 00_Tables_Mod*.sql + per-module indexes
+--   02_ForeignKeys.sql    — 01_ForeignKeys_Mod*.sql
+--   03_Integrity.sql      — functions, triggers, procedures, jobs
+--                           (see also indexes inside 01_Structure)
+--   04_Data_Migration.sql — reserved (ETL / reference data)
+--   05_Comments.sql       — COMMENT ON (mirrors 01_Modules order)
+--   07_Sanity_Check.sql   — extensions, ENUMs, catalog smoke checks
+--
+-- Comments run after behavioral DDL so COMMENT ON resolves.
 -- =========================================================
 
 

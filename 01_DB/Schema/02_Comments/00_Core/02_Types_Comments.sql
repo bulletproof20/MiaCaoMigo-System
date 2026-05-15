@@ -1,21 +1,22 @@
---=========================================================
--- metadata: centralized custom types (00_Core/02_Types.sql)
---=========================================================
+-- =========================================================
+-- CORE — CUSTOM TYPE COMMENTS
+-- Source types: 00_Core/01_Types.sql
+-- =========================================================
 
 -- module 1 — employee management
 
 comment on type absence_status is
-'absence approval workflow states; replaces legacy ck_sta_abs check constraint';
+'absence lifecycle: pending, approved, rejected, cancelled, detected';
 
 -- module 3 — commercial management
 
 comment on type purchase_status is
-'purchase reception workflow states; replaces legacy ck_sta_pur check constraint';
+'purchase lifecycle: pending, received, cancelled';
 
 -- module 4 — appointment management
 
 comment on type appointment_status is
-'consultation lifecycle states; includes late for derived client-portal display';
+'consultation lifecycle; includes late for derived display';
 
 comment on type invoice_status is
-'billing workflow states for invoice entities';
+'billing lifecycle for invoice entities';
