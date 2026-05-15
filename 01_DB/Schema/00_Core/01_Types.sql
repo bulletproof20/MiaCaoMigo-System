@@ -1,21 +1,25 @@
--- =========================================================
+--=========================================================
 -- DATABASE CUSTOM TYPES
--- File: 00_Core/01_Types.sql
--- =========================================================
+--=========================================================
 --
 -- DESCRIPTION
--- Single catalog of ENUM types for workflow and lifecycle fields.
--- Prefer these types over VARCHAR + CHECK (…) for stable value sets.
+-- --------------------------------------------------------
+-- Central catalog of PostgreSQL ENUM types used for workflow
+-- and lifecycle status fields across all modules.
 --
--- PURPOSE
--- One vocabulary per domain; align API and SQL literals.
+-- Status validation is enforced at the type level instead of
+-- per-table CHECK constraints, ensuring:
+-- - consistent vocabulary across modules;
+-- - single source of truth for allowed values;
+-- - safer refactors and API alignment.
 --
 -- LOAD ORDER
--- After 03_Loaders/00_Extensions.sql, before 01_Structure.sql
--- (any 00_Tables_Mod*.sql that references these types).
---
+-- --------------------------------------------------------
+-- This script must run after extensions and before any
+-- 00_Tables_ModX.sql file that references these types.
+-- 
 -- DBMS: PostgreSQL
--- =========================================================
+--=========================================================
 
 
 
