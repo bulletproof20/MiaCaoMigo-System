@@ -17,26 +17,7 @@
 --
 -- Foreign keys: 01_ForeignKeys_Mod3.sql (after all module tables exist).
 
---=========================================================
--- 0. CLEANUP
---=========================================================
--- Drops only tables related to this module in reverse dependency order
 
-
-
--- Line items (reference purchase / invoice / product / stock)
-drop table if exists purchase_line cascade;
-drop table if exists invoice_line cascade;
-
--- Dependent entities
-drop table if exists "return" cascade;
-drop table if exists purchase cascade;
-drop table if exists stock cascade;
-
--- Core entities
-drop table if exists product cascade;
-drop table if exists invoice cascade;
-drop table if exists "family" cascade;
 
 
 --=========================================================

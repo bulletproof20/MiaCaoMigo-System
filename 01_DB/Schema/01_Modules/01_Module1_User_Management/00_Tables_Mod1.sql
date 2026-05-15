@@ -12,34 +12,7 @@
 -- Foreign keys are applied in 01_ForeignKeys_Mod1.sql (after all
 -- module tables are created) to simplify init order and dependency control.
 
---=========================================================
--- 0. CLEANUP
---=========================================================
--- Drops only tables related to this module in reverse dependency order
 
--- Associative tables
-drop table if exists occupies cascade;
-drop table if exists have cascade;
-drop table if exists expert cascade;
-
--- Dependent entities
-drop table if exists assistant cascade;
-drop table if exists veterinarian cascade;
-drop table if exists schedule cascade;
-drop table if exists absence cascade;
-drop table if exists clock_in cascade;
-drop table if exists setup cascade;
-drop table if exists login_record cascade;
-
--- Core entities
-drop table if exists employee cascade;
-drop table if exists client cascade;
-drop table if exists profile cascade;
-drop table if exists permission cascade;
-drop table if exists specialty cascade;
-
--- Base entity
-drop table if exists user_account cascade;
 
 --=========================================================
 -- 1. USER_ACCOUNT

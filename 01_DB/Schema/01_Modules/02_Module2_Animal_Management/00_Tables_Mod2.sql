@@ -17,24 +17,7 @@
 --
 -- Foreign keys: 01_ForeignKeys_Mod2.sql (after all module tables exist).
 
---=========================================================
--- 0. CLEANUP
---=========================================================
--- Drops only tables related to this module in reverse dependency order
 
--- Associative tables
-drop table if exists delivery_employee cascade;
-
--- Dependent entities
-drop table if exists concession cascade;
-drop table if exists delivery cascade;
-drop table if exists ownership cascade;
-
--- Core entities
-drop table if exists animal cascade;
-drop table if exists breed cascade;
-drop table if exists species cascade;
-drop table if exists external_entity cascade;
 
 --=========================================================
 -- 1. SPECIES

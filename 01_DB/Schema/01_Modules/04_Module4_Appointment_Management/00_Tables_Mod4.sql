@@ -19,23 +19,7 @@
 --
 -- Foreign keys: 01_ForeignKeys_Mod4.sql (after all module tables exist).
 
---=========================================================
--- 0. CLEANUP
---=========================================================
--- Drops only tables related to this module in reverse dependency order
 
-drop table if exists rel_app_product cascade; -- This table will be removed
-drop table if exists rel_pre_prod cascade;
-drop table if exists prescription cascade;
-drop table if exists anamnesis cascade;
-drop table if exists overall_assessment cascade;
-drop table if exists appointment_notification cascade;
-drop table if exists appointment cascade;
-
-
--- Custom types
-drop type if exists appointment_status cascade;
-drop type if exists invoice_status cascade;
 
 --=========================================================
 -- 1. TYPES
