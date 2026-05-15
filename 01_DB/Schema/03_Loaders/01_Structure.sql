@@ -20,18 +20,6 @@
 \echo '========================================'
 
 -- =========================================================
--- Preparation to load structure layer
--- =========================================================
-
-\echo '=== Preparation ==='
-
-\echo '--- Drop existing tables and types'
-\i /docker-entrypoint-initdb.d/00_Core/00_Cleanup.sql
-
-\echo '--- Create types'
-\i /docker-entrypoint-initdb.d/00_Core/02_Types.sql
-
--- =========================================================
 -- tables
 -- =========================================================
 

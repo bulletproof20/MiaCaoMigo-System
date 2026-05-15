@@ -33,7 +33,7 @@ set client_min_messages to warning;
 
 \echo '>>> setting timezone to Europe/Lisbon'
 
-SET TIMEZONE TO 'Europe/Lisbon';
+SET timezone TO 'Europe/Lisbon';
 
 -- =========================================================
 -- extensions layer
@@ -51,7 +51,7 @@ SET TIMEZONE TO 'Europe/Lisbon';
 
 \echo '>>> loading custom types layer'
 
-\i /docker-entrypoint-initdb.d/00_Core/02_Types.sql
+\i /docker-entrypoint-initdb.d/00_Core/01_Types.sql
 
 
 
