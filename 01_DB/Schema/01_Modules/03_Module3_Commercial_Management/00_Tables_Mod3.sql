@@ -131,7 +131,7 @@ create table product (
     -- Minimum stock level,
 
 
-    constraint pk_product primary key (id_pro),
+    constraint pk_product primary key (id_pro)
     -- Unique identifier
 );
 
@@ -306,7 +306,6 @@ create table return (
     -- Unique identifier
 );
 
-<<<<<<< HEAD
 --=========================================================
 -- 9. ASSOCIATIVE TABLES
 --=========================================================
@@ -370,10 +369,8 @@ create table employee_return (
 
     constraint pk_employee_return primary key (id_emp, id_ret)
 );
-=======
 
-
--- Linhas de compra (junta Product, Purchase, Stock)
+------------------------------------------------------------
 CREATE TABLE PurchaseLine (
     ID_PURCHASE_LINE SERIAL PRIMARY KEY,
     ID_PURCHASE INT NOT NULL REFERENCES Purchase(id_pur),
@@ -396,6 +393,5 @@ CREATE TABLE InvoiceLine (
 
 ALTER TABLE "return" ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_INVOICE_LINE);
 ALTER TABLE "return" ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
-ALTER TABLE "return" DROP COLUMN reg_dat_ret; -- duplicado
-ALTER TABLE "return" RENAME COLUMN ina_dat_ret TO RETURN_DATE;
->>>>>>> main
+-- ALTER TABLE "return" DROP COLUMN reg_dat_ret; -- duplicado
+-- ALTER TABLE "return" RENAME COLUMN ina_dat_ret TO RETURN_DATE;

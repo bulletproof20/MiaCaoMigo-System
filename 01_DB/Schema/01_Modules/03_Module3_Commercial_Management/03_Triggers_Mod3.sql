@@ -1,42 +1,49 @@
 --- ========================================================= ------
 
 
--- Stock check before sale line insert
-create trigger trg_check_stock_before_sale
-before insert on invoice_line
-for each row
-execute function trg_check_stock_before_sale_func();
+--Calls low stock function befor inserting new line 
+
+CREATE TRIGGER trg_check_stock_before_sale
+BEFORE INSERT ON InvoiceLine
+FOR EACH ROW
+EXECUTE FUNCTION trg_check_stock_before_sale_func();
 
 
--- Decrement stock after sale line insert
-create trigger trg_stock_after_sale
-after insert on invoice_line
-for each row
-execute function trg_stock_after_sale_func();
+
+-- cals function that updates stock after a sale
+CREATE TRIGGER trg_stock_after_sale
+AFTER INSERT ON InvoiceLine
+FOR EACH ROW
+EXECUTE FUNCTION trg_stock_after_sale_func();
 
 
--- Recalculate invoice header total
-create trigger trg_update_invoice_total
-after insert or update or delete on invoice_line
-for each row
-execute function trg_update_invoice_total_func();
+-- calls function that updates invoice total after inserting/updating/deleting an invoice line
+CREATE TRIGGER trg_update_invoice_total
+AFTER INSERT OR UPDATE OR DELETE ON InvoiceLine
+FOR EACH ROW
+EXECUTE FUNCTION trg_update_invoice_total_func();
 
--- Restock on return insert
-create trigger trg_return_restock
-after insert on "return"
-for each row
-execute function trg_return_restock_func();
+-- calls function that restocks products after a return is inserted
 
-
--- Block inactive products on invoice lines
-create trigger trg_prevent_inactive_product_sale
-before insert on invoice_line
-for each row
-execute function trg_prevent_inactive_product_sale_func();
+CREATE TRIGGER trg_return_restock
+AFTER INSERT ON "return"
+FOR EACH ROW
+EXECUTE FUNCTION trg_return_restock_func();
 
 
--- Default ina_dat_ret on return insert
-create trigger trg_set_return_return_date
-before insert on "return"
-for each row
-execute function trg_set_return_return_date_func();
+-- calls function that prevents sales of inactive products
+
+CREATE TRIGGER trg_prevent_inactive_product_sale
+BEFORE INSERT ON InvoiceLine
+FOR EACH ROW
+EXECUTE FUNCTION trg_prevent_inactive_product_sale_func();
+
+
+
+
+-- calls function that sets return date after inserting a return
+
+CREATE TRIGGER trg_set_return_return_date
+BEFORE INSERT ON "return"
+FOR EACH ROW
+EXECUTE FUNCTION trg_set_return_return_date_func();

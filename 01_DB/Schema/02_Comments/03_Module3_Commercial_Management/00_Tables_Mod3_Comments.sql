@@ -244,14 +244,11 @@ comment on table "return" is
 comment on column "return".id_ret is
 'unique return identifier';
 
-comment on column "return".dat_ret is
-'business return date';
-
 comment on column "return".mot_ret is
 'reason narrative';
 
-comment on column "return".reg_dat_ret is
-'record creation timestamp';
+-- comment on column "return".reg_dat_ret is
+-- 'record creation timestamp';
 
 comment on column "return".ina_dat_ret is
 'closure or inactivation timestamp';

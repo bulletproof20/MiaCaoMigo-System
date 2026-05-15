@@ -4,6 +4,20 @@
 --=========================================================
 
 --=========================================================
+-- 0. CLEANUP
+-- Ensures older indexes and constraints get dropped before new ones
+-- avoids conflict
+--=========================================================
+drop index if exists idx_appointment_status_for_jobs;
+drop index if exists idx_appointment_id_cli;
+drop index if exists idx_appointment_id_emp;
+drop index if exists idx_appointment_id_animal;
+drop index if exists idx_appointment_vet_schedule;
+drop index if exists idx_appointment_sch_dat_app;
+drop index if exists idx_notification_client_read_status;
+alter table appointment drop constraint if exists ex_appointment_vet_overlap;
+
+--=========================================================
 -- INDEX 1: idx_appointment_status_for_jobs
 -- Speeds up jobs that frequently check for 'Scheduled' appointments.
 --=========================================================

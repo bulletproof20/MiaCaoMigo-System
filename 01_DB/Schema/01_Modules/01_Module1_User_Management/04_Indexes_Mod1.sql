@@ -1,5 +1,16 @@
 --=========================================================
 -- INDEXES - MODULE 1
+-- Ensures older indexes get droped before new ones
+-- avoids conflit
+--=========================================================
+drop index if exists uq_login_single_active_session_email;
+drop index if exists uq_employee_active_per_user;
+drop index if exists uq_clock_in_active_per_employee;
+alter table schedule drop constraint if exists ex_schedule_overlap;
+
+
+--=========================================================
+-- INDEXES - MODULE 1
 -- Ensures data integrity and operational consistency
 -- through partial unique indexes.
 --=========================================================
@@ -77,5 +88,4 @@ exclude using gist (
         ('2000-01-01'::date + sta_tim_sch)::timestamp,
         ('2000-01-01'::date + fin_hou_sch)::timestamp
     ) with &&
-
 );

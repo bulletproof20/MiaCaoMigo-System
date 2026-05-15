@@ -124,17 +124,17 @@ create table animal (
         references client(id_cli)
         on delete set null,
 
-    constraint fk_animal_species 
-        foreign key (id_spc)
-        references species(id_spc)
-        on delete restrict,
-    -- Links to species
+    -- constraint fk_animal_species 
+    --     foreign key (id_spc)
+    --     references species(id_spc)
+    --     on delete restrict,
+    -- -- Links to species, declares on external file
 
-    constraint fk_animal_breed 
-        foreign key (id_bre)
-        references breed(id_bre)
-        on delete set null,
-    -- Links to breed
+    -- constraint fk_animal_breed 
+    --     foreign key (id_bre)
+    --     references breed(id_bre)
+    --     on delete set null,
+    -- -- Links to breed, declared on external file
 
     constraint chk_gen_ani
     check (gen_ani in ('M','F') or gen_ani is null)

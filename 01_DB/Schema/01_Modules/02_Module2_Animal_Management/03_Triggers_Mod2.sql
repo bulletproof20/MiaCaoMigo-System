@@ -9,10 +9,10 @@
 -- estiver marcado com uma data de inativação.
 --=========================================================
 
--- create or replace trigger trg_block_ownership_if_animal_inactive
--- before insert on ownership           -- dispara antes de associar um dono
--- for each row                         -- executa para cada nova posse
--- execute function fn_block_ownership_if_animal_inactive();
+create or replace trigger trg_block_ownership_if_animal_inactive
+before insert on ownership           -- dispara antes de associar um dono
+for each row                         -- executa para cada nova posse
+execute function fn_block_ownership_if_animal_inactive();
 
 
 --=========================================================

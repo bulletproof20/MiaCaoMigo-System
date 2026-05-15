@@ -17,7 +17,7 @@ comment on index idx_appointment_id_emp is
 comment on index idx_appointment_id_animal is
 'supports animal medical history navigation';
 
-comment on index idx_appointment_id_spe is
+comment on index idx_appointment_vet_schedule is
 'supports filtering and analytics by consultation specialty';
 
 comment on index idx_appointment_sch_dat_app is
