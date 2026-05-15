@@ -168,8 +168,8 @@ create table purchase (
     pay_met_pur varchar(50),
     -- Payment method
 
-    sta_pur varchar(50),
-    -- Status
+    sta_pur purchase_status,
+    -- Workflow state (purchase_status enum; nullable until confirmed)
 
     id_inv int,
     -- Linked invoice (see FK phase)
@@ -180,12 +180,8 @@ create table purchase (
     id_emp int,
     -- Employee responsible
 
-    constraint pk_purchase primary key (id_pur),
+    constraint pk_purchase primary key (id_pur)
     -- Unique identifier
-
-    constraint ck_sta_pur
-    check (sta_pur in ('pending','received','cancelled') or sta_pur is null)
-    -- Validates status
 );
 
 --=========================================================

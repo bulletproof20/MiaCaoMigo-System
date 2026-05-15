@@ -81,6 +81,28 @@ where extname = 'btree_gist';
 
 
 -- =========================================================
+-- custom types validation
+-- =========================================================
+
+\echo '=== Custom Types Validation ==='
+
+\echo '--- validating centralized enum types'
+
+select
+    t.typname as type_name
+from pg_type t
+join pg_namespace n on n.oid = t.typnamespace
+where n.nspname = 'public'
+  and t.typname in (
+        'absence_status',
+        'purchase_status',
+        'appointment_status',
+        'invoice_status'
+    )
+order by t.typname;
+
+
+-- =========================================================
 -- structural validation
 -- =========================================================
 -- validates whether structural entities

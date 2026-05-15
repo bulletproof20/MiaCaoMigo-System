@@ -6,6 +6,7 @@
 --
 -- pipeline overview:
 --   00_Extensions   → enable pg_cron, btree_gist, etc.
+--   02_Types        → centralized ENUM types (00_Core/02_Types.sql)
 --   01_Structure    → 00_Tables_Mod*.sql (tables only)
 --   02_ForeignKeys  → 01_ForeignKeys_Mod*.sql (cross-module safe phase)
 --   03_Integrity    → functions, triggers, indexes, procedures, jobs
@@ -26,6 +27,14 @@
 \set QUIET 1
 set client_min_messages to warning;
 
+--=========================================================
+-- SESSION CONFIGURATION
+--=========================================================
+
+\echo '>>> setting timezone to Europe/Lisbon'
+
+SET TIMEZONE TO 'Europe/Lisbon';
+
 -- =========================================================
 -- extensions layer
 -- =========================================================
@@ -33,6 +42,16 @@ set client_min_messages to warning;
 \echo '>>> loading extensions layer'
 
 \i /docker-entrypoint-initdb.d/03_Loaders/00_Extensions.sql
+
+
+
+-- =========================================================
+-- custom types layer
+-- =========================================================
+
+\echo '>>> loading custom types layer'
+
+\i /docker-entrypoint-initdb.d/00_Core/02_Types.sql
 
 
 

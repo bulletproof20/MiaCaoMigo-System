@@ -6,11 +6,11 @@ select * from product;
 
 select * from purchase;
 
-select * from purchaseline;
+select * from purchase_line;
 
 select * from invoice;
 
-select * from invoiceline;
+select * from invoice_line;
 
 
 select * from "return";

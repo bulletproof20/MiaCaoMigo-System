@@ -30,7 +30,11 @@
 \echo '=== Core Comments ==='
 
 
-\echo '--- core | shared documentation placeholder'
+\echo '--- core | custom types'
+
+\i /docker-entrypoint-initdb.d/02_Comments/00_Core/02_Types_Comments.sql
+
+\echo '--- core | shared functions'
 
 \i /docker-entrypoint-initdb.d/02_Comments/00_Core/00_Common_Functions_Comments.sql
 

@@ -149,7 +149,7 @@ comment on column purchase.pay_met_pur is
 'payment method label';
 
 comment on column purchase.sta_pur is
-'workflow state (pending, received, cancelled)';
+'workflow state using centralized purchase_status enum (nullable until confirmed)';
 
 comment on column purchase.id_inv is
 'linked invoice when billed';
@@ -162,9 +162,6 @@ comment on column purchase.id_emp is
 
 comment on constraint pk_purchase on purchase is
 'primary key for purchase rows';
-
-comment on constraint ck_sta_pur on purchase is
-'restricts purchase status vocabulary';
 
 
 --=========================================================

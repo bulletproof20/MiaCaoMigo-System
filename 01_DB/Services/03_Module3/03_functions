@@ -104,16 +104,15 @@ GRANT EXECUTE ON FUNCTION get_last_failed_login TO anon;
 
 
 
--- get_user_by_email(email)
+-- fn_get_user_by_email(email)
 
-CREATE OR REPLACE FUNCTION get_user_by_email(p_email VARCHAR) 
+CREATE OR REPLACE FUNCTION fn_get_user_by_email(p_email VARCHAR)
 RETURNS INT AS $$
-    SELECT 
-    id_usr 
-    FROM user_account 
+    SELECT id_usr
+    FROM user_account
     WHERE ema_usr = p_email;
 $$ LANGUAGE sql;
-GRANT EXECUTE ON FUNCTION get_user_by_email TO anon;
+GRANT EXECUTE ON FUNCTION fn_get_user_by_email TO anon;
 
 -- Retrieves user identifier from email
 

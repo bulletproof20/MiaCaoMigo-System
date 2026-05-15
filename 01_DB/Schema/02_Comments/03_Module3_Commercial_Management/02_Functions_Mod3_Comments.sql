@@ -8,6 +8,9 @@
 comment on function fn_get_available_stock(integer) is
 'aggregates positive stock quantities for a product across batches';
 
+comment on function fn_warn_low_stock() is
+'raises a notice when stock falls at or below the product minimum after a sale';
+
 comment on function fn_check_stock_before_sale() is
 'validates invoice lines against available stock before insert';
 

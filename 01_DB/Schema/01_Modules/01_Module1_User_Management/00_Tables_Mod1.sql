@@ -496,8 +496,8 @@ create table absence (
     mot_abs varchar(50) not null,
     -- Reason (no_show, justified, etc.)
 
-    sta_abs varchar(20) not null default 'pending',
-    -- State (approved, rejected, pending, canceled, detected)
+    sta_abs absence_status not null default 'pending',
+    -- Workflow state (absence_status enum)
 
     res_abs int,
     -- Responsible (NULL = system)
@@ -518,14 +518,8 @@ create table absence (
     check (
         mot_abs = lower(trim(mot_abs))
         and length(mot_abs) > 2 
-    ),
-    -- Prevents empty or meaningless reasons
-
-    constraint ck_sta_abs
-    check (
-        sta_abs in ('pending','approved','rejected', 'cancelled', 'detected')
     )
-    -- Restricts valid states
+    -- Prevents empty or meaningless reasons
 );
 
 

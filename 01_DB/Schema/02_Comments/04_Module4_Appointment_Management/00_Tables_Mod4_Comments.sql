@@ -1,17 +1,7 @@
 --=========================================================
--- types
---=========================================================
-
-comment on type appointment_status is
-'finite state machine for appointment lifecycle values';
-
-comment on type invoice_status is
-'reserved billing status enumeration for future invoice workflows';
-
-
---=========================================================
 -- 1. appointment
 --=========================================================
+-- ENUM metadata: 02_Comments/00_Core/02_Types_Comments.sql
 
 comment on table appointment is
 'scheduling and consultation session for a client animal with assigned veterinarian and declared clinical specialty';

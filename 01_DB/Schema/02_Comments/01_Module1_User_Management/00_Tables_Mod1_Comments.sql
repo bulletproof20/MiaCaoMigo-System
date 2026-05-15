@@ -408,7 +408,7 @@ comment on column absence.mot_abs is
 'normalized absence reason';
 
 comment on column absence.sta_abs is
-'current operational absence state';
+'workflow state using centralized absence_status enum';
 
 comment on column absence.res_abs is
 'employee responsible for absence validation or resolution';
@@ -424,9 +424,6 @@ comment on constraint ck_absence_time on absence is
 
 comment on constraint ck_mot_abs_format on absence is
 'validates normalized absence reason format';
-
-comment on constraint ck_sta_abs on absence is
-'restricts allowed operational absence states';
 
 comment on constraint fk_absence_employee on absence is
 'links absence to employee';

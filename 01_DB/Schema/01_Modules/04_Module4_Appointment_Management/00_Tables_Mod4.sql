@@ -18,31 +18,11 @@
 -- - Billing through invoices with status tracking
 --
 -- Foreign keys: 01_ForeignKeys_Mod4.sql (after all module tables exist).
-
+-- Status ENUM types: 00_Core/02_Types.sql (appointment_status, invoice_status).
 
 
 --=========================================================
--- 1. TYPES
---=========================================================
--- Defines custom ENUM types for status fields to ensure data consistency.
-
-create type appointment_status as enum (
-    'scheduled',
-    'in_progress',
-    'completed',
-    'cancelled',
-    'no_show'
-);
-
-create type invoice_status as enum (
-    'pending',
-    'paid',
-    'overdue',
-    'cancelled'
-);
-
---=========================================================
--- 2. APPOINTMENT
+-- 1. APPOINTMENT
 --=========================================================
 -- Stores appointment scheduling, status, and general information.
 -- id_spe: clinical nature of the consultation (Module 1 specialty catalog),

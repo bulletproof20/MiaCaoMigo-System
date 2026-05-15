@@ -33,7 +33,6 @@
 --=========================================================
 
 
-
 --=========================================================
 -- MODULE 1 — EMPLOYEE MANAGEMENT
 --=========================================================
@@ -215,3 +214,5 @@ drop table if exists appointment cascade;
 
 drop type if exists appointment_status cascade;
 drop type if exists invoice_status cascade;
+drop type if exists absence_status cascade;
+drop type if exists purchase_status cascade;

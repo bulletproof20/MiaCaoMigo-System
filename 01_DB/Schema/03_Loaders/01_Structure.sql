@@ -2,6 +2,7 @@
 -- structure loader
 -- =========================================================
 -- Creates physical tables only (00_Tables_ModX.sql).
+-- Requires 00_Core/02_Types.sql to be loaded first (see init.sql).
 --
 -- Foreign keys are NOT declared here; they load in
 -- 02_ForeignKeys.sql after every module's tables exist.
@@ -15,9 +16,20 @@
 -- =========================================================
 
 \echo '========================================'
-\echo 'STRUCTURE LAYER (TABLES ONLY)'
+\echo 'STRUCTURE LAYER'
 \echo '========================================'
 
+-- =========================================================
+-- Preparation to load structure layer
+-- =========================================================
+
+\echo '=== Preparation ==='
+
+\echo '--- Drop existing tables and types'
+\i /docker-entrypoint-initdb.d/00_Core/00_Cleanup.sql
+
+\echo '--- Create types'
+\i /docker-entrypoint-initdb.d/00_Core/02_Types.sql
 
 -- =========================================================
 -- tables
