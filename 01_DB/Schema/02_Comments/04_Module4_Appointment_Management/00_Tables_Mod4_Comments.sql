@@ -52,7 +52,7 @@ comment on column appointment.com_app is
 comment on constraint pk_appointment on appointment is
 'primary key for appointment rows';
 
-comment on constraint chk_app_time on appointment is
+comment on constraint chk_appointment_flow on appointment is
 'ensures recorded end time is strictly after start time when both present';
 
 

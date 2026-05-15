@@ -1,149 +1,177 @@
 -- Stock disponível de um produto (todos os lotes juntos)
-create or replace function fn_get_available_stock(p_product_id int)
-returns int as $$
-begin
-    return coalesce(
-        (select sum(qty_sto) from stock where id_pro = p_product_id and qty_sto > 0),
+CREATE OR REPLACE FUNCTION fn_get_available_stock(p_product_id INT)
+RETURNS INT AS $$
+BEGIN
+    RETURN COALESCE(
+        (SELECT SUM(qty_sto) FROM Stock WHERE id_pro = p_product_id AND qty_sto > 0),
         0
     );
-end;
-$$ language plpgsql;
+END;
+$$ LANGUAGE plpgsql;
 
 
--- Impede venda acima do stock disponível (invoice_line)
-create or replace function trg_check_stock_before_sale_func()
-returns trigger as $$
-declare
-    stock_atual int;
-begin
-    select fn_get_available_stock(new.id_pro) into stock_atual;
+--function that is called by the trigger that checks for low stock 
+--after a sale and raises a notice if the stock is below the minimum
 
-    if stock_atual < new.qty_inv_lin then
-        raise exception 'Stock insuficiente para o produto % (disponível: %, solicitado: %)',
-                         new.id_pro, stock_atual, new.qty_inv_lin;
-    end if;
+CREATE OR REPLACE FUNCTION trg_warn_low_stock_func()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_stock_atual INT;
+    v_min_sto INT;
+    v_nam_pro VARCHAR;
+BEGIN
+    -- 1. Ver stock após abate
+    SELECT fn_get_available_stock(NEW.ID_PRODUCT) INTO v_stock_atual;
+    
+    -- 2. Buscar dados do produto específico
+    SELECT min_sto, nam_pro INTO v_min_sto, v_nam_pro
+    FROM Product 
+    WHERE id_pro = NEW.ID_PRODUCT;
+    
+    -- 3. Aviso se atingir o limite individual
+    IF v_stock_atual <= v_min_sto THEN
+        RAISE NOTICE ' STOCK BAIXO: O produto "%" (ID: %) tem apenas % unidades. (Mínimo: %). Consulte a View vw_produtos_para_encomendar.', 
+                     v_nam_pro, NEW.ID_PRODUCT, v_stock_atual, v_min_sto;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-    return new;
-end;
-$$ language plpgsql;
 
 
--- Atualiza stock após venda (FIFO por data de validade)
-create or replace function trg_stock_after_sale_func()
-returns trigger as $$
-declare
-    stock_record record;
-    remaining_quantity int;
-begin
-    remaining_quantity := new.qty_inv_lin;
 
-    for stock_record in
-        select id_sto, qty_sto from stock
-        where id_pro = new.id_pro and qty_sto > 0
-        order by val_dat_sto nulls last
-    loop
-        if remaining_quantity <= stock_record.qty_sto then
-            update stock set qty_sto = stock_record.qty_sto - remaining_quantity
-            where id_sto = stock_record.id_sto;
-            exit;
-        else
-            update stock set qty_sto = 0
-            where id_sto = stock_record.id_sto;
+--Function for not selling more than the available stock
+
+
+CREATE OR REPLACE FUNCTION trg_check_stock_before_sale_func()
+RETURNS TRIGGER AS $$
+DECLARE
+    stock_atual INT;
+BEGIN
+    SELECT fn_get_available_stock(NEW.ID_PRODUCT) INTO stock_atual;
+    
+    IF stock_atual < NEW.QUANTITY THEN
+        RAISE EXCEPTION 'Stock insuficiente para o produto % (disponível: %, solicitado: %)',
+                         NEW.ID_PRODUCT, stock_atual, NEW.QUANTITY;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- function for updating stock after a sale (decrease quantity)
+
+
+CREATE OR REPLACE FUNCTION trg_stock_after_sale_func()
+RETURNS TRIGGER AS $$
+DECLARE
+    stock_record RECORD;
+    remaining_quantity INT;
+BEGIN
+    remaining_quantity := NEW.QUANTITY;
+    
+    -- Percorre lotes FIFO (primeiro a expirar primeiro)
+    FOR stock_record IN
+        SELECT id_sto, qty_sto FROM Stock
+        WHERE id_pro = NEW.ID_PRODUCT AND qty_sto > 0
+        ORDER BY val_dat_sto NULLS LAST
+    LOOP
+        IF remaining_quantity <= stock_record.qty_sto THEN
+            UPDATE Stock SET qty_sto = stock_record.qty_sto - remaining_quantity
+            WHERE id_sto = stock_record.id_sto;
+            EXIT;
+        ELSE
+            UPDATE Stock SET qty_sto = 0
+            WHERE id_sto = stock_record.id_sto;
             remaining_quantity := remaining_quantity - stock_record.qty_sto;
-        end if;
-    end loop;
+        END IF;
+    END LOOP;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-    return new;
-end;
-$$ language plpgsql;
 
+-- function for updating invoice total after inserting/updating/deleting an invoice line
 
--- Atualiza total da fatura após alteração em invoice_line
-create or replace function trg_update_invoice_total_func()
-returns trigger as $$
-declare
-    inv_id int;
-begin
-    if tg_op = 'DELETE' then
-        inv_id := old.id_inv;
-    else
-        inv_id := new.id_inv;
-    end if;
-
-    update invoice set val_inv = (
-        select coalesce(sum(qty_inv_lin * uni_pri_inv_lin * (1 + iva_inv_lin / 100)), 0)
-        from invoice_line
-        where id_inv = inv_id
+CREATE OR REPLACE FUNCTION trg_update_invoice_total_func()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE Invoice SET val_inv = (
+        SELECT COALESCE(SUM(QUANTITY * UNIT_PRICE * (1 + IVA/100)), 0)
+        FROM InvoiceLine
+        WHERE ID_INVOICE = NEW.ID_INVOICE
     )
-    where id_inv = inv_id;
+    WHERE id_inv = NEW.ID_INVOICE;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-    return coalesce(new, old);
-end;
-$$ language plpgsql;
 
+--function that handles returns and restocks products accordingly
 
--- Devolução: repõe stock com base na linha de fatura
-create or replace function trg_return_restock_func()
-returns trigger as $$
-declare
-    prod_id int;
-    qty_sold int;
-begin
-    if new.id_inv_lin is null then
-        return new;
-    end if;
-
-    select id_pro, qty_inv_lin into prod_id, qty_sold
-    from invoice_line where id_inv_lin = new.id_inv_lin;
-
-    if prod_id is null then
-        raise exception 'Linha de fatura % inválida para devolução', new.id_inv_lin;
-    end if;
-
-    if new.qty_ret > qty_sold then
-        raise exception 'Quantidade devolvida (%) excede a quantidade vendida (%)',
-                         new.qty_ret, qty_sold;
-    end if;
-
-    insert into stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
-    values (
+CREATE OR REPLACE FUNCTION trg_return_restock_func()
+RETURNS TRIGGER AS $$
+DECLARE
+    prod_id INT;
+    qty_sold INT;
+BEGIN
+    -- Obter produto e quantidade original
+    SELECT ID_PRODUCT, QUANTITY INTO prod_id, qty_sold
+    FROM InvoiceLine WHERE ID_INVOICE_LINE = NEW.ID_INVOICE_LINE;
+    
+    IF NEW.QUANTITY_RETURNED > qty_sold THEN
+        RAISE EXCEPTION 'Quantidade devolvida (%) excede a quantidade vendida (%)',
+                         NEW.QUANTITY_RETURNED, qty_sold;
+    END IF;
+    
+    -- Repor stock (adicionar ao lote mais recente)
+    INSERT INTO Stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
+    VALUES (
         prod_id,
-        (select bat_sto from stock where id_pro = prod_id order by ent_dat_sto desc nulls last limit 1),
-        new.qty_ret,
-        now(),
-        null
+        (SELECT bat_sto FROM Stock WHERE id_pro = prod_id ORDER BY ent_dat_sto DESC LIMIT 1),
+        NEW.QUANTITY_RETURNED,
+        NOW(),
+        NULL
     );
-
-    return new;
-end;
-$$ language plpgsql;
-
-
--- Impede venda de produto inativo
-create or replace function trg_prevent_inactive_product_sale_func()
-returns trigger as $$
-declare
-    is_inactive boolean;
-begin
-    select ina_dat_pro is not null into is_inactive
-    from product where id_pro = new.id_pro;
-
-    if is_inactive then
-        raise exception 'Produto % está inativo e não pode ser vendido', new.id_pro;
-    end if;
-
-    return new;
-end;
-$$ language plpgsql;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 
--- Data de inativação da devolução: preenche ina_dat_ret se não vier preenchida
-create or replace function trg_set_return_return_date_func()
-returns trigger as $$
-begin
-    if new.ina_dat_ret is null then
-        new.ina_dat_ret := now();
-    end if;
-    return new;
-end;
-$$ language plpgsql;
+
+
+--function for not seeling products that are not ative 
+
+CREATE OR REPLACE FUNCTION trg_prevent_inactive_product_sale_func()
+RETURNS TRIGGER AS $$
+DECLARE
+    is_inactive BOOLEAN;
+BEGIN
+    SELECT ina_dat_pro IS NOT NULL INTO is_inactive
+    FROM Product WHERE id_pro = NEW.ID_PRODUCT;
+    
+    IF is_inactive THEN
+        RAISE EXCEPTION 'Produto % está inativo e não pode ser vendido', NEW.ID_PRODUCT;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- function for setting return date to current timestamp if not provided
+
+CREATE OR REPLACE FUNCTION trg_set_return_return_date_func()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.RETURN_DATE IS NULL THEN
+        NEW.RETURN_DATE := NOW();
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;

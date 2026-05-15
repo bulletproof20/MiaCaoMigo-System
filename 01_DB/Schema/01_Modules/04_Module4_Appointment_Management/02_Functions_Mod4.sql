@@ -67,9 +67,14 @@ begin
     from appointment
     where id_app = new.id_app;
 
-    if v_appointment_start_time is not null and new.reg_dat_pre < v_appointment_start_time then
+    if v_appointment_start_time is null then
+        raise exception 'Inicie a consulta primeiro.';
+    end if;
+
+    if new.reg_dat_pre < v_appointment_start_time then
         raise exception 'A data de emissão da prescrição não pode ser anterior à data de início da consulta.';
     end if;
+
 
     return new;
 end;
@@ -229,6 +234,21 @@ returns trigger as $$
 begin
     if old.status_app in ('Completed', 'Cancelled', 'No-Show') then
         raise exception 'Não é possível alterar uma consulta que já foi concluída, cancelada ou marcada como não comparência.';
+    end if;
+    return new;
+end;
+$$ language plpgsql;
+
+--=========================================================
+-- FUNCTION 12: fn_prevent_completed_appointment_modification
+-- Prevents any modification to an appointment that is already
+-- in a terminal state (Completed, Cancelled).
+--=========================================================
+create or replace function fn_prevent_completed_appointment_modification()
+returns trigger as $$
+begin
+    if old.status_app IN ('Completed', 'Cancelled') then
+        raise exception 'Não é possível modificar uma consulta finalizada';
     end if;
     return new;
 end;

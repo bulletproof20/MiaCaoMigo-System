@@ -1,22 +1,20 @@
 --=========================================================
--- PROCEDURE: prc_auto_complete_overdue_appointments
--- Marks appointments as 'Completed' if they have been 'In Progress' for too long.
--- This procedure can be called by a scheduled job to clean up stale appointment statuses.
---=========================================================
-create or replace procedure prc_auto_complete_overdue_appointments()
+-- PROCEDURE: prc_auto_update_no_show_appointments
+-- Automatically updates the status of past, scheduled appointments to 'No-Show'.
+-- This procedure is intended to be called by a scheduled job, typically
+-- running once per day after midnight.
+--=========================================================86
+create or replace procedure prc_auto_update_no_show_appointments()
 language plpgsql
 as $$
 begin
-    -- Find appointments that are 'In Progress' for more than a defined period (e.g., 4 hours)
-    -- and automatically complete them with a system note.
+    -- Updates appointments that were scheduled for any time before the current moment
+    -- and are still in 'Scheduled' status.
     update appointment
-    set
-        status_app = 'Completed',
-        end_dat_app = now(),
-        com_app = coalesce(com_app, '') || ' [Aviso: Consulta fechada automaticamente pelo sistema por inatividade.]'
+    set status_app = 'No-Show'
     where
-        status_app = 'In Progress'
-        and sta_dat_app < (now() - interval '4 hours'); -- Timeout threshold
+        status_app = 'Scheduled'
+        and sch_dat_app < now();
 end;
 $$;
 
@@ -33,30 +31,19 @@ declare
     v_aviso text;
 begin
     for consulta in (
-        select
-            a.id_cli,
-            uc.nam_usr as nome_cliente,
-            ua.nam_usr as nome_veterinario,
-            an.nam_ani as nome_animal,
-            sp.nam_spe as nome_especialidade
+        select a.id_app,
+               a.id_cli,
+               c.nam_usr as nome_cliente,
+               e.nam_emp as nome_veterinario,
+               an.nam_ani as nome_animal
         from appointment a
-        join client c on a.id_cli = c.id_cli
-        join user_account uc on c.id_usr = uc.id_usr
+        join user_account c on a.id_cli = c.id_usr -- Assuming client name is in user_account
         join animal an on a.id_animal = an.id_ani
         join employee e on a.id_emp = e.id_emp
-        join user_account ua on e.id_usr = ua.id_usr
-        join specialty sp on a.id_spe = sp.id_spe
-        where a.sch_dat_app::date = current_date + interval '1 day'
-          and a.status_app = 'Scheduled'
+        where a.sch_dat_app::date = current_date + interval '1 day' and a.status_app = 'Scheduled'
     ) loop
-        v_aviso := format(
-            'Lembrete: Bom dia %s! Consulta de %s para o animal %s com %s está marcada para amanhã.',
-            consulta.nome_cliente,
-            consulta.nome_especialidade,
-            consulta.nome_animal,
-            consulta.nome_veterinario
-        );
-        insert into appointment_notification (id_cli, message) values (consulta.id_cli, v_aviso);
+        v_aviso := format('Lembrete: Bom dia %s! A sua consulta para o animal %s com o/a Dr(a). %s está marcada para amanhã.', consulta.nome_cliente, consulta.nome_animal, consulta.nome_veterinario);
+        insert into appointment_notification (id_cli, id_app, message) values (consulta.id_cli, consulta.id_app, v_aviso);
     end loop;
 end;
 $$;
@@ -203,3 +190,24 @@ begin
     end if;
 end;
 $$;
+
+
+--=========================================================
+-- PROCEDURE: prc_prescription_for_appointment
+-- Creates a prescription record linked to a specific appointment.
+-- This procedure is intended to be called after the appointment is completed.
+--=========================================================
+create or replace procedure prc_prescription_for_appointment(
+    idd_app int,
+    description text
+)
+language plpgsql
+as $$
+begin
+    insert into prescription (id_app, reg_dat_pre, des_pre)
+    values (idd_app, now(), description);
+end; 
+$$;
+
+
+select * from appointment;

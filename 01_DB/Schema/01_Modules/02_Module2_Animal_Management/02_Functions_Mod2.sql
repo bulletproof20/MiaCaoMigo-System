@@ -8,23 +8,21 @@
 -- Impede que um animal seja adotado/possuído se ele
 -- estiver marcado como inativo (ex: falecido ou removido).
 --=========================================================
-
-create or replace function fn_block_ownership_if_animal_inactive()
-returns trigger as $$
-begin
-    -- Verifica se o animal está inativo na tabela Animal
-    if exists (
-        select 1 
-        from animal a
-        where a.animal_id = new.id_animal 
-          and a.inactivation_date is not null
-    ) then
-        raise exception 'Cannot assign ownership: Animal is inactive/deceased.';
-    end if;
-
-    return new;
-end;
-$$ language plpgsql;
+ create or replace function fn_block_ownership_if_animal_inactive()
+ returns trigger as $$
+  begin
+     
+     if exists (
+         select 1 
+         from animal a
+         where a.id_ani = new.id_ani
+           --and a.inactivation_date is not null
+     ) then
+         raise exception 'Cannot assign ownership: Animal is inactive/deceased.';
+     end if;
+     return new;
+ end;
+ $$ language plpgsql;
 
 
 --=========================================================
@@ -57,10 +55,10 @@ returns trigger as $$
 begin
     if exists (
         select 1 
-        from ownership
-        where id_animal = new.id_animal
-          and end_date is null  -- Posse anterior ainda ativa
-          and id_ownership <> new.id_ownership
+        from ownership o
+        where o.id_ani = new.id_ani
+          and o.end_dat_own is null  -- Posse anterior ainda ativa
+          and o.id_own <> new.id_own
     ) then
         raise exception 'Animal already has an active owner. Close the previous ownership first.';
     end if;
@@ -82,11 +80,11 @@ declare
     v_breed_species_id int;
 begin
     -- Procura a espécie associada à raça
-    select id_species into v_breed_species_id 
+    select id_spc into v_breed_species_id 
     from breed 
-    where id_breed = new.rece_id; -- No teu diagrama o FK no Animal é RECE_ID
+    where id_bre = new.id_bre; -- No teu diagrama o FK no Animal é RECE_ID
 
-    if v_breed_species_id <> new.species_id then
+    if v_breed_species_id <> new.id_spc then
         raise exception 'Consistency Error: Breed does not belong to the selected species.';
     end if;
 

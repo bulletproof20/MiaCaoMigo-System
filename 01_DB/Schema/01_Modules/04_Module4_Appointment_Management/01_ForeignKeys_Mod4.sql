@@ -6,7 +6,6 @@
 -- after all tables from Modules 1–4 exist.
 --
 --=========================================================
-
 -- appointment → animal, employee, client
 alter table appointment
     add constraint fk_animal
@@ -20,6 +19,13 @@ alter table appointment
         foreign key (id_emp)
         references employee(id_emp)
         on delete restrict;
+
+    -- Foreign Key linkage to client
+alter table appointment
+    add constraint fk_appointment_client
+        FOREIGN KEY (id_cli)
+        REFERENCES client(id_cli)
+        on delete cascade;
 
 -- Add foreign key for client in appointment table
 alter table appointment
@@ -40,12 +46,25 @@ ADD CONSTRAINT fk_appointment_invoice
 FOREIGN KEY (id_inv) REFERENCES invoice(id_inv)
 ON DELETE SET NULL ON UPDATE CASCADE;
 
+alter table overall_assessment
+-- Defining the Primary Key
+    ADD CONSTRAINT pk_overall_assessment PRIMARY KEY (id_app);
+
 -- overall_assessment → appointment
 alter table overall_assessment
     add constraint fk_appointment
         foreign key (id_app)
         references appointment(id_app)
         on delete cascade;
+
+alter table overall_assessment        
+    -- Foreign Key linkage
+    ADD CONSTRAINT fk_assessment_appointment
+        FOREIGN KEY (id_app)
+        REFERENCES appointment(id_app)
+        on delete cascade;
+        
+   
 
 -- anamnesis → appointment
 alter table anamnesis
@@ -93,3 +112,9 @@ alter table appointment_notification
         foreign key (id_cli)
         references client(id_cli)
         on delete cascade;
+
+alter table appointment_notification
+    add constraint fk_notification_appointment 
+        foreign key (id_app) 
+        references appointment(id_app) 
+        on delete cascade

@@ -20,18 +20,17 @@
 --=========================================================
 select cron.schedule(
     'daily_appointment_warnings',
-    '0-30 9-19 * * 1-5',  -- Executa de meia em meia hora, das 08:00 às 19:30, de segunda a sexta-feira
-    --A assumir que a clinica só está aberta das 09:00 às 20:00
+    '0 8 * * *',  -- Executes daily at 8:00 AM
     $$ CALL prc_generate_appointment_warnings(); $$
 );
 
 --=========================================================
--- JOB 2: opened_appointments_auto_close
--- Executes daily to close opened appointments on the previous day.
+-- JOB 2: daily_no_show_appointment_updater
+-- Executes daily after midnight to mark missed appointments as 'No-Show'.
 --=========================================================
 select cron.schedule(
-    'opened_appointments_auto_close',
-    '30 22 * * 1-5',      -- Executa de meia em meia hora, das 08:00 às 19:30, de segunda a sexta-feira
-    $$ CALL prc_auto_close_clock_in_midnight(); $$
+    'daily_no_show_appointment_updater',
+    '5 0 * * *', -- Executes daily at 00:05 AM
+    $$ CALL prc_auto_update_no_show_appointments(); $$
 );
 --=========================================================

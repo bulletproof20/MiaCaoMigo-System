@@ -22,25 +22,21 @@
 --=========================================================
 -- Drops only tables related to this module in reverse dependency order
 
--- Associative tables
-drop table if exists employee_return cascade;
-drop table if exists employee_purchase cascade;
-drop table if exists return_product cascade;
-drop table if exists purchase_product cascade;
+
 
 -- Line items (reference purchase / invoice / product / stock)
 drop table if exists purchase_line cascade;
 drop table if exists invoice_line cascade;
 
 -- Dependent entities
-drop table if exists return cascade;
+drop table if exists "return" cascade;
 drop table if exists purchase cascade;
 drop table if exists stock cascade;
 
 -- Core entities
 drop table if exists product cascade;
 drop table if exists invoice cascade;
-drop table if exists family cascade;
+drop table if exists "family" cascade;
 
 
 --=========================================================
@@ -131,9 +127,14 @@ create table product (
     id_ret int,
     -- Last return
 
+    min_sto INT NOT NULL DEFAULT 5,
+    -- Minimum stock level,
+
+
     constraint pk_product primary key (id_pro)
     -- Unique identifier
 );
+
 
 --=========================================================
 -- 4. STOCK
@@ -200,6 +201,14 @@ create table purchase (
 
     constraint pk_purchase primary key (id_pur),
     -- Unique identifier
+
+
+    constraint fk_client foreign key (id_cli) references client(id_cli)
+        on DELETE set null,
+
+    constraint fk_employee foreign key (id_emp) references employee(id_emp)
+        on DELETE set null,
+
 
     constraint chk_sta_pur
     check (sta_pur in ('pending','received','cancelled') or sta_pur is null)
@@ -275,8 +284,8 @@ create table return (
     id_ret int generated always as identity,
     -- Return identifier
 
-    dat_ret date,
-    -- Return date
+    --dat_ret date,
+    -- Return date, this column was "deleted" because of the trigger that sets the return date to the current timestamp if not provided.
 
     mot_ret varchar(100),
     -- Reason
@@ -360,3 +369,29 @@ create table employee_return (
 
     constraint pk_employee_return primary key (id_emp, id_ret)
 );
+
+------------------------------------------------------------
+CREATE TABLE PurchaseLine (
+    ID_PURCHASE_LINE SERIAL PRIMARY KEY,
+    ID_PURCHASE INT NOT NULL REFERENCES Purchase(id_pur),
+    ID_PRODUCT INT NOT NULL REFERENCES Product(id_pro),
+    BATCH VARCHAR(50),
+    QUANTITY INT NOT NULL CHECK (QUANTITY > 0),
+    UNIT_COST NUMERIC(10,2) NOT NULL,
+    ID_STOCK INT REFERENCES Stock(id_sto)
+);
+
+-- Linhas de fatura (venda ao cliente)
+CREATE TABLE InvoiceLine (
+    ID_INVOICE_LINE SERIAL PRIMARY KEY,
+    ID_INVOICE INT NOT NULL REFERENCES Invoice(id_inv),
+    ID_PRODUCT INT NOT NULL REFERENCES Product(id_pro),
+    QUANTITY INT NOT NULL CHECK (QUANTITY > 0),
+    UNIT_PRICE NUMERIC(10,2) NOT NULL,
+    IVA NUMERIC(5,2) NOT NULL
+);
+
+ALTER TABLE "return" ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_INVOICE_LINE);
+ALTER TABLE "return" ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
+-- ALTER TABLE "return" DROP COLUMN reg_dat_ret; -- duplicado
+-- ALTER TABLE "return" RENAME COLUMN ina_dat_ret TO RETURN_DATE;

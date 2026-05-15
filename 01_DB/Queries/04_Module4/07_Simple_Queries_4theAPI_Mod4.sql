@@ -84,7 +84,6 @@ LEFT JOIN prescription p ON a.id_app = p.id_app
 LEFT JOIN invoice i ON a.id_inv = i.id_inv
 WHERE a.id_app = 1; -- << Substituir pelo ID da consulta
 
-
 --=========================================================
 -- QUERY 4: Products Used in an Appointment
 -- Description: Lists all products (e.g., medication, supplies) used

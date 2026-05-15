@@ -1,5 +1,5 @@
 -- =========================================================
--- comments: functions - module 4
+-- COMMENTS: FUNCTIONS - MODULE 4
 -- =========================================================
 -- metadata documentation for scheduling, clinical validation,
 -- and inventory hooks supporting appointment workflows.

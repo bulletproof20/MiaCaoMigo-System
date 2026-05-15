@@ -32,6 +32,7 @@ drop table if exists overall_assessment cascade;
 drop table if exists appointment_notification cascade;
 drop table if exists appointment cascade;
 
+
 -- Custom types
 drop type if exists appointment_status cascade;
 drop type if exists invoice_status cascade;
@@ -41,7 +42,7 @@ drop type if exists invoice_status cascade;
 --=========================================================
 -- Defines custom ENUM types for status fields to ensure data consistency.
 
-create type appointment_status as enum (
+create type appointment_status as enum   (
     'Scheduled',
     'In Progress', 
     'Completed', 
@@ -100,9 +101,9 @@ create table appointment (
     -- General comments or observations about the appointment
 
     constraint pk_appointment primary key (id_app),
-    -- Unique identifier. FKs are defined in 01_ForeignKeys_Mod4.sql
+    -- Unique identifier
 
-    constraint chk_app_time
+    constraint chk_appointment_flow
     check (sta_dat_app < end_dat_app)
     -- Ensures the end time is after the start time
 );
@@ -119,10 +120,7 @@ CREATE TABLE overall_assessment (
     resp_rate INT,     -- Respiratory rate (breaths per minute)
     general_status TEXT, -- General notations about the animal's condition
 
-    -- Defining the Primary Key
-    CONSTRAINT pk_overall_assessment PRIMARY KEY (id_app),
-
-    -- Safety checks to prevent impossible medical data
+ -- Safety checks to prevent impossible medical data
     CONSTRAINT chk_body_temp CHECK (body_temp > 20 AND body_temp < 50), -- Realistic temperature range
     CONSTRAINT chk_weight CHECK (weight > 0),
     CONSTRAINT chk_hrt_rate CHECK (hrt_rate > 0),
@@ -144,6 +142,7 @@ create table anamnesis (
     -- Detailed description of the patient's history and symptoms (reason for visit, etc.)
 
     constraint pk_anamnesis primary key (id_app)
+    -- Unique identifier
 );
 
 --=========================================================
@@ -163,8 +162,11 @@ create table prescription (
     des_pre text,
     -- General instructions or description for the prescription
 
-    constraint pk_prescription primary key (id_pre)
+    constraint pk_prescription primary key (id_pre),
     -- Unique identifier
+
+    constraint uq_prescription_per_appointment unique (id_app)
+    -- Ensures only one prescription can be registered per appointment.
 );
 
 --=========================================================
@@ -224,6 +226,9 @@ create table appointment_notification (
 
     id_cli int not null,
     -- Client associated with the notification
+
+    id_app int not null,
+    -- Appointment associated with the notification
 
     message text not null,
     -- The notification message

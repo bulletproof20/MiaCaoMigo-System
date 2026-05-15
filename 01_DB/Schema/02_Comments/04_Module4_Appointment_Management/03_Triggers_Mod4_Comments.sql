@@ -4,8 +4,7 @@
 -- metadata documentation for appointment lifecycle enforcement.
 -- =========================================================
 
-comment on trigger trg_block_overlapping_appointments on appointment is
-'fires before insert/update to enforce veterinarian availability windows';
+
 
 comment on trigger trg_block_appointment_if_vet_unavailable on appointment is
 'fires before insert/update to respect recorded absences';
