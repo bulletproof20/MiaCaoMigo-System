@@ -187,27 +187,27 @@ VALUES (1, 1),
 
 -- 1.8. CLIENT (Utilizadores 21-40)
 
-INSERT INTO client (id_usr, pas_cli)
-VALUES (21, 'senha_cliente_muito_segura_123'),
-       (22, 'senha_cliente_muito_segura_123'),
-       (23, 'senha_cliente_muito_segura_123'),
-       (24, 'senha_cliente_muito_segura_123'),
-       (25, 'senha_cliente_muito_segura_123'),
-       (26, 'senha_cliente_muito_segura_123'),
-       (27, 'senha_cliente_muito_segura_123'),
-       (28, 'senha_cliente_muito_segura_123'),
-       (29, 'senha_cliente_muito_segura_123'),
-       (30, 'senha_cliente_muito_segura_123'),
-       (31, 'senha_cliente_muito_segura_123'),
-       (32, 'senha_cliente_muito_segura_123'),
-       (33, 'senha_cliente_muito_segura_123'),
-       (34, 'senha_cliente_muito_segura_123'),
-       (35, 'senha_cliente_muito_segura_123'),
-       (36, 'senha_cliente_muito_segura_123'),
-       (37, 'senha_cliente_muito_segura_123'),
-       (38, 'senha_cliente_muito_segura_123'),
-       (39, 'senha_cliente_muito_segura_123'),
-       (40, 'senha_cliente_muito_segura_123');
+INSERT INTO client (id_usr, pas_cli, ina_dat_cli)
+VALUES (21, 'senha_cliente_muito_segura_123', null),
+       (22, 'senha_cliente_muito_segura_123', null),
+       (23, 'senha_cliente_muito_segura_123', null),
+       (24, 'senha_cliente_muito_segura_123', null),
+       (25, 'senha_cliente_muito_segura_123', null),
+       (26, 'senha_cliente_muito_segura_123', null),
+       (27, 'senha_cliente_muito_segura_123', null),
+       (28, 'senha_cliente_muito_segura_123', null),
+       (29, 'senha_cliente_muito_segura_123', null),
+       (30, 'senha_cliente_muito_segura_123', null),
+       (31, 'senha_cliente_muito_segura_123', null),
+       (32, 'senha_cliente_muito_segura_123', null),
+       (33, 'senha_cliente_muito_segura_123', null),
+       (34, 'senha_cliente_muito_segura_123', null),
+       (35, 'senha_cliente_muito_segura_123', null),
+       (36, 'senha_cliente_muito_segura_123', null),
+       (37, 'senha_cliente_muito_segura_123', null),
+       (38, 'senha_cliente_muito_segura_123', null),
+       (39, 'senha_cliente_muito_segura_123', null),
+       (40, 'senha_cliente_muito_segura_123', null);
 
 -- 1.9. SCHEDULE (Horários para os 20 funcionários, dias 1 a 5)
 
@@ -284,27 +284,26 @@ VALUES ('Labrador Retriever', 1),
 
 -- 2.3. ANIMAL (20 Animais)
 
-INSERT INTO animal (reg_id_ani, nam_ani, dat_bir_ani, gen_ani, id_spc, id_bre)
-VALUES ('ANI-001', 'Bobi', '2020-05-15', 'M', 1, 1),
-       ('ANI-002', 'Tareco', '2021-02-10', 'M', 2, 10),
-       ('ANI-003', 'Luna', '2019-11-20', 'F', 1, 3),
-       ('ANI-004', 'Mimi', '2022-01-05', 'F', 2, 6),
-       ('ANI-005', 'Pipoca', '2023-03-12', 'F', 3, 11),
-       ('ANI-006', 'Rex', '2018-08-25', 'M', 1, 2),
-       ('ANI-007', 'Simba', '2020-12-30', 'M', 2, 8),
-       ('ANI-008', 'Daisy', '2021-07-14', 'F', 1, 4),
-       ('ANI-009', 'Nala', '2019-04-18', 'F', 2, 7),
-       ('ANI-010', 'Bolinha', '2022-09-09', 'M', 4, 14),
-       ('ANI-011', 'Thor', '2020-01-01', 'M', 1, 3),
-       ('ANI-012', 'Cleo', '2021-05-20', 'F', 2, 9),
-       ('ANI-013', 'Tico', '2023-01-15', 'M', 3, 12),
-       ('ANI-014', 'Jade', '2018-03-22', 'F', 1, 5),
-       ('ANI-015', 'Félix', '2017-10-10', 'M', 2, 10),
-       ('ANI-016', 'Mel', '2022-11-30', 'F', 1, 1),
-       ('ANI-017', 'Zeca', '2020-06-05', 'M', 2, 6),
-       ('ANI-018', 'Pipa', '2021-08-20', 'F', 3, 13),
-       ('ANI-019', 'Russo', '2022-04-12', 'M', 4, 15),
-       ('ANI-020', 'Kika', '2019-02-28', 'F', 1, 2);
+INSERT INTO animal (reg_id_ani, nam_ani, dat_bir_ani, gen_ani, id_spc, id_bre, inactivation_date)
+VALUES ('ANI-001', 'Bobi', '2020-05-15', 'M', 1, 1, null),
+       ('ANI-002', 'Tareco', '2021-02-10', 'M', 2, 10, null),
+       ('ANI-003', 'Luna', '2019-11-20', 'F', 1, 3, null),
+       ('ANI-004', 'Mimi', '2022-01-05', 'F', 2, 6, null),
+       ('ANI-005', 'Pipoca', '2023-03-12', 'F', 3, 11, null),
+       ('ANI-006', 'Rex', '2018-08-25', 'M', 1, 2, null),
+       ('ANI-007', 'Simba', '2020-12-30', 'M', 2, 8, null),
+       ('ANI-008', 'Daisy', '2021-07-14', 'F', 1, 4, null),
+       ('ANI-009', 'Nala', '2019-04-18', 'F', 2, 7, null),
+       ('ANI-011', 'Thor', '2020-01-01', 'M', 1, 3, null),
+       ('ANI-012', 'Cleo', '2021-05-20', 'F', 2, 9, null),
+       ('ANI-013', 'Tico', '2023-01-15', 'M', 3, 12, null),
+       ('ANI-014', 'Jade', '2018-03-22', 'F', 1, 5, null),
+       ('ANI-015', 'Félix', '2017-10-10', 'M', 2, 10, null),
+       ('ANI-016', 'Mel', '2022-11-30', 'F', 1, 1, null),
+       ('ANI-017', 'Zeca', '2020-06-05', 'M', 2, 6, null),
+       ('ANI-018', 'Pipa', '2021-08-20', 'F', 3, 13, null),
+       ('ANI-019', 'Russo', '2022-04-12', 'M', 4, 15, null),
+       ('ANI-020', 'Kika', '2019-02-28', 'F', 1, 2, null);
 
 -- 2.4. OWNERSHIP
 
@@ -485,4 +484,3 @@ VALUES (50.00, '2027-05-01 11:00:00', 'Consulta Geral - Bobi', 1),
        (65.50, '2027-05-01 12:00:00', 'Consulta + Medicamento - Tareco', 2),
        (50.00, '2027-05-02 10:00:00', 'Consulta - Luna', 3),
        (60.00, '2027-05-02 11:30:00', 'Consulta + Limpeza - Mimi', 4);
-

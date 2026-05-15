@@ -25,3 +25,6 @@ comment on index idx_appointment_sch_dat_app is
 
 comment on index idx_notification_client_read_status is
 'composite index for unread notification feeds per client';
+
+
+select * from user_account

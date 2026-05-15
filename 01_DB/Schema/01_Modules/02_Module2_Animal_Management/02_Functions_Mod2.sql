@@ -16,7 +16,7 @@
          select 1 
          from animal a
          where a.id_ani = new.id_ani
-           --and a.inactivation_date is not null
+           and a.inactivation_date is not null
      ) then
          raise exception 'Cannot assign ownership: Animal is inactive/deceased.';
      end if;

@@ -9,6 +9,7 @@
 --   01_Structure    → 00_Tables_Mod*.sql (tables only)
 --   02_ForeignKeys  → 01_ForeignKeys_Mod*.sql (cross-module safe phase)
 --   03_Integrity    → functions, triggers, indexes, procedures, jobs
+--   08_Services     → 05_Services/** API / business-logic functions
 --   04_Data_Migration → reserved for seed / etl scripts
 --   05_Comments     → 02_Comments/** mirrors 01_Modules/** layout
 --   06_Queries      → 04_Queries/** reporting views (post-comments)
@@ -71,6 +72,18 @@ set client_min_messages to warning;
 
 
 -- =========================================================
+-- services layer
+-- =========================================================
+-- PL/pgSQL used by the Node API (login_user, new_client, …).
+-- =========================================================
+
+\echo '>>> loading services layer'
+
+\i /docker-entrypoint-initdb.d/03_Loaders/08_Services.sql
+
+
+
+-- =========================================================
 -- data migration layer
 -- =========================================================
 
@@ -100,6 +113,7 @@ set client_min_messages to warning;
 \echo '>>> loading queries layer'
 
 -- \i /docker-entrypoint-initdb.d/03_Loaders/06_Queries.sql
+-- (06_Queries.sql still points at a missing file; enable after fixing the loader)
 
 
 

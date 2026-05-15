@@ -208,6 +208,3 @@ begin
     values (idd_app, now(), description);
 end; 
 $$;
-
-
-select * from appointment;

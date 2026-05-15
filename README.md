@@ -167,6 +167,8 @@ Configuration is handled automatically via:
 * Subfolders are ignored by PostgreSQL
 * Therefore, **init.sql must be in the root of Schema/**
 
+* **Services** (`01_DB/Services`) and **Queries** (`01_DB/Queries`) are mounted as subfolders and loaded via `\i` inside `init.sql` (see `03_Loaders/08_Services.sql`)
+
 ---
 
 ## Data Persistence

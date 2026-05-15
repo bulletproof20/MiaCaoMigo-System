@@ -33,9 +33,10 @@ services:
       # Persistent volume (DB data is not lost when stopping the container)
       - postgres_data:/var/lib/postgresql/data
 
-      # Mounts the project's Schema folder inside the container
-      # PostgreSQL automatically executes the .sql files here on first initialization
+      # Schema orchestrates init; Services + Queries are mounted for \i loaders
       - ./01_DB/Schema:/docker-entrypoint-initdb.d
+      - ./01_DB/Services:/docker-entrypoint-initdb.d/05_Services
+      - ./01_DB/Queries:/docker-entrypoint-initdb.d/04_Queries
 
     # Additional configuration passed directly to PostgreSQL
     command: >
