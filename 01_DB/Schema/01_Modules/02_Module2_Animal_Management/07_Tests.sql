@@ -108,7 +108,7 @@ order by
 do $$
 begin
     -- Tenta atribuir o animal com ID 3 (que já está 'Adotado') a um novo cliente (ID 5).
-    call prc_assign_ownership(3, 5, 1, 'Tentativa de adoção duplicada');
+    call sp_assign_ownership(3, 5, 1, 'Tentativa de adoção duplicada');
 exception
     when others then
         raise notice 'TESTE BEM SUCEDIDO: A exceção foi apanhada, o que impede posses duplicadas. Mensagem: %', sqlerrm;
@@ -116,9 +116,9 @@ end;
 $$;
 
 -- Teste 7: Executar o procedimento para registar uma nova adoção
--- Objetivo: Testar o procedure 'prc_assign_ownership' num animal disponível.
+-- Objetivo: Testar o procedure 'sp_assign_ownership' num animal disponível.
 -- Vamos adotar o animal 'Bobby' (ID 1) para o cliente com ID 4.
-call prc_assign_ownership(p_id_ani => 1, p_id_cli => 4, p_id_emp => 1, p_mot_own => 'Adoção via teste');
+call sp_assign_ownership(p_id_ani => 1, p_id_cli => 4, p_id_emp => 1, p_mot_own => 'Adoção via teste');
 
 -- Verificação do Teste 7:
 -- Confirma se o estado do animal 'Bobby' foi atualizado para 'Adotado' e se existe um novo registo de posse.
@@ -126,8 +126,8 @@ select id_ani, nam_ani, sta_ani from animal where id_ani = 1;
 select * from ownership where id_ani = 1 and end_dat_own is null;
 
 -- Teste 8: Terminar a posse criada no teste anterior
--- Objetivo: Testar o procedure 'prc_end_ownership'.
-call prc_end_ownership(p_id_ani => 1, p_reason => 'Devolução via teste');
+-- Objetivo: Testar o procedure 'sp_end_ownership'.
+call sp_end_ownership(p_id_ani => 1, p_reason => 'Devolução via teste');
 
 -- Verificação do Teste 8:
 -- Confirma se o estado do animal 'Bobby' voltou a 'Interno' e se a posse tem uma data de fim.

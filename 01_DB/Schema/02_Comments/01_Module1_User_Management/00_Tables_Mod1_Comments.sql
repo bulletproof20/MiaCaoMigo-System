@@ -32,25 +32,25 @@ comment on constraint pk_user_account on user_account is
 comment on constraint uq_ema_usr on user_account is
 'prevents duplicated personal email addresses';
 
-comment on constraint chk_nam_usr_format on user_account is
+comment on constraint ck_nam_usr_format on user_account is
 'validates legal name format and minimum length';
 
-comment on constraint chk_nif_usr_format on user_account is
+comment on constraint ck_nif_usr_format on user_account is
 'validates portuguese tax number numeric format';
 
 comment on constraint uq_nif_usr on user_account is
 'ensures tax identification uniqueness';
 
-comment on constraint chk_add_usr_format on user_account is
+comment on constraint ck_add_usr_format on user_account is
 'validates minimum address length';
 
-comment on constraint chk_pos_usr_format on user_account is
+comment on constraint ck_pos_usr_format on user_account is
 'validates postal code structure';
 
-comment on constraint chk_pho_usr_format on user_account is
+comment on constraint ck_pho_usr_format on user_account is
 'validates international phone number format';
 
-comment on constraint chk_ema_usr_format on user_account is
+comment on constraint ck_ema_usr_format on user_account is
 'validates normalized email structure and blocks corporate domain usage';
 
 
@@ -76,7 +76,7 @@ comment on constraint pk_profile on profile is
 comment on constraint uq_nam_pro on profile is
 'prevents duplicated profile names';
 
-comment on constraint chk_nam_pro_format on profile is
+comment on constraint ck_nam_pro_format on profile is
 'validates normalized profile naming convention';
 
 
@@ -102,7 +102,7 @@ comment on constraint pk_permission on permission is
 comment on constraint uq_nam_per on permission is
 'prevents duplicated permission names';
 
-comment on constraint chk_nam_per_format on permission is
+comment on constraint ck_nam_per_format on permission is
 'validates permission naming convention and normalization';
 
 
@@ -128,10 +128,10 @@ comment on constraint pk_specialty on specialty is
 comment on constraint uq_nam_spe on specialty is
 'prevents duplicated specialty names';
 
-comment on constraint chk_nam_spe_format on specialty is
+comment on constraint ck_nam_spe_format on specialty is
 'validates specialty naming format';
 
-comment on constraint chk_des_spe_format on specialty is
+comment on constraint ck_des_spe_format on specialty is
 'prevents invalid specialty descriptions (non-empty and minimum length)';
 
 
@@ -178,16 +178,16 @@ comment on constraint pk_employee on employee is
 comment on constraint uq_ema_emp on employee is
 'prevents duplicated professional email addresses';
 
-comment on constraint chk_ema_emp_format on employee is
+comment on constraint ck_ema_emp_format on employee is
 'validates corporate email normalization and domain';
 
-comment on constraint chk_pho_emp_format on employee is
+comment on constraint ck_pho_emp_format on employee is
 'validates professional phone number format';
 
-comment on constraint chk_pho_emg_format on employee is
+comment on constraint ck_pho_emg_format on employee is
 'validates emergency phone number format';
 
-comment on constraint chk_pas_emp_format on employee is
+comment on constraint ck_pas_emp_format on employee is
 'ensures password hash minimum integrity requirements';
 
 comment on constraint fk_employee_user on employee is
@@ -199,10 +199,10 @@ comment on constraint fk_employee_aut_reg on employee is
 comment on constraint fk_employee_aut_ina on employee is
 'tracks employee responsible for deactivation';
 
-comment on constraint chk_employee_dates on employee is
+comment on constraint ck_employee_dates on employee is
 'ensures valid temporal lifecycle consistency';
 
-comment on constraint chk_employee_inactivation on employee is
+comment on constraint ck_employee_inactivation on employee is
 'ensures deactivation requires responsible employee and timestamp';
 
 
@@ -248,7 +248,7 @@ comment on constraint fk_veterinarian_employee on veterinarian is
 comment on constraint uq_num_omv_vet on veterinarian is
 'prevents duplicated veterinarian registrations';
 
-comment on constraint chk_num_omv_vet_format on veterinarian is
+comment on constraint ck_num_omv_vet_format on veterinarian is
 'validates veterinarian registration integrity';
 
 
@@ -306,10 +306,10 @@ comment on constraint uq_client_user on client is
 comment on constraint fk_client_user on client is
 'links client to base user account';
 
-comment on constraint chk_pas_cli_format on client is
+comment on constraint ck_pas_cli_format on client is
 'ensures password hash minimum integrity requirements';
 
-comment on constraint chk_client_dates on client is
+comment on constraint ck_client_dates on client is
 'ensures temporal consistency of client lifecycle';
 
 --=========================================================
@@ -334,7 +334,7 @@ comment on column login_record.suc_log is
 comment on column login_record.ip_add_log is
 'ip address used during authentication attempt';
 
-comment on column login_record.eml_usr is
+comment on column login_record.ema_log is
 'email snapshot used during authentication attempt';
 
 comment on column login_record.id_usr is
@@ -343,10 +343,10 @@ comment on column login_record.id_usr is
 comment on constraint pk_login_record on login_record is
 'ensures unique identification of each login record';
 
-comment on constraint chk_login_time on login_record is
+comment on constraint ck_login_time on login_record is
 'ensures temporal consistency of authentication sessions';
 
-comment on constraint chk_login_email_format on login_record is
+comment on constraint ck_ema_log_format on login_record is
 'validates normalized email snapshot format';
 
 comment on constraint fk_login_record_user on login_record is
@@ -375,10 +375,10 @@ comment on column schedule.fin_hou_sch is
 comment on constraint pk_schedule on schedule is
 'ensures unique schedule interval per employee';
 
-comment on constraint chk_schedule_day on schedule is
+comment on constraint ck_schedule_day on schedule is
 'validates allowed weekday range';
 
-comment on constraint chk_schedule_time on schedule is
+comment on constraint ck_schedule_time on schedule is
 'validates schedule temporal interval consistency';
 
 comment on constraint fk_schedule_employee on schedule is
@@ -419,13 +419,13 @@ comment on column absence.cre_tim_abs is
 comment on constraint pk_absence on absence is
 'ensures unique identification of each absence';
 
-comment on constraint chk_absence_time on absence is
+comment on constraint ck_absence_time on absence is
 'ensures absence temporal interval consistency';
 
-comment on constraint chk_mot_abs_format on absence is
+comment on constraint ck_mot_abs_format on absence is
 'validates normalized absence reason format';
 
-comment on constraint chk_sta_abs on absence is
+comment on constraint ck_sta_abs on absence is
 'restricts allowed operational absence states';
 
 comment on constraint fk_absence_employee on absence is
@@ -457,7 +457,7 @@ comment on column clock_in.end_dat_clk is
 comment on constraint pk_clock_in on clock_in is
 'ensures unique identification of each attendance record';
 
-comment on constraint chk_clock_time on clock_in is
+comment on constraint ck_clock_time on clock_in is
 'ensures temporal consistency of attendance intervals';
 
 comment on constraint fk_clock_employee on clock_in is
@@ -486,10 +486,10 @@ comment on constraint pk_setup on setup is
 comment on constraint fk_setup_user on setup is
 'links setup preferences to user account';
 
-comment on constraint chk_the_set_format on setup is
+comment on constraint ck_the_set_format on setup is
 'validates allowed interface theme values';
 
-comment on constraint chk_lan_set_format on setup is
+comment on constraint ck_lan_set_format on setup is
 'validates normalized language code structure';
 
 

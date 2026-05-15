@@ -26,19 +26,19 @@
 --=========================================================
 -- Defines custom ENUM types for status fields to ensure data consistency.
 
-create type appointment_status as enum   (
-    'Scheduled',
-    'In Progress', 
-    'Completed', 
-    'Cancelled', 
-    'No-Show'
+create type appointment_status as enum (
+    'scheduled',
+    'in_progress',
+    'completed',
+    'cancelled',
+    'no_show'
 );
 
 create type invoice_status as enum (
-    'Pending', 
-    'Paid', 
-    'Overdue', 
-    'Cancelled'
+    'pending',
+    'paid',
+    'overdue',
+    'cancelled'
 );
 
 --=========================================================
@@ -51,22 +51,22 @@ create table appointment (
     id_app int generated always as identity,
     -- Appointment identifier
 
-    --Animal identifier    
-    id_animal int NOT NULL,
+    id_ani int not null,
+    -- Animal identifier
 
-    -- Employee (Veterinarian) identifier
-    id_emp int NOT NULL,
+    id_emp int not null,
+    -- Employee (veterinarian) identifier
 
-    --client identifier
-    id_cli int NOT NULL,
+    id_cli int not null,
+    -- Client identifier
 
-    -- Specialty of the appointment (e.g., General Checkup, Surgery)
-    id_spe int NOT NULL,
+    id_spe int not null,
+    -- Specialty of the appointment (e.g., general checkup, surgery)
 
-    -- Invoice identifier (nullable, as it may be generated after the appointment) 
-    id_inv int, 
+    id_inv int,
+    -- Invoice identifier (nullable; may be generated after the appointment)
 
-    sch_dat_app timestamp NOT NULL,
+    sch_dat_app timestamp not null,
     -- Scheduled datetime
 
     sta_dat_app timestamp,
@@ -75,8 +75,8 @@ create table appointment (
     end_dat_app timestamp,
     -- Actual end datetime of the consultation
 
-    status_app appointment_status not null default 'Scheduled',
-    -- Current status of the appointment (e.g., Scheduled, Completed)
+    status_app appointment_status not null default 'scheduled',
+    -- Current status of the appointment
 
     dia_app text,
     -- Diagnosis resulting from the appointment. Filled upon completion.
@@ -85,30 +85,46 @@ create table appointment (
     -- General comments or observations about the appointment
 
     constraint pk_appointment primary key (id_app),
-    -- Unique identifier
 
-    constraint chk_appointment_flow
+    constraint ck_appointment_flow
     check (sta_dat_app < end_dat_app)
     -- Ensures the end time is after the start time
 );
 
 --=========================================================
--- 3. Overall Assessment
+-- 3. OVERALL_ASSESSMENT
 --=========================================================
--- Stores clinical history collected during appointment
-CREATE TABLE overall_assessment (
-    id_app INT NOT NULL, -- PK and FK to appointment
-    body_temp NUMERIC(4,1),     -- Body temperature in °C (e.g., 38.5)
-    weight NUMERIC(6,2),        -- Weight in kg (e.g., 25.50)
-    hrt_rate INT,      -- Heart rate (beats per minute)
-    resp_rate INT,     -- Respiratory rate (breaths per minute)
-    general_status TEXT, -- General notations about the animal's condition
+-- Stores clinical vitals collected during an appointment (1:1 with appointment)
+create table overall_assessment (
+    id_app int not null,
+    -- PK and FK to appointment
 
- -- Safety checks to prevent impossible medical data
-    CONSTRAINT chk_body_temp CHECK (body_temp > 20 AND body_temp < 50), -- Realistic temperature range
-    CONSTRAINT chk_weight CHECK (weight > 0),
-    CONSTRAINT chk_hrt_rate CHECK (hrt_rate > 0),
-    CONSTRAINT chk_resp_rate CHECK (resp_rate > 0)
+    bod_tmp_ova numeric(4,1),
+    -- Body temperature in °C (e.g., 38.5)
+
+    wei_ova numeric(6,2),
+    -- Weight in kg (e.g., 25.50)
+
+    hrt_rat_ova int,
+    -- Heart rate (beats per minute)
+
+    res_rat_ova int,
+    -- Respiratory rate (breaths per minute)
+
+    gen_sta_ova text,
+    -- General notations about the animal's condition
+
+    constraint ck_bod_tmp_ova
+    check (bod_tmp_ova is null or (bod_tmp_ova > 20 and bod_tmp_ova < 50)),
+
+    constraint ck_wei_ova
+    check (wei_ova is null or wei_ova > 0),
+
+    constraint ck_hrt_rat_ova
+    check (hrt_rat_ova is null or hrt_rat_ova > 0),
+
+    constraint ck_res_rat_ova
+    check (res_rat_ova is null or res_rat_ova > 0)
 );
 
 --=========================================================
@@ -116,7 +132,7 @@ CREATE TABLE overall_assessment (
 --=========================================================
 -- Stores patient history collected during appointment
 create table anamnesis (
-    id_app int not null, -- PK and FK to appointment
+    id_app int not null,
     -- Establishes a 1-to-1 relationship, as an anamnesis is unique to a consultation.
 
     reg_dat_ana timestamp not null default current_timestamp,
@@ -126,7 +142,6 @@ create table anamnesis (
     -- Detailed description of the patient's history and symptoms (reason for visit, etc.)
 
     constraint pk_anamnesis primary key (id_app)
-    -- Unique identifier
 );
 
 --=========================================================
@@ -147,7 +162,6 @@ create table prescription (
     -- General instructions or description for the prescription
 
     constraint pk_prescription primary key (id_pre),
-    -- Unique identifier
 
     constraint uq_prescription_per_appointment unique (id_app)
     -- Ensures only one prescription can be registered per appointment.
@@ -172,9 +186,8 @@ create table rel_app_product (
 
     constraint pk_appointment_product primary key (id_app, id_pro),
 
-    constraint chk_qty_rel_app_product
+    constraint ck_qty_rel_app_product
     check (qty_pre_pro > 0)
-    -- Ensures valid quantity
 );
 
 --=========================================================
@@ -195,13 +208,12 @@ create table rel_pre_prod (
 
     constraint pk_prescription_product primary key (id_pre, id_pro),
 
-    constraint chk_qty_rel_pre_prod
+    constraint ck_qty_rel_pre_prod
     check (qty_pre_pro > 0)
-    -- Ensures valid quantity
 );
 
 --=========================================================
--- 8. APPOINTMENT NOTIFICATIONS
+-- 8. APPOINTMENT_NOTIFICATION
 --=========================================================
 -- Stores notifications generated for clients
 create table appointment_notification (
@@ -214,14 +226,14 @@ create table appointment_notification (
     id_app int not null,
     -- Appointment associated with the notification
 
-    message text not null,
-    -- The notification message
+    msg_not text not null,
+    -- Notification message body
 
-    created_at timestamp default current_timestamp,
+    cre_tim_not timestamp default current_timestamp,
     -- Timestamp when the notification was created
 
-    is_read boolean default false,
-    -- Flag to indicate if the client has read the notification
+    rea_not boolean default false,
+    -- Flag indicating whether the client has read the notification
 
     constraint pk_appointment_notification primary key (id_not)
 );

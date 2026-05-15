@@ -141,7 +141,7 @@ FROM generate_series(1, 40) as i;
 -- =========================================================
 -- 8. PURCHASELINE (40 Registos)
 -- =========================================================
-INSERT INTO PurchaseLine (ID_PURCHASE, ID_PRODUCT, BATCH, QUANTITY, UNIT_COST, ID_STOCK)
+INSERT INTO purchase_line (id_pur, id_pro, bat_pln, qty_pln, uni_cos_pln, id_sto)
 SELECT
     i, 
     (i % 30) + 1, 
@@ -165,7 +165,7 @@ FROM generate_series(1, 40) as i;
 -- =========================================================
 -- 10. INVOICELINE (40 Registos)
 -- =========================================================
-INSERT INTO InvoiceLine (ID_INVOICE, ID_PRODUCT, QUANTITY, UNIT_PRICE, IVA)
+INSERT INTO invoice_line (id_inv, id_pro, qty_inv_lin, uni_pri_inv_lin, iva_inv_lin)
 SELECT
     i, 
     (i % 30) + 1, 

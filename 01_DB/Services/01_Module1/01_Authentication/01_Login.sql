@@ -51,7 +51,7 @@ begin
 
         -- register failed attempt
         insert into login_record (
-            sig_tim_log, suc_log, ip_add_log, eml_usr
+            sig_tim_log, suc_log, ip_add_log, ema_log
         )
         values (
             now(), false, p_ip, p_email
@@ -84,7 +84,7 @@ begin
 
         -- register failed password attempt
         insert into login_record (
-            sig_tim_log, suc_log, ip_add_log, eml_usr
+            sig_tim_log, suc_log, ip_add_log, ema_log
         )
         values (
             now(), false, p_ip, p_email
@@ -113,7 +113,7 @@ begin
     );
 
     -- retrieve associated user
-    v_user_id := get_user_by_email(
+    v_user_id := fn_get_user_by_email(
         p_email
     );
 
@@ -124,7 +124,7 @@ begin
             sig_tim_log,
             suc_log,
             ip_add_log,
-            eml_usr,
+            ema_log,
             id_usr
         )
         values (
@@ -168,7 +168,7 @@ begin
         sig_tim_log,
         suc_log,
         ip_add_log,
-        eml_usr,
+        ema_log,
         id_usr
     )
     values (

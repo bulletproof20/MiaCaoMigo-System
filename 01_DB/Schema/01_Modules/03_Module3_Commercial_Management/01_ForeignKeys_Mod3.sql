@@ -33,7 +33,7 @@ alter table invoice
 
 -- purchase → invoice, client, employee
 alter table purchase
-    add constraint fk_invoice
+    add constraint fk_purchase_invoice
         foreign key (id_inv)
         references invoice(id_inv)
         on delete cascade;
@@ -149,13 +149,13 @@ alter table product
         on delete set null;
 
 alter table product
-    add constraint fk_stock
+    add constraint fk_product_stock
         foreign key (id_sto)
         references stock(id_sto)
         on delete set null;
 
 alter table product
-    add constraint fk_return
+    add constraint fk_product_return
         foreign key (id_ret)
         references "return"(id_ret)
         on delete set null;

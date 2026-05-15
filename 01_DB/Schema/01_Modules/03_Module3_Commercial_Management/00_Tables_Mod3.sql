@@ -143,7 +143,7 @@ create table stock (
     constraint pk_stock primary key (id_sto),
     -- Unique identifier
 
-    constraint chk_qty_sto
+    constraint ck_qty_sto
     check (qty_sto >= 0)
     -- Prevents negative stock
 );
@@ -183,15 +183,7 @@ create table purchase (
     constraint pk_purchase primary key (id_pur),
     -- Unique identifier
 
-
-    constraint fk_client foreign key (id_cli) references client(id_cli)
-        on DELETE set null,
-
-    constraint fk_employee foreign key (id_emp) references employee(id_emp)
-        on DELETE set null,
-
-
-    constraint chk_sta_pur
+    constraint ck_sta_pur
     check (sta_pur in ('pending','received','cancelled') or sta_pur is null)
     -- Validates status
 );
@@ -224,7 +216,7 @@ create table purchase_line (
 
     constraint pk_purchase_line primary key (id_pur_lin),
 
-    constraint chk_qty_pln
+    constraint ck_qty_pln
     check (qty_pln > 0)
 );
 
@@ -253,7 +245,7 @@ create table invoice_line (
 
     constraint pk_invoice_line primary key (id_inv_lin),
 
-    constraint chk_qty_inv_lin
+    constraint ck_qty_inv_lin
     check (qty_inv_lin > 0)
 );
 
@@ -281,7 +273,7 @@ create table return (
     -- Optional link to originating invoice line
 
     qty_ret int not null default 1,
-    -- Quantity returned (replaces legacy QUANTITY_RETURNED)
+    -- Quantity returned (replaces legacy qty_ret)
 
     constraint pk_return primary key (id_ret)
     -- Unique identifier
@@ -306,7 +298,7 @@ create table purchase_product (
     constraint pk_purchase_product primary key (id_pur, id_pro),
     -- Composite identifier
 
-    constraint chk_qty_purchase
+    constraint ck_qty_purchase
     check (qty_pur_pro > 0)
     -- Ensures valid quantity
 );
@@ -324,7 +316,7 @@ create table return_product (
 
     constraint pk_return_product primary key (id_ret, id_pro),
 
-    constraint chk_qty_return
+    constraint ck_qty_return
     check (qty_ret_pro > 0)
     -- Ensures valid quantity
 );
@@ -350,29 +342,3 @@ create table employee_return (
 
     constraint pk_employee_return primary key (id_emp, id_ret)
 );
-
-------------------------------------------------------------
-CREATE TABLE PurchaseLine (
-    ID_PURCHASE_LINE SERIAL PRIMARY KEY,
-    ID_PURCHASE INT NOT NULL REFERENCES Purchase(id_pur),
-    ID_PRODUCT INT NOT NULL REFERENCES Product(id_pro),
-    BATCH VARCHAR(50),
-    QUANTITY INT NOT NULL CHECK (QUANTITY > 0),
-    UNIT_COST NUMERIC(10,2) NOT NULL,
-    ID_STOCK INT REFERENCES Stock(id_sto)
-);
-
--- Linhas de fatura (venda ao cliente)
-CREATE TABLE InvoiceLine (
-    ID_INVOICE_LINE SERIAL PRIMARY KEY,
-    ID_INVOICE INT NOT NULL REFERENCES Invoice(id_inv),
-    ID_PRODUCT INT NOT NULL REFERENCES Product(id_pro),
-    QUANTITY INT NOT NULL CHECK (QUANTITY > 0),
-    UNIT_PRICE NUMERIC(10,2) NOT NULL,
-    IVA NUMERIC(5,2) NOT NULL
-);
-
-ALTER TABLE "return" ADD COLUMN ID_INVOICE_LINE INT REFERENCES InvoiceLine(ID_INVOICE_LINE);
-ALTER TABLE "return" ADD COLUMN QUANTITY_RETURNED INT NOT NULL DEFAULT 1;
--- ALTER TABLE "return" DROP COLUMN reg_dat_ret; -- duplicado
--- ALTER TABLE "return" RENAME COLUMN ina_dat_ret TO RETURN_DATE;

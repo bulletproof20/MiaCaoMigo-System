@@ -18,10 +18,10 @@ SELECT
     a.status_app
 FROM appointment a
 JOIN client c ON a.id_cli = c.id_cli
-JOIN animal an ON a.id_animal = an.id_ani
+JOIN animal an ON a.id_ani = an.id_ani
 WHERE a.id_emp = 1 -- << Substituir pelo ID do veterinário
   AND a.sch_dat_app >= current_date
-  AND a.status_app = 'Scheduled'
+  AND a.status_app = 'scheduled'
 ORDER BY a.sch_dat_app;
 
 --=========================================================
@@ -37,8 +37,8 @@ SELECT
     a.status_app
 FROM appointment a
 JOIN client c ON a.id_cli = c.id_cli
-JOIN animal an ON a.id_animal = an.id_ani
+JOIN animal an ON a.id_ani = an.id_ani
 WHERE c.id_cli = 1 -- << Substituir pelo ID do cliente
   AND a.sch_dat_app >= current_date
-  AND a.status_app = 'Scheduled'
+  AND a.status_app = 'scheduled'
 ORDER BY a.sch_dat_app;

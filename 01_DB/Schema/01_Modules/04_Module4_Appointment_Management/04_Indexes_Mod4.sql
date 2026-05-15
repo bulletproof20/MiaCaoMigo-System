@@ -11,7 +11,7 @@
 drop index if exists idx_appointment_status_for_jobs;
 drop index if exists idx_appointment_id_cli;
 drop index if exists idx_appointment_id_emp;
-drop index if exists idx_appointment_id_animal;
+drop index if exists idx_appointment_id_ani;
 drop index if exists idx_appointment_vet_schedule;
 drop index if exists idx_appointment_sch_dat_app;
 drop index if exists idx_notification_client_read_status;
@@ -19,11 +19,11 @@ alter table appointment drop constraint if exists ex_appointment_vet_overlap;
 
 --=========================================================
 -- INDEX 1: idx_appointment_status_for_jobs
--- Speeds up jobs that frequently check for 'Scheduled' appointments.
+-- Speeds up jobs that frequently check for 'scheduled' appointments.
 --=========================================================
 create index idx_appointment_status_for_jobs
 on appointment (sch_dat_app)
-where status_app = 'Scheduled';
+where status_app = 'scheduled';
 
 --=========================================================
 -- INDEX 2: idx_appointment_foreign_keys
@@ -31,8 +31,8 @@ where status_app = 'Scheduled';
 --=========================================================
 create index idx_appointment_id_cli on appointment (id_cli);
 create index idx_appointment_id_emp on appointment (id_emp);
-create index idx_appointment_id_animal on appointment (id_animal);
-create index idx_appointment_vet_schedule on appointment(id_emp, sch_dat_app) where status_app = 'Scheduled';
+create index idx_appointment_id_ani on appointment (id_ani);
+create index idx_appointment_vet_schedule on appointment(id_emp, sch_dat_app) where status_app = 'scheduled';
 --=========================================================
 -- INDEX 3: idx_appointment_sch_dat_app
 -- Speeds up general queries filtering or ordering by scheduled date,
@@ -44,9 +44,9 @@ create index idx_appointment_sch_dat_app on appointment (sch_dat_app);
 -- INDEX 4: idx_notification_client_read_status
 -- Speeds up fetching unread notifications for a specific client.
 -- This is a composite index, optimized for queries like:
--- SELECT * FROM appointment_notification WHERE id_cli = X AND is_read = false;
+-- SELECT * FROM appointment_notification WHERE id_cli = X AND rea_not = false;
 --=========================================================
-create index idx_notification_client_read_status on appointment_notification (id_cli, is_read);
+create index idx_notification_client_read_status on appointment_notification (id_cli, rea_not);
 
 --=========================================================
 -- EXCLUSION CONSTRAINT 1: ex_appointment_vet_overlap
@@ -59,4 +59,4 @@ ADD CONSTRAINT ex_appointment_vet_overlap
 EXCLUDE USING gist (
     id_emp WITH =, -- Ensure the same veterinarian, = means "where's equal" or same value
     tsrange(sch_dat_app, sch_dat_app + interval '30 minutes') WITH && -- && means "overlaps"
-) WHERE (status_app = 'Scheduled');
+) WHERE (status_app = 'scheduled');

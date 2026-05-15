@@ -20,10 +20,10 @@ SELECT
 FROM appointment a
 JOIN client c ON a.id_cli = c.id_cli
 JOIN specialty s ON a.id_spe = s.id_spe
-JOIN animal an ON a.id_animal = an.id_ani
+JOIN animal an ON a.id_ani = an.id_ani
 WHERE a.id_emp = 1 -- << Substituir pelo ID do veterinário
   AND a.sch_dat_app >= current_date
-  AND a.status_app = 'Scheduled'
+  AND a.status_app = 'scheduled'
 ORDER BY a.sch_dat_app;
 
 
@@ -44,7 +44,7 @@ SELECT
 FROM appointment a
 JOIN employee e ON a.id_emp = e.id_emp
 JOIN specialty s ON a.id_spe = s.id_spe
-WHERE a.id_animal = 1 -- << Substituir pelo ID do animal
+WHERE a.id_ani = 1 -- << Substituir pelo ID do animal
 ORDER BY a.sch_dat_app DESC;
 
 
@@ -66,16 +66,16 @@ SELECT
     i.id_inv as invoice_id,
     a.dia_app as diagnosis,
     a.com_app as comments,
-    oa.body_temp,
-    oa.weight,
-    oa.hrt_rate,
-    oa.resp_rate,
-    oa.general_status,
+    oa.bod_tmp_ova,
+    oa.wei_ova,
+    oa.hrt_rat_ova,
+    oa.res_rat_ova,
+    oa.gen_sta_ova,
     anam.des_ana as anamnesis_description,
     p.des_pre as prescription_description
 FROM appointment a
 LEFT JOIN client c ON a.id_cli = c.id_cli
-LEFT JOIN animal an ON a.id_animal = an.id_ani
+LEFT JOIN animal an ON a.id_ani = an.id_ani
 LEFT JOIN employee e ON a.id_emp = e.id_emp
 LEFT JOIN specialty s ON a.id_spe = s.id_spe
 LEFT JOIN overall_assessment oa ON a.id_app = oa.id_app
@@ -120,9 +120,9 @@ GROUP BY month, status_app;
 --=========================================================
 SELECT
     id_not,
-    message,
-    created_at
+    msg_not,
+    cre_tim_not
 FROM appointment_notification
 WHERE id_cli = 1 -- << Substituir pelo ID do cliente
-  AND is_read = false
-ORDER BY created_at DESC;
+  AND rea_not = false
+ORDER BY cre_tim_not DESC;

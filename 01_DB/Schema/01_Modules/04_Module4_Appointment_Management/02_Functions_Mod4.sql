@@ -16,7 +16,7 @@ begin
         select 1
         from appointment a
         where a.id_emp = new.id_emp -- Same veterinarian
-          and a.status_app = 'Scheduled' -- Only check against other scheduled appointments
+          and a.status_app = 'scheduled' -- Only check against other scheduled appointments
           and (tg_op = 'INSERT' or a.id_app <> new.id_app) -- Exclude self on updates only
           and (new.sch_dat_app, new.sch_dat_app + interval '30 minutes') OVERLAPS 
               (a.sch_dat_app, a.sch_dat_app + interval '30 minutes')
@@ -185,7 +185,7 @@ begin
         a.id_app as appointment_id,
         a.sch_dat_app as scheduled_date,
         case
-            when a.status_app = 'Scheduled' and a.sch_dat_app < now() then 'Late'::appointment_status
+            when a.status_app = 'scheduled' and a.sch_dat_app < now() then 'late'::appointment_status
             else a.status_app
         end as status,
         ua.nam_usr as vet_name,
@@ -195,7 +195,7 @@ begin
     from appointment a
     join employee e on a.id_emp = e.id_emp
     join user_account ua on e.id_usr = ua.id_usr
-    join animal an on a.id_animal = an.id_ani
+    join animal an on a.id_ani = an.id_ani
     join specialty s on a.id_spe = s.id_spe
     where a.id_cli = p_client_id
     order by a.sta_dat_app desc nulls last, a.sch_dat_app desc;
@@ -213,11 +213,11 @@ begin
     if not exists (
         select 1
         from ownership o
-        where o.id_ani = new.id_animal
+        where o.id_ani = new.id_ani
           and o.id_cli = new.id_cli
           and o.end_dat_own is null
     ) then
-        raise exception 'O animal com ID % não pertence ao cliente com ID %.', new.id_animal, new.id_cli;
+        raise exception 'O animal com ID % não pertence ao cliente com ID %.', new.id_ani, new.id_cli;
     end if;
 
     return new;
@@ -232,24 +232,10 @@ $$ language plpgsql;
 create or replace function fn_prevent_completed_appointment_modification()
 returns trigger as $$
 begin
-    if old.status_app in ('Completed', 'Cancelled', 'No-Show') then
+    if old.status_app in ('completed', 'cancelled', 'no_show') then
         raise exception 'Não é possível alterar uma consulta que já foi concluída, cancelada ou marcada como não comparência.';
     end if;
     return new;
 end;
 $$ language plpgsql;
 
---=========================================================
--- FUNCTION 12: fn_prevent_completed_appointment_modification
--- Prevents any modification to an appointment that is already
--- in a terminal state (Completed, Cancelled).
---=========================================================
-create or replace function fn_prevent_completed_appointment_modification()
-returns trigger as $$
-begin
-    if old.status_app IN ('Completed', 'Cancelled') then
-        raise exception 'Não é possível modificar uma consulta finalizada';
-    end if;
-    return new;
-end;
-$$ language plpgsql;

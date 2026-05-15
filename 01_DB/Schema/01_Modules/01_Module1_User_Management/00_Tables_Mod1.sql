@@ -46,32 +46,32 @@ create table user_account (
     constraint uq_ema_usr unique (ema_usr),
     -- Prevents duplicated emails
 
-    constraint chk_nam_usr_format
+    constraint ck_nam_usr_format
     check (nam_usr ~ '^[A-Za-zÀ-ÿ\s''-]+$'
     and length(trim(nam_usr)) > 3
     ),
     -- Validates name format
 
-    constraint chk_nif_usr_format
+    constraint ck_nif_usr_format
     check (nif_usr ~ '^[0-9]{9}$'),
     -- Validates tax number
 
     constraint uq_nif_usr unique(nif_usr),
     -- Unique NIF
 
-    constraint chk_add_usr_format
+    constraint ck_add_usr_format
     check(length(trim(add_usr)) > 3),
     -- Validades address format
 
-    constraint chk_pos_usr_format
+    constraint ck_pos_usr_format
     check (pos_usr ~ '^[0-9]{4}-[0-9]{3}$'),
     -- Validates postal code
 
-    constraint chk_pho_usr_format
+    constraint ck_pho_usr_format
     check (pho_usr is null or pho_usr ~ '^\+[1-9][0-9]{7,14}$'),
     -- Validates phone format
 
-    constraint chk_ema_usr_format
+    constraint ck_ema_usr_format
 	check (
 	    ema_usr = lower(trim(ema_usr))
 	    and ema_usr ~ '.+@.+\..+'
@@ -102,7 +102,7 @@ create table profile (
     constraint uq_nam_pro unique (nam_pro),
     -- Prevents duplicate profiles
 
-    constraint chk_nam_pro_format
+    constraint ck_nam_pro_format
     check (
         nam_pro = lower(trim(nam_pro))
         and length(nam_pro) > 3
@@ -130,7 +130,7 @@ create table permission (
     constraint uq_nam_per unique (nam_per),
     -- Prevents duplicates
 
-    constraint chk_nam_per_format
+    constraint ck_nam_per_format
     check (
         nam_per = lower(trim(nam_per))
         and length(nam_per) > 3
@@ -158,13 +158,13 @@ create table specialty (
     constraint uq_nam_spe unique (nam_spe),
     -- Prevents duplicates
 
-    constraint chk_nam_spe_format
+    constraint ck_nam_spe_format
     check (
         nam_spe = lower(trim(nam_spe))
         and length(trim(nam_spe)) >= 5
     ),
 
-    constraint chk_des_spe_format
+    constraint ck_des_spe_format
     check (
         des_spe = trim(des_spe)
         and length(trim(des_spe)) >= 5
@@ -212,32 +212,32 @@ create table employee (
     constraint uq_ema_emp unique (ema_emp),
     -- Prevents duplicate professional emails
 
-    constraint chk_ema_emp_format
+    constraint ck_ema_emp_format
     check (
         ema_emp = lower(trim(ema_emp))
         and ema_emp ~ '^[^@\s]+@miacaomigo\.pt$'
     ),
     -- Ensures corporate email format and normalization
 
-    constraint chk_pho_emp_format
+    constraint ck_pho_emp_format
     check (
         pho_emp is null 
         or pho_emp ~ '^\+[1-9][0-9]{7,14}$'
     ),
     -- Validates professional phone format (E.164)
 
-    constraint chk_pho_emg_format
+    constraint ck_pho_emg_format
     check (
         pho_emg is null 
         or pho_emg ~ '^\+[1-9][0-9]{7,14}$'
     ),
     -- Validates emergency phone format (E.164)
 
-    constraint chk_pas_emp_format
+    constraint ck_pas_emp_format
     check (length(trim(pas_emp)) >= 16),
     -- Ensures password hash is not trivial/invalid
 
-    constraint chk_employee_dates
+    constraint ck_employee_dates
     check (
         -- Registration cannot be in the future
         reg_dat_emp <= current_timestamp
@@ -253,7 +253,7 @@ create table employee (
     ),
     -- Ensures temporal consistency of employee lifecycle
 
-    constraint chk_employee_inactivation
+    constraint ck_employee_inactivation
     check (
         (dea_dat_emp is null and aut_ina_emp is null)
         or
@@ -294,7 +294,7 @@ create table veterinarian (
     constraint uq_num_omv_vet unique (num_omv_vet),
     -- Prevents duplicate professional registrations
 
-    constraint chk_num_omv_vet_format
+    constraint ck_num_omv_vet_format
     check (
         num_omv_vet = trim(num_omv_vet)
         and length(num_omv_vet) > 3
@@ -346,11 +346,11 @@ create table client (
         unique (id_usr),
     -- Unique identifier for user association (one-to-one)
 
-    constraint chk_pas_cli_format
+    constraint ck_pas_cli_format
     check (length(trim(pas_cli)) >= 16),
     -- Ensures password hash is not trivial/invalid
 
-    constraint chk_client_dates
+    constraint ck_client_dates
     check (
         -- Registration cannot be in the future
         reg_dat_cli <= current_timestamp
@@ -391,7 +391,7 @@ create table login_record (
     ip_add_log inet,
     -- IP address (IPv4/IPv6)
 
-    eml_usr varchar(255),
+    ema_log varchar(255),
     -- Email snapshot (even if user does not exist)
 
     id_usr int,
@@ -399,7 +399,7 @@ create table login_record (
 
     constraint pk_login_record primary key (id_log),
 
-    constraint chk_login_time
+    constraint ck_login_time
     check (
         -- Login cannot be in the future
         sig_tim_log <= current_timestamp
@@ -421,7 +421,7 @@ create table login_record (
         suc_log = false
         or (
             id_usr is not null
-            and eml_usr is not null
+            and ema_log is not null
             and ip_add_log is not null
             and sig_tim_log is not null
             and ip_add_log is not null
@@ -429,12 +429,12 @@ create table login_record (
     ),
     -- Ensures login sucess consistency
 
-    constraint chk_login_email_format
+    constraint ck_ema_log_format
     check (
-        eml_usr is null
+        ema_log is null
         or (
-            eml_usr = lower(trim(eml_usr))
-            and eml_usr ~ '.+@.+\..+'
+            ema_log = lower(trim(ema_log))
+            and ema_log ~ '.+@.+\..+'
         )
     )
     -- Validates email snapshot format (if provided)
@@ -461,11 +461,11 @@ create table schedule (
     constraint pk_schedule primary key (id_emp, day_wee_sch, sta_tim_sch),
     -- Composite identifier
 
-    constraint chk_schedule_day
+    constraint ck_schedule_day
     check (day_wee_sch between 1 and 7),
     -- Ensures valid weekday
 
-    constraint chk_schedule_time
+    constraint ck_schedule_time
     check (
         sta_tim_sch < fin_hou_sch
         and sta_tim_sch >= time '00:00:00'
@@ -508,20 +508,20 @@ create table absence (
     constraint pk_absence primary key (id_abs),
     -- Unique identifier
 
-    constraint chk_absence_time
+    constraint ck_absence_time
     check (
         sta_dat_tim_abs < end_dat_tim_abs
         -- Start must be before end
     ),
 
-    constraint chk_mot_abs_format
+    constraint ck_mot_abs_format
     check (
         mot_abs = lower(trim(mot_abs))
         and length(mot_abs) > 2 
     ),
     -- Prevents empty or meaningless reasons
 
-    constraint chk_sta_abs
+    constraint ck_sta_abs
     check (
         sta_abs in ('pending','approved','rejected', 'cancelled', 'detected')
     )
@@ -550,7 +550,7 @@ create table clock_in (
     constraint pk_clock_in primary key (id_clk),
     -- Unique identifier
 
-    constraint chk_clock_time
+    constraint ck_clock_time
     check (
         -- Entry cannot be in the future
         sta_dat_clk <= current_timestamp
@@ -585,14 +585,14 @@ create table setup (
     constraint pk_setup primary key (id_usr),
     -- One-to-one relation with user
 
-    constraint chk_the_set_format
+    constraint ck_the_set_format
     check (
         the_set = lower(trim(the_set))
         and the_set in ('light', 'dark')
     ),
     -- Restricts theme to valid values
 
-    constraint chk_lan_set_format 
+    constraint ck_lan_set_format 
     check (
         lan_set = lower(trim(lan_set))
         and lan_set ~ '^[a-z]{2}-[a-z]{2}$'

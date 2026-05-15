@@ -35,7 +35,7 @@ SELECT * FROM vw_produtos_para_encomendar order by stock_minimo desc;
 UPDATE product SET min_sto = 50 WHERE id_pro = 1;
 
 -- 2. Faz uma venda de teste (Garante que o ID da fatura existe, usei o 41 do teu exemplo)
-INSERT INTO InvoiceLine (ID_INVOICE, ID_PRODUCT, QUANTITY, UNIT_PRICE, IVA) 
+INSERT INTO invoice_line (id_inv, id_pro, qty_inv_lin, uni_pri_inv_lin, iva_inv_lin) 
 VALUES (41, 1, 1, 10.00, 23.00);
 
 

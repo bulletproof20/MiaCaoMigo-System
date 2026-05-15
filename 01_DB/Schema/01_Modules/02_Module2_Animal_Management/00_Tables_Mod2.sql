@@ -93,8 +93,11 @@ create table animal (
     id_bre int,
     -- Breed
 
-    registration_date date default current_date, -- Data de registo
-    inactivation_date date,                      -- Data de inativação
+    reg_dat_ani date default current_date,
+    -- Registration date
+
+    ina_dat_ani date,
+    -- Inactivation date
 
     constraint pk_animal primary key (id_ani),
     -- Unique identifier
@@ -102,7 +105,7 @@ create table animal (
     constraint uq_reg_id_ani unique (reg_id_ani),
     -- Prevents duplicate registrations
 
-    constraint fk_animal_client 
+    constraint fk_animal_client
         foreign key (id_cli)
         references client(id_cli)
         on delete set null,
@@ -119,7 +122,7 @@ create table animal (
     --     on delete set null,
     -- -- Links to breed, declared on external file
 
-    constraint chk_gen_ani
+    constraint ck_gen_ani
     check (gen_ani in ('M','F') or gen_ani is null)
     -- Validates gender
 );
@@ -150,11 +153,11 @@ create table external_entity (
     constraint pk_external_entity primary key (id_ext_ent),
     -- Unique identifier
 
-    constraint chk_pho_ext_ent_format
+    constraint ck_pho_ext_ent_format
     check (pho_ext_ent is null or pho_ext_ent ~ '^\+[1-9][0-9]{7,14}$'),
     -- Validates phone format
 
-    constraint chk_ema_ext_ent_format
+    constraint ck_ema_ext_ent_format
     check (ema_ext_ent is null or ema_ext_ent ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$')
     -- Validates email format
 );
@@ -188,7 +191,7 @@ create table ownership (
     constraint pk_ownership primary key (id_own),
     -- Unique identifier
 
-    constraint chk_ownership_dates
+    constraint ck_ownership_dates
     check (
         end_dat_own is null 
         or sta_dat_own <= end_dat_own
@@ -258,7 +261,7 @@ create table delivery (
     constraint pk_delivery primary key (id_del),
     -- Unique identifier
 
-    constraint chk_delivery_dates
+    constraint ck_delivery_dates
     check (
         del_dat_del is null 
         or reg_dat_del <= del_dat_del

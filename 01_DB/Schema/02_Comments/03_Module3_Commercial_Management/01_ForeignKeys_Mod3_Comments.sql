@@ -14,7 +14,7 @@ comment on constraint fk_stock_product on stock is
 comment on constraint fk_invoice_appointment on invoice is
 'optional bridge from billing to scheduling';
 
-comment on constraint fk_invoice on purchase is
+comment on constraint fk_purchase_invoice on purchase is
 'purchase may reference an invoice for reconciliation';
 
 comment on constraint fk_purchase_client on purchase is
@@ -68,8 +68,8 @@ comment on constraint fk_emp_ret_return on employee_return is
 comment on constraint fk_purchase_product on product is
 'latest purchase pointer maintained on the product';
 
-comment on constraint fk_stock on product is
+comment on constraint fk_product_stock on product is
 'current stock pointer maintained on the product';
 
-comment on constraint fk_return on product is
+comment on constraint fk_product_return on product is
 'latest return pointer maintained on the product';

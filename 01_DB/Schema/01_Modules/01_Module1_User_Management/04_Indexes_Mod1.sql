@@ -24,10 +24,10 @@ alter table schedule drop constraint if exists ex_schedule_overlap;
 --=========================================================
 
 create unique index uq_login_single_active_session_email
-on login_record(eml_usr)
+on login_record(ema_log)
 where sou_tim_log is null 
   and suc_log = true
-  and eml_usr is not null;
+  and ema_log is not null;
 
 
 

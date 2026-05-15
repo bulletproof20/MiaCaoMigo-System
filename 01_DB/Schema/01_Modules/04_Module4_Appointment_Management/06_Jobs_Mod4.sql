@@ -21,16 +21,16 @@
 select cron.schedule(
     'daily_appointment_warnings',
     '0 8 * * *',  -- Executes daily at 8:00 AM
-    $$ CALL prc_generate_appointment_warnings(); $$
+    $$ CALL sp_generate_appointment_warnings(); $$
 );
 
 --=========================================================
 -- JOB 2: daily_no_show_appointment_updater
--- Executes daily after midnight to mark missed appointments as 'No-Show'.
+-- Executes daily after midnight to mark missed appointments as 'no_show'.
 --=========================================================
 select cron.schedule(
     'daily_no_show_appointment_updater',
     '5 0 * * *', -- Executes daily at 00:05 AM
-    $$ CALL prc_auto_update_no_show_appointments(); $$
+    $$ CALL sp_auto_update_no_show_appointments(); $$
 );
 --=========================================================

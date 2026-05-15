@@ -1,28 +1,27 @@
 -- =========================================================
 -- comments: procedures - module 4
 -- =========================================================
--- metadata documentation for appointment automation routines.
--- note: prc_auto_close_clock_in_midnight shares a name with module 1;
--- whichever script loads last defines the callable signature.
--- =========================================================
 
-comment on procedure prc_auto_close_clock_in_midnight() is
-'closes stale attendance rows by backfilling midnight end timestamps';
+comment on procedure sp_auto_update_no_show_appointments() is
+'marks past scheduled appointments as no_show for nightly hygiene';
 
-comment on procedure prc_generate_appointment_warnings() is
-'creates next-day reminder notifications for scheduled clients including specialty label in message text';
+comment on procedure sp_generate_appointment_warnings() is
+'creates next-day reminder notifications for scheduled clients';
 
-comment on procedure prc_cancel_appointment(integer) is
+comment on procedure sp_cancel_appointment(integer) is
 'cancels future appointments subject to the 24-hour policy window';
 
-comment on procedure prc_reschedule_appointment(integer, timestamp without time zone) is
+comment on procedure sp_reschedule_appointment(integer, timestamp without time zone) is
 'updates scheduled times when advance-notice rules pass';
 
-comment on procedure prc_create_appointment(integer, integer, integer, integer, timestamp without time zone) is
-'inserts a scheduled appointment with explicit consultation specialty and default scheduled status';
+comment on procedure sp_create_appointment(integer, integer, integer, integer, timestamp without time zone) is
+'inserts a scheduled appointment with explicit consultation specialty';
 
-comment on procedure prc_start_appointment(integer) is
-'marks a visit as in progress and stamps the start time';
+comment on procedure sp_start_appointment(integer) is
+'marks a visit as in_progress and stamps the start time';
 
-comment on procedure prc_end_appointment(integer, character varying, text) is
-'finalizes a visit with diagnosis metadata and completion state';
+comment on procedure sp_end_appointment(integer, character varying, text) is
+'finalizes a visit with diagnosis metadata and completed status';
+
+comment on procedure sp_prescription_for_appointment(integer, text) is
+'creates a prescription row linked to a completed appointment';

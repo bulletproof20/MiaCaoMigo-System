@@ -51,7 +51,7 @@ execute function fn_block_past_appointments();
 -- Ensures the animal belongs to the client before creating/updating an appointment.
 --=========================================================
 create or replace trigger trg_validate_animal_client_relationship
-before insert or update of id_animal, id_cli on appointment
+before insert or update of id_ani, id_cli on appointment
 for each row
 execute function fn_validate_animal_client_relationship();
 

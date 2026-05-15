@@ -221,7 +221,7 @@ FROM employee,
 
 -- 1.10. LOGIN_RECORD
 
-INSERT INTO login_record (sig_tim_log, suc_log, ip_add_log, eml_usr, id_usr)
+INSERT INTO login_record (sig_tim_log, suc_log, ip_add_log, ema_log, id_usr)
 VALUES (current_timestamp - interval '1 day', true, '192.168.1.1', 'joao.silva@gmail.com', 1),
        (current_timestamp - interval '20 hours', true, '192.168.1.5', 'maria.oli@outlook.com', 2),
        (current_timestamp - interval '18 hours', false, '1.2.3.4', 'hacker@mal.com', null),
@@ -381,7 +381,7 @@ VALUES ('P001', '123001', 'Ração Adulto 15kg', 45.50, 6.0, 1),
 
 INSERT INTO stock (id_pro, bat_sto, qty_sto, ent_dat_sto)
 SELECT id_pro,
-       'BATCH-202',
+       'bat_pln-202',
        100,
        current_date
 FROM product;
@@ -402,31 +402,31 @@ VALUES (current_timestamp - interval '5 days', 150.00, 1, 6, 'received'),
 -- 4.1. APPOINTMENT (20 Consultas - Seed Corrigida)
 --=========================================================
 
-INSERT INTO appointment (id_animal, id_emp, id_cli, sch_dat_app, sta_dat_app, end_dat_app, status_app, dia_app, com_app)
-VALUES (1, 1, 1, '2027-05-01 10:00:00', '2027-05-01 10:00:00', '2027-05-01 10:30:00', 'Completed', 'Check-up anual', 'Animal saudável, vacinas em dia.'),
-       (2, 2, 2, '2027-05-01 11:00:00', '2027-05-01 11:05:00', '2027-05-01 11:40:00', 'Completed', 'Otite externa', 'Prescrito tratamento tópico e oral.'),
-       (3, 3, 3, '2027-05-02 09:00:00', '2027-05-02 09:00:00', '2027-05-02 09:25:00', 'Completed', 'Desparasitação', 'Administrado desparasitante interno.'),
-       (4, 4, 4, '2027-05-02 10:30:00', '2027-05-02 10:30:00', '2027-05-02 11:00:00', 'Completed', 'Revisão de ferida', 'Cicatrização a decorrer bem.'),
-       (5, 5, 5, '2027-05-03 14:00:00', '2027-05-03 14:00:00', '2027-05-03 14:35:00', 'Completed', 'Vacinação', 'Vacina polivalente administrada.'),
-       (6, 1, 6, '2027-05-03 15:30:00', '2027-05-03 15:30:00', '2027-05-03 16:00:00', 'Completed', 'Problemas gastrointestinais', 'Dieta especial recomendada.'),
-       (7, 2, 7, '2027-05-04 10:00:00', '2027-05-04 10:00:00', '2027-05-04 10:20:00', 'Completed', 'Check-up dentário', 'Sem problemas graves, limpeza recomendada.'),
-       (8, 3, 8, '2027-05-04 11:30:00', '2027-05-04 11:30:00', '2027-05-04 12:00:00', 'Completed', 'Alergia cutânea', 'Identificado alérgeno, tratamento com anti-histamínicos.'),
-       (9, 4, 9, '2027-05-05 09:00:00', '2027-05-05 09:00:00', '2027-05-05 09:45:00', 'Completed', 'Exame de rotina', 'Animal em excelente forma.'),
-       (10, 5, 10, '2027-05-05 16:00:00', '2027-05-05 16:00:00', '2027-05-05 16:30:00', 'Completed', 'Problemas respiratórios', 'Antibiótico e repouso.'),
-       (11, 11, 11, '2027-05-06 10:00:00', NULL, NULL, 'Scheduled', NULL, NULL),
-       (12, 12, 12, '2027-05-06 11:00:00', NULL, NULL, 'Scheduled', NULL, NULL),
-       (13, 13, 13, '2027-05-07 09:00:00', NULL, NULL, 'Scheduled', NULL, NULL),
-       (14, 14, 14, '2027-05-07 15:00:00', NULL, NULL, 'Scheduled', NULL, NULL),
-       (15, 15, 15, '2027-05-08 10:00:00', NULL, NULL, 'Scheduled', NULL, NULL),
-       (16, 1, 16, '2027-05-08 11:00:00', NULL, NULL, 'Cancelled', NULL, NULL),
-       (17, 2, 17, '2027-05-09 10:00:00', NULL, NULL, 'No-Show', NULL, NULL),
-       (18, 3, 18, '2027-05-09 12:00:00', NULL, NULL, 'Scheduled', NULL, NULL),
-       (19, 4, 19, '2027-05-10 09:00:00', NULL, NULL, 'Scheduled', NULL, NULL),
-       (20, 5, 20, '2027-05-10 14:00:00', NULL, NULL, 'Scheduled', NULL, NULL);
+INSERT INTO appointment (id_ani, id_emp, id_cli, sch_dat_app, sta_dat_app, end_dat_app, status_app, dia_app, com_app)
+VALUES (1, 1, 1, '2027-05-01 10:00:00', '2027-05-01 10:00:00', '2027-05-01 10:30:00', 'completed', 'Check-up anual', 'Animal saudável, vacinas em dia.'),
+       (2, 2, 2, '2027-05-01 11:00:00', '2027-05-01 11:05:00', '2027-05-01 11:40:00', 'completed', 'Otite externa', 'Prescrito tratamento tópico e oral.'),
+       (3, 3, 3, '2027-05-02 09:00:00', '2027-05-02 09:00:00', '2027-05-02 09:25:00', 'completed', 'Desparasitação', 'Administrado desparasitante interno.'),
+       (4, 4, 4, '2027-05-02 10:30:00', '2027-05-02 10:30:00', '2027-05-02 11:00:00', 'completed', 'Revisão de ferida', 'Cicatrização a decorrer bem.'),
+       (5, 5, 5, '2027-05-03 14:00:00', '2027-05-03 14:00:00', '2027-05-03 14:35:00', 'completed', 'Vacinação', 'Vacina polivalente administrada.'),
+       (6, 1, 6, '2027-05-03 15:30:00', '2027-05-03 15:30:00', '2027-05-03 16:00:00', 'completed', 'Problemas gastrointestinais', 'Dieta especial recomendada.'),
+       (7, 2, 7, '2027-05-04 10:00:00', '2027-05-04 10:00:00', '2027-05-04 10:20:00', 'completed', 'Check-up dentário', 'Sem problemas graves, limpeza recomendada.'),
+       (8, 3, 8, '2027-05-04 11:30:00', '2027-05-04 11:30:00', '2027-05-04 12:00:00', 'completed', 'Alergia cutânea', 'Identificado alérgeno, tratamento com anti-histamínicos.'),
+       (9, 4, 9, '2027-05-05 09:00:00', '2027-05-05 09:00:00', '2027-05-05 09:45:00', 'completed', 'Exame de rotina', 'Animal em excelente forma.'),
+       (10, 5, 10, '2027-05-05 16:00:00', '2027-05-05 16:00:00', '2027-05-05 16:30:00', 'completed', 'Problemas respiratórios', 'Antibiótico e repouso.'),
+       (11, 11, 11, '2027-05-06 10:00:00', NULL, NULL, 'scheduled', NULL, NULL),
+       (12, 12, 12, '2027-05-06 11:00:00', NULL, NULL, 'scheduled', NULL, NULL),
+       (13, 13, 13, '2027-05-07 09:00:00', NULL, NULL, 'scheduled', NULL, NULL),
+       (14, 14, 14, '2027-05-07 15:00:00', NULL, NULL, 'scheduled', NULL, NULL),
+       (15, 15, 15, '2027-05-08 10:00:00', NULL, NULL, 'scheduled', NULL, NULL),
+       (16, 1, 16, '2027-05-08 11:00:00', NULL, NULL, 'cancelled', NULL, NULL),
+       (17, 2, 17, '2027-05-09 10:00:00', NULL, NULL, 'no_show', NULL, NULL),
+       (18, 3, 18, '2027-05-09 12:00:00', NULL, NULL, 'scheduled', NULL, NULL),
+       (19, 4, 19, '2027-05-10 09:00:00', NULL, NULL, 'scheduled', NULL, NULL),
+       (20, 5, 20, '2027-05-10 14:00:00', NULL, NULL, 'scheduled', NULL, NULL);
 
 -- 4.2. OVERALL_ASSESSMENT (Para os primeiros 10 appointments - Completed)
 
-INSERT INTO overall_assessment (id_app, body_temp, weight, hrt_rate, resp_rate, general_status)
+insert into overall_assessment (id_app, bod_tmp_ova, wei_ova, hrt_rat_ova, res_rat_ova, gen_sta_ova)
 VALUES (1, 38.5, 25.0, 80, 20, 'Saudável, check-up anual'),
        (2, 39.0, 4.5, 110, 25, 'Ligeira desidratação'),
        (3, 38.2, 30.0, 75, 18, 'Excelente condição física'),
@@ -470,12 +470,12 @@ VALUES (1, 4, 6, '1 lata manhã e noite'),
 
 -- 4.6. APPOINTMENT_NOTIFICATION (Para clientes)
 
-INSERT INTO appointment_notification (id_cli, id_app, message)
+INSERT INTO appointment_notification (id_cli, id_app, msg_not)
 SELECT id_cli,
        id_app,
        'Lembrete: Consulta agendada para o seu animal.'
 FROM appointment
-WHERE status_app = 'Scheduled'
+WHERE status_app = 'scheduled'
 LIMIT 20;
 
 -- 4.7. INVOICE (Faturas das consultas terminadas)

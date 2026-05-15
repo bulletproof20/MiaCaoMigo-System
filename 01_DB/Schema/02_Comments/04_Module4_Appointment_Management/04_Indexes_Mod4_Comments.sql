@@ -14,7 +14,7 @@ comment on index idx_appointment_id_cli is
 comment on index idx_appointment_id_emp is
 'supports veterinarian workload queries';
 
-comment on index idx_appointment_id_animal is
+comment on index idx_appointment_id_ani is
 'supports animal medical history navigation';
 
 comment on index idx_appointment_vet_schedule is

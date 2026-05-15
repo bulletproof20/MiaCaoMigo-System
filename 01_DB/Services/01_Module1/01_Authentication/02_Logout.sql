@@ -66,7 +66,7 @@ begin
 	--raise notice '%', p_email;
     update login_record
     set sou_tim_log = now() -- set logout timestamp
-    where eml_usr = p_email
+    where ema_log = p_email
       and sou_tim_log is null
       and suc_log = true;
 

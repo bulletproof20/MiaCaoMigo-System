@@ -8,7 +8,7 @@ begin
     p_email := normalize_email(p_email);
 
     -- active employee
-    if is_employee_email(p_email) then
+    if fn_is_employee_email(p_email) then
 
         return exists (
 
@@ -62,7 +62,7 @@ begin
     -- 1. RETRIEVE STORED PASSWORD
     --=====================================================
 
-    if is_employee_email(p_email) then
+    if fn_is_employee_email(p_email) then
 
         -- employee password
         select e.pas_emp

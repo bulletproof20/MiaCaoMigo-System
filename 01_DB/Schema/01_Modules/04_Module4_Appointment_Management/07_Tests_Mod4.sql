@@ -42,14 +42,14 @@ begin
     raise notice 'Using client % animal % vet % specialty %', v_cli, v_ani, v_vet, v_spe;
 
     begin
-        call prc_create_appointment(v_cli, v_ani, v_vet, v_spe, now() + interval '3 days');
-        raise notice 'PASS: prc_create_appointment';
+        call sp_create_appointment(v_cli, v_ani, v_vet, v_spe, now() + interval '3 days');
+        raise notice 'PASS: sp_create_appointment';
     exception when others then
-        raise notice 'FAIL: prc_create_appointment — %', sqlerrm;
+        raise notice 'FAIL: sp_create_appointment — %', sqlerrm;
     end;
 
     begin
-        call prc_create_appointment(v_cli, v_ani, v_vet, v_spe, now() - interval '1 day');
+        call sp_create_appointment(v_cli, v_ani, v_vet, v_spe, now() - interval '1 day');
         raise notice 'FAIL: past appointment should be blocked';
     exception when others then
         if sqlerrm like '%passado%' then
@@ -71,7 +71,7 @@ begin
 
     if v_bad_spe is not null then
         begin
-            call prc_create_appointment(v_cli, v_ani, v_vet, v_bad_spe, now() + interval '8 days');
+            call sp_create_appointment(v_cli, v_ani, v_vet, v_bad_spe, now() + interval '8 days');
             raise notice 'FAIL: vet without specialty should be blocked';
         exception when others then
             if sqlerrm like '%especialidade%' or sqlerrm like '%credenciado%' or sqlerrm like '%associado%' then

@@ -5,12 +5,12 @@
 
 
 --=========================================================
--- PROCEDURE 1: prc_auto_close_clock_in_midnight
+-- PROCEDURE 1: sp_auto_close_clock_in_midnight
 -- Closes open clock-in records from previous days by setting
 -- the end time to midnight (00:00) of the current day.
 --=========================================================
 
-create or replace procedure prc_auto_close_clock_in_midnight()
+create or replace procedure sp_auto_close_clock_in_midnight()
 language plpgsql
 as $$
 begin
@@ -27,12 +27,12 @@ $$;
 
 
 --=========================================================
--- PROCEDURE 2: prc_auto_cancel_expired_absences
+-- PROCEDURE 2: sp_auto_cancel_expired_absences
 -- Automatically cancels pending absences whose end date
 -- has already passed, preserving historical records.
 --=========================================================
 
-create or replace procedure prc_auto_cancel_expired_absences()
+create or replace procedure sp_auto_cancel_expired_absences()
 language plpgsql
 as $$
 begin

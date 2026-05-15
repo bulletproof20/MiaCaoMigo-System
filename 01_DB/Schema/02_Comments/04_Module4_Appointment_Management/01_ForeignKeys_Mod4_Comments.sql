@@ -5,19 +5,19 @@
 -- modules 1–4 tables exist.
 --=========================================================
 
-comment on constraint fk_animal on appointment is
+comment on constraint fk_appointment_animal on appointment is
 'ensures appointments reference a live animal';
 
 comment on constraint fk_appointment_employee on appointment is
 'binds the visit to a responsible employee';
 
-comment on constraint fk_client on appointment is
+comment on constraint fk_appointment_client on appointment is
 'binds the visit to the owning client';
 
 comment on constraint fk_appointment_specialty on appointment is
 'binds the consultation to the catalog specialty that drives reporting and workload metrics';
 
-comment on constraint fk_appointment on overall_assessment is
+comment on constraint fk_overall_assessment_appointment on overall_assessment is
 'vitals row references its appointment';
 
 comment on constraint fk_anamnesis_appointment on anamnesis is
@@ -40,3 +40,6 @@ comment on constraint fk_pre_pro_product on rel_pre_prod is
 
 comment on constraint fk_appointment_notification_client on appointment_notification is
 'notification targets a registered client';
+
+comment on constraint fk_notification_appointment on appointment_notification is
+'notification references the related appointment';

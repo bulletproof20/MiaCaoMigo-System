@@ -21,7 +21,7 @@ $$ language plpgsql;
 
 
 --=========================================================
--- function: get_user_by_email
+-- function: fn_get_user_by_email
 --=========================================================
 -- description:
 -- retrieves the user identifier associated with a given email.
@@ -30,9 +30,9 @@ $$ language plpgsql;
 -- - supports both employee and client
 -- - navigates correctly through the data model
 --=========================================================
-drop function if exists get_user_by_email(varchar);
+drop function if exists fn_get_user_by_email(varchar);
 
-create function get_user_by_email(p_email varchar)
+create function fn_get_user_by_email(p_email varchar)
 returns integer as $$
 declare
     v_user_id integer;
@@ -43,7 +43,7 @@ begin
     -- 1. RETRIEVE USER ID
     --=====================================================
 
-    if is_employee_email(p_email) then
+    if fn_is_employee_email(p_email) then
 
         -- employee → user_account
         select e.id_usr
@@ -98,7 +98,7 @@ begin
     select exists (
         select 1
         from login_record lr
-        where lr.eml_usr = p_email
+        where lr.ema_log = p_email
           and lr.sou_tim_log is null
           and lr.suc_log = true
     )

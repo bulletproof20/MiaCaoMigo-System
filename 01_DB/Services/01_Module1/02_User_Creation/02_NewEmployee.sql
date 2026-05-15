@@ -79,7 +79,7 @@ begin
     -- retrieve existing shared identity
     v_id_usr_by_nif := fn_get_user_by_nif(p_nif_usr);
 
-    v_id_usr_by_email := get_user_by_email(p_ema_usr);
+    v_id_usr_by_email := fn_get_user_by_email(p_ema_usr);
 
     -- validate identity consistency
     if v_id_usr_by_nif is distinct from v_id_usr_by_email then

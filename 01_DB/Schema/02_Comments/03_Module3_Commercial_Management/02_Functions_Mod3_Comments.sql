@@ -8,20 +8,20 @@
 comment on function fn_get_available_stock(integer) is
 'aggregates positive stock quantities for a product across batches';
 
-comment on function trg_check_stock_before_sale_func() is
+comment on function fn_check_stock_before_sale() is
 'validates invoice lines against available stock before insert';
 
-comment on function trg_stock_after_sale_func() is
+comment on function fn_stock_after_sale() is
 'decrements fifo batches after a sale line is inserted';
 
-comment on function trg_update_invoice_total_func() is
+comment on function fn_update_invoice_total() is
 'recalculates invoice header totals when lines change';
 
-comment on function trg_return_restock_func() is
+comment on function fn_return_restock() is
 'creates restock rows when returns reference invoice lines';
 
-comment on function trg_prevent_inactive_product_sale_func() is
+comment on function fn_prevent_inactive_product_sale() is
 'blocks invoice lines for inactivated products';
 
-comment on function trg_set_return_return_date_func() is
+comment on function fn_set_return_inactivation_date() is
 'defaults return closure timestamps when omitted';

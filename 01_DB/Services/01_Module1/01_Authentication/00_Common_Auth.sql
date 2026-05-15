@@ -44,7 +44,7 @@ begin
     select exists (
         select 1
         from login_record lr
-        where lr.eml_usr = p_email
+        where lr.ema_log = p_email
           and lr.sou_tim_log is null
           and lr.suc_log = true
     )
@@ -90,7 +90,7 @@ begin
 
         update login_record
         set sou_tim_log = now() -- mark logout timestamp
-        where eml_usr = p_email -- match email
+        where ema_log = p_email -- match email
           and sou_tim_log is null -- only active sessions
           and suc_log = true; -- only valid sessions
 

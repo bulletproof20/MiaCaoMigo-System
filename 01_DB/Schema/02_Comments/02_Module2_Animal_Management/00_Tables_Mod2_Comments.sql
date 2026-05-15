@@ -81,7 +81,7 @@ comment on constraint pk_animal on animal is
 comment on constraint uq_reg_id_ani on animal is
 'enforces uniqueness of registration codes';
 
-comment on constraint chk_gen_ani on animal is
+comment on constraint ck_gen_ani on animal is
 'restricts gender codes to M, F, or null';
 
 
@@ -113,10 +113,10 @@ comment on column external_entity.typ_ext_ent is
 comment on constraint pk_external_entity on external_entity is
 'primary key for external_entity rows';
 
-comment on constraint chk_pho_ext_ent_format on external_entity is
+comment on constraint ck_pho_ext_ent_format on external_entity is
 'validates optional phone pattern';
 
-comment on constraint chk_ema_ext_ent_format on external_entity is
+comment on constraint ck_ema_ext_ent_format on external_entity is
 'validates optional email pattern';
 
 
@@ -151,7 +151,7 @@ comment on column ownership.id_emp is
 comment on constraint pk_ownership on ownership is
 'primary key for ownership rows';
 
-comment on constraint chk_ownership_dates on ownership is
+comment on constraint ck_ownership_dates on ownership is
 'ensures end date is not before start date';
 
 
@@ -221,7 +221,7 @@ comment on column delivery.id_ani is
 comment on constraint pk_delivery on delivery is
 'primary key for delivery rows';
 
-comment on constraint chk_delivery_dates on delivery is
+comment on constraint ck_delivery_dates on delivery is
 'ensures delivery timestamp is not before registration timestamp';
 
 

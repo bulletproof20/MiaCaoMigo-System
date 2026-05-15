@@ -1,29 +1,29 @@
 --=========================================================
--- PROCEDURE: prc_auto_update_no_show_appointments
--- Automatically updates the status of past, scheduled appointments to 'No-Show'.
+-- PROCEDURE: sp_auto_update_no_show_appointments
+-- Automatically updates the status of past, scheduled appointments to 'no_show'.
 -- This procedure is intended to be called by a scheduled job, typically
 -- running once per day after midnight.
 --=========================================================86
-create or replace procedure prc_auto_update_no_show_appointments()
+create or replace procedure sp_auto_update_no_show_appointments()
 language plpgsql
 as $$
 begin
     -- Updates appointments that were scheduled for any time before the current moment
-    -- and are still in 'Scheduled' status.
+    -- and are still in 'scheduled' status.
     update appointment
-    set status_app = 'No-Show'
+    set status_app = 'no_show'
     where
-        status_app = 'Scheduled'
+        status_app = 'scheduled'
         and sch_dat_app < now();
 end;
 $$;
 
 --=========================================================
--- PROCEDURE: prc_generate_appointment_warnings
+-- PROCEDURE: sp_generate_appointment_warnings
 -- Generates a warning message for clients who have an appointment the next day.
 -- This procedure is intended to be called by a scheduled job.
 --=========================================================
-create or replace procedure prc_generate_appointment_warnings()
+create or replace procedure sp_generate_appointment_warnings()
 language plpgsql
 as $$
 declare
@@ -38,23 +38,23 @@ begin
                an.nam_ani as nome_animal
         from appointment a
         join user_account c on a.id_cli = c.id_usr -- Assuming client name is in user_account
-        join animal an on a.id_animal = an.id_ani
+        join animal an on a.id_ani = an.id_ani
         join employee e on a.id_emp = e.id_emp
-        where a.sch_dat_app::date = current_date + interval '1 day' and a.status_app = 'Scheduled'
+        where a.sch_dat_app::date = current_date + interval '1 day' and a.status_app = 'scheduled'
     ) loop
         v_aviso := format('Lembrete: Bom dia %s! A sua consulta para o animal %s com o/a Dr(a). %s está marcada para amanhã.', consulta.nome_cliente, consulta.nome_animal, consulta.nome_veterinario);
-        insert into appointment_notification (id_cli, id_app, message) values (consulta.id_cli, consulta.id_app, v_aviso);
+        insert into appointment_notification (id_cli, id_app, msg_not) values (consulta.id_cli, consulta.id_app, v_aviso);
     end loop;
 end;
 $$;
 
 --=========================================================
--- PROCEDURE: prc_cancel_appointment
--- Cancels an appointment by setting its status to 'Cancelled'.
+-- PROCEDURE: sp_cancel_appointment
+-- Cancels an appointment by setting its status to 'cancelled'.
 -- The cancellation is only allowed if done more than 24 hours
 -- before the appointment's start time.
 --=========================================================
-create or replace procedure prc_cancel_appointment(p_app_id int)
+create or replace procedure sp_cancel_appointment(p_app_id int)
 language plpgsql
 as $$
 declare
@@ -73,18 +73,18 @@ begin
         raise exception 'A consulta só pode ser cancelada com mais de 24 horas de antecedência.';
     end if;
 
-    -- Update the status to 'Cancelled'
-    update appointment set status_app = 'Cancelled' where id_app = p_app_id;
+    -- Update the status to 'cancelled'
+    update appointment set status_app = 'cancelled' where id_app = p_app_id;
 end;
 $$;
 
 --=========================================================
--- PROCEDURE: prc_reschedule_appointment
+-- PROCEDURE: sp_reschedule_appointment
 -- Updates the scheduled time (sch_dat_app) of an existing appointment.
 -- The update is only allowed if done more than 24 hours
 -- before the original appointment's start time.
 --=========================================================
-create or replace procedure prc_reschedule_appointment(
+create or replace procedure sp_reschedule_appointment(
     p_app_id int,
     p_new_scheduled_time timestamp
 )
@@ -116,14 +116,14 @@ end;
 $$;
 
 --=========================================================
--- PROCEDURE: prc_create_appointment
+-- PROCEDURE: sp_create_appointment
 -- Creates a new appointment in the system.
 -- This procedure centralizes the logic for creating an appointment,
 -- based on the initial scheduling data.
 --=========================================================
-create or replace procedure prc_create_appointment(
+create or replace procedure sp_create_appointment(
     p_id_cli int,
-    p_id_animal int,
+    p_id_ani int,
     p_id_emp int,
     p_id_spe int,
     p_scheduled_time timestamp
@@ -131,30 +131,30 @@ create or replace procedure prc_create_appointment(
 language plpgsql
 as $$
 begin
-    -- Creates an appointment with a 'Scheduled' status.
+    -- Creates an appointment with a 'scheduled' status.
     -- The sta_dat_app and end_dat_app fields are left NULL, to be filled in by the vet later.
     -- Triggers enforce: past dates, overlaps, absences, ownership, vet × specialty (expert).
-    insert into appointment (id_cli, id_animal, id_emp, id_spe, sch_dat_app, status_app)
-    values (p_id_cli, p_id_animal, p_id_emp, p_id_spe, p_scheduled_time, 'Scheduled');
+    insert into appointment (id_cli, id_ani, id_emp, id_spe, sch_dat_app, status_app)
+    values (p_id_cli, p_id_ani, p_id_emp, p_id_spe, p_scheduled_time, 'scheduled');
 end;
 $$;
 
 --=========================================================
--- PROCEDURE: prc_start_appointment
--- Marks an appointment as 'In Progress' and sets its start time.
+-- PROCEDURE: sp_start_appointment
+-- Marks an appointment as 'in_progress' and sets its start time.
 -- To be called by the veterinarian when the consultation begins.
 --=========================================================
-create or replace procedure prc_start_appointment(p_app_id int)
+create or replace procedure sp_start_appointment(p_app_id int)
 language plpgsql
 as $$
 begin
     update appointment
     set
         sta_dat_app = now(),
-        status_app = 'In Progress'
+        status_app = 'in_progress'
     where
         id_app = p_app_id
-        and status_app in ('Scheduled'); -- Can start if it's scheduled 
+        and status_app in ('scheduled'); -- Can start if it's scheduled 
 
     if not found then
         raise exception 'Não foi possível iniciar a consulta. Verifique se o ID % existe e se o estado é "Scheduled".', p_app_id;
@@ -163,11 +163,11 @@ end;
 $$;
 
 --=========================================================
--- PROCEDURE: prc_end_appointment
--- Marks an appointment as 'Completed', sets its end time, and records diagnosis/comments.
+-- PROCEDURE: sp_end_appointment
+-- Marks an appointment as 'completed', sets its end time, and records diagnosis/comments.
 -- To be called by the veterinarian when the consultation ends.
 --=========================================================
-create or replace procedure prc_end_appointment(
+create or replace procedure sp_end_appointment(
     p_app_id int,
     p_diagnosis varchar(100),
     p_comments text
@@ -178,12 +178,12 @@ begin
     update appointment
     set
         end_dat_app = now(),
-        status_app = 'Completed',
+        status_app = 'completed',
         dia_app = p_diagnosis,
         com_app = p_comments
     where
         id_app = p_app_id
-        and status_app = 'In Progress'; -- Can only end an appointment that is in progress
+        and status_app = 'in_progress'; -- Can only end an appointment that is in progress
 
     if not found then
         raise exception 'Não foi possível terminar a consulta. Verifique se o ID % existe e se o estado é "In Progress".', p_app_id;
@@ -193,21 +193,18 @@ $$;
 
 
 --=========================================================
--- PROCEDURE: prc_prescription_for_appointment
+-- PROCEDURE: sp_prescription_for_appointment
 -- Creates a prescription record linked to a specific appointment.
 -- This procedure is intended to be called after the appointment is completed.
 --=========================================================
-create or replace procedure prc_prescription_for_appointment(
-    idd_app int,
-    description text
+create or replace procedure sp_prescription_for_appointment(
+    p_id_app int,
+    p_des_pre text
 )
 language plpgsql
 as $$
 begin
     insert into prescription (id_app, reg_dat_pre, des_pre)
-    values (idd_app, now(), description);
-end; 
+    values (p_id_app, now(), p_des_pre);
+end;
 $$;
-
-
-select * from appointment;

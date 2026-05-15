@@ -19,7 +19,7 @@ comment on table appointment is
 comment on column appointment.id_app is
 'unique appointment identifier';
 
-comment on column appointment.id_animal is
+comment on column appointment.id_ani is
 'animal receiving care';
 
 comment on column appointment.id_emp is
@@ -52,7 +52,7 @@ comment on column appointment.com_app is
 comment on constraint pk_appointment on appointment is
 'primary key for appointment rows';
 
-comment on constraint chk_appointment_flow on appointment is
+comment on constraint ck_appointment_flow on appointment is
 'ensures recorded end time is strictly after start time when both present';
 
 
@@ -66,28 +66,28 @@ comment on table overall_assessment is
 comment on column overall_assessment.id_app is
 'primary key and foreign key to appointment';
 
-comment on column overall_assessment.body_temp is
+comment on column overall_assessment.bod_tmp_ova is
 'body temperature in degrees celsius';
 
-comment on column overall_assessment.weight is
+comment on column overall_assessment.wei_ova is
 'weight measurement in kilograms';
 
-comment on column overall_assessment.hrt_rate is
+comment on column overall_assessment.hrt_rat_ova is
 'heart rate in beats per minute';
 
-comment on column overall_assessment.resp_rate is
+comment on column overall_assessment.res_rat_ova is
 'respiratory rate in breaths per minute';
 
-comment on column overall_assessment.general_status is
+comment on column overall_assessment.gen_sta_ova is
 'qualitative assessment narrative';
 
 comment on constraint pk_overall_assessment on overall_assessment is
 'primary key for overall_assessment rows';
 
-comment on constraint chk_body_temp on overall_assessment is
+comment on constraint ck_bod_tmp_ova on overall_assessment is
 'keeps temperature within plausible veterinary bounds';
 
-comment on constraint chk_weight on overall_assessment is
+comment on constraint ck_wei_ova on overall_assessment is
 'requires positive weight measurements';
 
 
@@ -156,7 +156,7 @@ comment on column rel_app_product.dos_pre_pro is
 comment on constraint pk_appointment_product on rel_app_product is
 'composite primary key';
 
-comment on constraint chk_qty_rel_app_product on rel_app_product is
+comment on constraint ck_qty_rel_app_product on rel_app_product is
 'requires strictly positive quantities';
 
 
@@ -182,7 +182,7 @@ comment on column rel_pre_prod.dos_pre_pro is
 comment on constraint pk_prescription_product on rel_pre_prod is
 'composite primary key';
 
-comment on constraint chk_qty_rel_pre_prod on rel_pre_prod is
+comment on constraint ck_qty_rel_pre_prod on rel_pre_prod is
 'requires strictly positive quantities';
 
 
@@ -199,13 +199,13 @@ comment on column appointment_notification.id_not is
 comment on column appointment_notification.id_cli is
 'target client';
 
-comment on column appointment_notification.message is
+comment on column appointment_notification.msg_not is
 'human-readable notification body';
 
-comment on column appointment_notification.created_at is
+comment on column appointment_notification.cre_tim_not is
 'creation timestamp';
 
-comment on column appointment_notification.is_read is
+comment on column appointment_notification.rea_not is
 'read/unread flag for client portals';
 
 comment on constraint pk_appointment_notification on appointment_notification is

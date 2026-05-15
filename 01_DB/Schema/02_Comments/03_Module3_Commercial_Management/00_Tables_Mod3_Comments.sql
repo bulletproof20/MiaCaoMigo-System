@@ -122,7 +122,7 @@ comment on column stock.ent_dat_sto is
 comment on constraint pk_stock on stock is
 'primary key for stock rows';
 
-comment on constraint chk_qty_sto on stock is
+comment on constraint ck_qty_sto on stock is
 'disallows negative quantities';
 
 
@@ -163,7 +163,7 @@ comment on column purchase.id_emp is
 comment on constraint pk_purchase on purchase is
 'primary key for purchase rows';
 
-comment on constraint chk_sta_pur on purchase is
+comment on constraint ck_sta_pur on purchase is
 'restricts purchase status vocabulary';
 
 
@@ -198,7 +198,7 @@ comment on column purchase_line.id_sto is
 comment on constraint pk_purchase_line on purchase_line is
 'primary key for purchase_line rows';
 
-comment on constraint chk_qty_pln on purchase_line is
+comment on constraint ck_qty_pln on purchase_line is
 'requires strictly positive quantities';
 
 
@@ -230,7 +230,7 @@ comment on column invoice_line.iva_inv_lin is
 comment on constraint pk_invoice_line on invoice_line is
 'primary key for invoice_line rows';
 
-comment on constraint chk_qty_inv_lin on invoice_line is
+comment on constraint ck_qty_inv_lin on invoice_line is
 'requires strictly positive sale quantities';
 
 
@@ -282,7 +282,7 @@ comment on column purchase_product.qty_pur_pro is
 comment on constraint pk_purchase_product on purchase_product is
 'composite primary key';
 
-comment on constraint chk_qty_purchase on purchase_product is
+comment on constraint ck_qty_purchase on purchase_product is
 'enforces strictly positive quantities';
 
 
@@ -305,7 +305,7 @@ comment on column return_product.qty_ret_pro is
 comment on constraint pk_return_product on return_product is
 'composite primary key';
 
-comment on constraint chk_qty_return on return_product is
+comment on constraint ck_qty_return on return_product is
 'enforces strictly positive quantities';
 
 

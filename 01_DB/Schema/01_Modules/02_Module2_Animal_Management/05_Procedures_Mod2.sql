@@ -7,10 +7,10 @@
 --=========================================================
 
 --=========================================================
--- PROCEDURE 1: prc_register_animal
+-- PROCEDURE 1: sp_register_animal
 -- Registers a new animal in the system.
 --=========================================================
-create or replace procedure prc_register_animal( p_reg_id_ani varchar, p_nam_ani varchar, p_dat_bir_ani date, p_gen_ani char, p_ori_ani varchar, p_sta_ani varchar, p_id_spc int, p_id_bre int default null ) language plpgsql as $$ begin
+create or replace procedure sp_register_animal( p_reg_id_ani varchar, p_nam_ani varchar, p_dat_bir_ani date, p_gen_ani char, p_ori_ani varchar, p_sta_ani varchar, p_id_spc int, p_id_bre int default null ) language plpgsql as $$ begin
 insert into animal (
     reg_id_ani,
     nam_ani,
@@ -36,11 +36,11 @@ end;
 $$;
 
 --=========================================================
--- PROCEDURE 2: prc_assign_ownership
+-- PROCEDURE 2: sp_assign_ownership
 -- Assigns an animal to a client, creating an ownership record
 -- and updating the animal's status to 'Adotado'.
 --=========================================================
-create or replace procedure prc_assign_ownership( p_id_ani int, p_id_cli int, p_id_emp int, p_mot_own varchar ) language plpgsql as $$
+create or replace procedure sp_assign_ownership( p_id_ani int, p_id_cli int, p_id_emp int, p_mot_own varchar ) language plpgsql as $$
 declare
     v_animal_status varchar;
 begin
@@ -78,11 +78,11 @@ end;
 $$;
 
 --=========================================================
--- PROCEDURE 3: prc_end_ownership
+-- PROCEDURE 3: sp_end_ownership
 -- Ends an active ownership for an animal, setting the end date
 -- and changing the animal's status back to 'Interno'.
 --=========================================================
-create or replace procedure prc_end_ownership(p_id_ani int, p_reason varchar) language plpgsql as $$
+create or replace procedure sp_end_ownership(p_id_ani int, p_reason varchar) language plpgsql as $$
 declare
     v_ownership_id int;
 begin
@@ -119,11 +119,11 @@ end;
 $$;
 
 --=========================================================
--- PROCEDURE 4: prc_record_delivery
+-- PROCEDURE 4: sp_record_delivery
 -- Records the delivery (rescue/arrival) of an animal,
 -- creating a delivery record and linking employees.
 --=========================================================
-create or replace procedure prc_record_delivery( p_id_ani int, p_res_dat_del timestamp, p_res_loc_del varchar, p_cli_sta_del varchar, p_id_ext_ent int, p_employee_ids int[] ) language plpgsql as $$
+create or replace procedure sp_record_delivery( p_id_ani int, p_res_dat_del timestamp, p_res_loc_del varchar, p_cli_sta_del varchar, p_id_ext_ent int, p_employee_ids int[] ) language plpgsql as $$
 declare
     v_id_del int;
     v_emp_id int;
@@ -173,10 +173,10 @@ end;
 $$;
 
 --=========================================================
--- PROCEDURE 5: prc_process_concession
+-- PROCEDURE 5: sp_process_concession
 -- Processes the transfer of an animal to an external entity.
 --=========================================================
-create or replace procedure prc_process_concession( p_id_ani int, p_id_ext_ent int, p_id_emp int, p_mot_con varchar, p_cli_sta_con varchar ) language plpgsql as $$
+create or replace procedure sp_process_concession( p_id_ani int, p_id_ext_ent int, p_id_emp int, p_mot_con varchar, p_cli_sta_con varchar ) language plpgsql as $$
 declare
     v_animal_status varchar;
 begin

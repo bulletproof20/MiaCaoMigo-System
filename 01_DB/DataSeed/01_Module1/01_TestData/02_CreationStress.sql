@@ -458,7 +458,7 @@ insert into schedule (id_emp, day_wee_sch, sta_tim_sch, fin_hou_sch) values
 -- 13. LOGIN_RECORD (authentication creation telemetry)
 --=========================================================
 
-insert into login_record (sig_tim_log, sou_tim_log, suc_log, ip_add_log, eml_usr, id_usr) values
+insert into login_record (sig_tim_log, sou_tim_log, suc_log, ip_add_log, ema_log, id_usr) values
     (current_timestamp - interval '26 days 4 hours', current_timestamp - interval '26 days 1 hours', true, '10.40.12.18'::inet, '20@miacaomigo.pt', 20),
     (current_timestamp - interval '20 days 6 hours', current_timestamp - interval '20 days 2 hours', true, '10.40.12.19'::inet, '1@miacaomigo.pt', 1),
     (current_timestamp - interval '18 days 3 hours', current_timestamp - interval '18 days', true, '10.40.20.22'::inet, '8@miacaomigo.pt', 8),

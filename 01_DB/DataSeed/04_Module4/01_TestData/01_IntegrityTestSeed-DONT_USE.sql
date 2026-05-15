@@ -27,7 +27,7 @@ restart identity cascade;
 -- veterinarians id_emp 4 and 10 with matching expert rows.
 --=========================================================
 insert into appointment (
-    id_animal,
+    id_ani,
     id_emp,
     id_cli,
     id_spe,
@@ -39,27 +39,27 @@ insert into appointment (
     com_app
 ) values
 -- Client 4 + animal 3 (ownership active in default Mod2 seed)
-(3, 4, 4, 1, now() + interval '1 day', now() + interval '25 hours', now() + interval '26 hours', 'Scheduled', null, 'Check-up anual'),
-(3, 10, 4, 2, now() - interval '2 days', now() - interval '47 hours', now() - interval '46 hours', 'Completed', 'Otite externa', 'Limpeza efetuada'),
-(3, 4, 4, 7, now() + interval '2 days', now() + interval '49 hours', now() + interval '50 hours', 'Scheduled', null, 'Reforço vacina'),
-(3, 10, 4, 5, now() + interval '3 days', now() + interval '73 hours', now() + interval '74 hours', 'Scheduled', null, 'Vacinação anual'),
-(3, 4, 4, 1, now() - interval '1 day', now() - interval '23 hours', now() - interval '22 hours', 'Completed', 'Revisão pós-operatória', 'Tudo ok'),
-(3, 10, 4, 2, now() + interval '4 days', now() + interval '97 hours', now() + interval '98 hours', 'Scheduled', null, 'Consulta de rotina'),
-(3, 4, 4, 7, now() + interval '5 days', now() + interval '121 hours', now() + interval '122 hours', 'Scheduled', null, 'Exame de sangue'),
-(3, 10, 4, 5, now() - interval '5 days', now() - interval '120 hours', now() - interval '119 hours', 'Completed', 'Dermatite', 'Tratamento tópico'),
-(3, 4, 4, 1, now() + interval '6 days', now() + interval '145 hours', now() + interval '146 hours', 'Scheduled', null, 'Check-up dentário'),
-(3, 10, 4, 2, now() - interval '10 days', now() - interval '240 hours', now() - interval '239 hours', 'Completed', 'Gastroenterite', 'Dieta especial'),
-(3, 4, 4, 7, now() + interval '7 days', now() + interval '169 hours', now() + interval '170 hours', 'Scheduled', null, 'Consulta de acompanhamento'),
-(3, 10, 4, 5, now() - interval '15 days', now() - interval '360 hours', now() - interval '359 hours', 'Completed', 'Fratura', 'Imobilização'),
-(3, 4, 4, 1, now() + interval '8 days', now() + interval '193 hours', now() + interval '194 hours', 'Scheduled', null, 'Consulta de emergência'),
-(3, 10, 4, 2, now() - interval '20 days', now() - interval '480 hours', now() - interval '479 hours', 'Completed', 'Infeção urinária', 'Antibióticos'),
-(3, 4, 4, 7, now() + interval '9 days', now() + interval '217 hours', now() + interval '218 hours', 'Scheduled', null, 'Consulta pré-cirúrgica');
+(3, 4, 4, 1, now() + interval '1 day', now() + interval '25 hours', now() + interval '26 hours', 'scheduled', null, 'Check-up anual'),
+(3, 10, 4, 2, now() - interval '2 days', now() - interval '47 hours', now() - interval '46 hours', 'completed', 'Otite externa', 'Limpeza efetuada'),
+(3, 4, 4, 7, now() + interval '2 days', now() + interval '49 hours', now() + interval '50 hours', 'scheduled', null, 'Reforço vacina'),
+(3, 10, 4, 5, now() + interval '3 days', now() + interval '73 hours', now() + interval '74 hours', 'scheduled', null, 'Vacinação anual'),
+(3, 4, 4, 1, now() - interval '1 day', now() - interval '23 hours', now() - interval '22 hours', 'completed', 'Revisão pós-operatória', 'Tudo ok'),
+(3, 10, 4, 2, now() + interval '4 days', now() + interval '97 hours', now() + interval '98 hours', 'scheduled', null, 'Consulta de rotina'),
+(3, 4, 4, 7, now() + interval '5 days', now() + interval '121 hours', now() + interval '122 hours', 'scheduled', null, 'Exame de sangue'),
+(3, 10, 4, 5, now() - interval '5 days', now() - interval '120 hours', now() - interval '119 hours', 'completed', 'Dermatite', 'Tratamento tópico'),
+(3, 4, 4, 1, now() + interval '6 days', now() + interval '145 hours', now() + interval '146 hours', 'scheduled', null, 'Check-up dentário'),
+(3, 10, 4, 2, now() - interval '10 days', now() - interval '240 hours', now() - interval '239 hours', 'completed', 'Gastroenterite', 'Dieta especial'),
+(3, 4, 4, 7, now() + interval '7 days', now() + interval '169 hours', now() + interval '170 hours', 'scheduled', null, 'Consulta de acompanhamento'),
+(3, 10, 4, 5, now() - interval '15 days', now() - interval '360 hours', now() - interval '359 hours', 'completed', 'Fratura', 'Imobilização'),
+(3, 4, 4, 1, now() + interval '8 days', now() + interval '193 hours', now() + interval '194 hours', 'scheduled', null, 'Consulta de emergência'),
+(3, 10, 4, 2, now() - interval '20 days', now() - interval '480 hours', now() - interval '479 hours', 'completed', 'Infeção urinária', 'Antibióticos'),
+(3, 4, 4, 7, now() + interval '9 days', now() + interval '217 hours', now() + interval '218 hours', 'scheduled', null, 'Consulta pré-cirúrgica');
 
 
 --=========================================================
 -- 2. OVERALL ASSESSMENT
 --=========================================================
-insert into overall_assessment (id_app, body_temp, weight, hrt_rate, resp_rate, general_status) values
+insert into overall_assessment (id_app, bod_tmp_ova, wei_ova, hrt_rat_ova, res_rat_ova, gen_sta_ova) values
 (5, 37.8, 15.0, 75, 18, 'Recuperação excelente, sem sinais de complicação.'),
 (8, 39.0, 8.2, 90, 25, 'Pele avermelhada e com crostas, prurido intenso.'),
 (10, 39.5, 10.1, 100, 30, 'Vómitos e diarreia, desidratado.'),

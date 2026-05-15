@@ -154,7 +154,7 @@ values
 -- LOGIN_RECORD
 --=========================================================
 
-insert into login_record (sig_tim_log,sou_tim_log,suc_log,ip_add_log,eml_usr,id_usr)
+insert into login_record (sig_tim_log,sou_tim_log,suc_log,ip_add_log,ema_log,id_usr)
 values
 
 -- successful employee sessions
@@ -257,7 +257,7 @@ insert into login_record (
     sou_tim_log,
     suc_log,
     ip_add_log,
-    eml_usr,
+    ema_log,
     id_usr
 )
 values

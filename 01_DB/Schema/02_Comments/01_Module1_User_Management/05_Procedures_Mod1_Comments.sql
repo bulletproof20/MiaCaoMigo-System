@@ -12,17 +12,17 @@
 
 
 -- =========================================================
--- prc_auto_close_clock_in_midnight
+-- sp_auto_close_clock_in_midnight
 -- =========================================================
 
-comment on procedure prc_auto_close_clock_in_midnight() is
+comment on procedure sp_auto_close_clock_in_midnight() is
 'automatically closes open employee clock-in sessions from previous days by assigning midnight as the closing timestamp';
 
 
 
 -- =========================================================
--- prc_auto_cancel_expired_absences
+-- sp_auto_cancel_expired_absences
 -- =========================================================
 
-comment on procedure prc_auto_cancel_expired_absences() is
+comment on procedure sp_auto_cancel_expired_absences() is
 'automatically cancels pending absences whose scheduled absence interval has already expired';
