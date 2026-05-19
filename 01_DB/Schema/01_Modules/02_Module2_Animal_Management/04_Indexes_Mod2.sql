@@ -6,22 +6,14 @@
 --
 -- DESCRIPTION
 -- ---------------------------------------------------------
--- Supporting extension install, partial uniques, and exclusion constraints
--- that complement Module 2 triggers for animal ownership integrity.
---
--- This file contains:
--- - btree_gist enablement
--- - Delivery and ownership uniqueness aids
--- - GiST ownership overlap exclusion
--- ---------------------------------------------------------
+-- Integrity partial uniques, GiST exclusion, and btree_gist
+-- enablement for ownership and delivery rules.
 --
 -- LOAD ORDER
 -- ---------------------------------------------------------
 -- Requires:
 -- - delivery and ownership tables materialized
---
--- Must load before:
--- - Bulk loads assuming uniqueness and exclusion rules
+-- - btree_gist (also installed in 03_Loaders/00_Extensions.sql)
 -- =========================================================
 
 -- =========================================================
@@ -29,31 +21,52 @@
 -- =========================================================
 
 create extension if not exists btree_gist;
- 
+
+
 -- =========================================================
--- Enforces at most one delivery record per animal
+-- INTEGRITY — at most one delivery per animal
+-- =========================================================
+-- Optimizes:
+--   - delivery uniqueness per animal intake pipeline
+--   - animal-centric delivery lookups
+--
+-- Partial UNIQUE replaces redundant secondary index on id_ani.
 -- =========================================================
 
 drop index if exists uq_animal_single_delivery;
+
 create unique index uq_animal_single_delivery
-on delivery(id_ani);
+on delivery (id_ani);
 
 
 -- =========================================================
--- Enforces a single active ownership interval per animal
+-- INTEGRITY — single active ownership per animal
+-- =========================================================
+-- Optimizes:
+--   - adoption and end-ownership procedures
+--   - vw_active_ownership_detail (end_dat_own is null)
+--
+-- Enforces one open custody interval per animal.
 -- =========================================================
 
 drop index if exists uq_ownership_active_per_animal;
+
 create unique index uq_ownership_active_per_animal
-on ownership(id_ani)
+on ownership (id_ani)
 where end_dat_own is null;
 
 
 -- =========================================================
--- Prevents overlapping ownership dateranges per animal
+-- INTEGRITY — non-overlapping ownership date ranges
+-- =========================================================
+-- Optimizes:
+--   - ownership overlap validation (GiST exclusion)
+--
+-- Prevents intersecting custody intervals per animal.
 -- =========================================================
 
 alter table ownership drop constraint if exists ex_ownership_overlap;
+
 alter table ownership
 add constraint ex_ownership_overlap
 exclude using gist (

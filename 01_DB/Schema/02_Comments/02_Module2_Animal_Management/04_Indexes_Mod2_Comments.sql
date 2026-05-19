@@ -1,15 +1,12 @@
 -- =========================================================
 -- comments: indexes - module 2
 -- =========================================================
--- metadata documentation for uniqueness filters and temporal
--- exclusion constraints supporting animal workflows.
--- =========================================================
 
 comment on index uq_animal_single_delivery is
-'ensures each animal has at most one delivery intake row';
+'unique: at most one delivery record per animal';
 
 comment on index uq_ownership_active_per_animal is
-'partial unique index limiting one open-ended ownership interval per animal';
+'partial unique: one open ownership interval per animal';
 
 comment on constraint ex_ownership_overlap on ownership is
-'prevents overlapping ownership date ranges per animal via GiST exclusion';
+'gist exclusion: non-overlapping custody date ranges per animal';

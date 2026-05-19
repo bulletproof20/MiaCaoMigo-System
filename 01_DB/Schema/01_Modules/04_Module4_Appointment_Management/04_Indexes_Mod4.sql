@@ -6,27 +6,15 @@
 --
 -- DESCRIPTION
 -- ---------------------------------------------------------
--- Performance indexes and GiST exclusion enforcing veterinarian
--- schedule spacing for active appointments.
---
--- This file contains:
--- - Filtered B-tree indexes for dashboards and jobs
--- - Composite notification lookup index
--- - Exclusion constraint preventing double-booked vets
--- ---------------------------------------------------------
+-- Integrity GiST exclusion, scheduling partial indexes, FK
+-- lookup aids, and notification inbox support. Avoids broad
+-- redundant indexes on sch_dat_app alone.
 --
 -- LOAD ORDER
 -- ---------------------------------------------------------
 -- Requires:
 -- - appointment, appointment_notification tables
--- - btree_gist extension (install externally if not present)
---
--- Must load before:
--- - 06_Jobs_Mod4.sql (queries assume supporting indexes)
--- =========================================================
-
--- =========================================================
--- Drops prior module indexes/constraints for idempotent reloads
+-- - btree_gist extension
 -- =========================================================
 
 drop index if exists idx_appointment_status_for_jobs;
@@ -35,40 +23,19 @@ drop index if exists idx_appointment_id_emp;
 drop index if exists idx_appointment_id_ani;
 drop index if exists idx_appointment_vet_schedule;
 drop index if exists idx_appointment_sch_dat_app;
+drop index if exists idx_appointment_operational_day;
 drop index if exists idx_notification_client_read_status;
 alter table appointment drop constraint if exists ex_appointment_vet_overlap;
 
--- =========================================================
--- Accelerates job queries over scheduled future appointments
--- =========================================================
-
-create index idx_appointment_status_for_jobs
-on appointment (sch_dat_app)
-where status_app = 'scheduled';
 
 -- =========================================================
--- Speeds up joins and filters on foreign keys + vet schedules
+-- INTEGRITY — veterinarian slot overlap prevention
 -- =========================================================
-
-create index idx_appointment_id_cli on appointment (id_cli);
-create index idx_appointment_id_emp on appointment (id_emp);
-create index idx_appointment_id_ani on appointment (id_ani);
-create index idx_appointment_vet_schedule on appointment(id_emp, sch_dat_app) where status_app = 'scheduled';
-
--- =========================================================
--- Supports chronological reporting and ad hoc range scans
--- =========================================================
-
-create index idx_appointment_sch_dat_app on appointment (sch_dat_app);
-
--- =========================================================
--- Optimizes unread notifications per client inbox
--- =========================================================
-
-create index idx_notification_client_read_status on appointment_notification (id_cli, rea_not);
-
--- =========================================================
--- Prevents overlapping 30-minute slots per veterinarian
+-- Optimizes:
+--   - double-booking prevention for scheduled visits
+--   - fn_block_overlapping_appointments validation
+--
+-- GiST exclusion on 30-minute slots per id_emp (scheduled only).
 -- =========================================================
 
 alter table appointment
@@ -77,3 +44,106 @@ exclude using gist (
     id_emp with =,
     tsrange(sch_dat_app, sch_dat_app + interval '30 minutes') with &&
 ) where (status_app = 'scheduled');
+
+
+-- =========================================================
+-- SCHEDULING — cron jobs on scheduled appointments
+-- =========================================================
+-- Optimizes:
+--   - sp_auto_update_no_show_appointments
+--   - sp_generate_appointment_warnings (scheduled + date filter)
+--   - partial scans on status_app = scheduled ordered by time
+--
+-- Replaces a generic sch_dat_app index for job-shaped queries.
+-- =========================================================
+
+create index idx_appointment_status_for_jobs
+on appointment (sch_dat_app)
+where status_app = 'scheduled';
+
+
+-- =========================================================
+-- SCHEDULING — veterinarian calendar (scheduled)
+-- =========================================================
+-- Optimizes:
+--   - overlap checks and vet schedule queries
+--   - filters on (id_emp, sch_dat_app) for scheduled rows
+--
+-- Leading id_emp supports vet-centric dashboards; partial
+-- narrows to bookable visits only.
+-- =========================================================
+
+create index idx_appointment_vet_schedule
+on appointment (id_emp, sch_dat_app)
+where status_app = 'scheduled';
+
+
+-- =========================================================
+-- SCHEDULING — daily operational board
+-- =========================================================
+-- Optimizes:
+--   - vw_appointments_today
+--   - same-day filters on sch_dat_app for active visit states
+--
+-- Partial index covers scheduled and in-progress same-day loads.
+-- =========================================================
+
+create index idx_appointment_operational_day
+on appointment (sch_dat_app)
+where status_app in ('scheduled', 'in_progress');
+
+
+-- =========================================================
+-- OPERATIONAL — client appointment history
+-- =========================================================
+-- Optimizes:
+--   - vw_appointment_detail client joins
+--   - client-centric appointment listings
+--
+-- FK child index on appointment.id_cli.
+-- =========================================================
+
+create index idx_appointment_id_cli
+on appointment (id_cli);
+
+
+-- =========================================================
+-- OPERATIONAL — veterinarian workload (all statuses)
+-- =========================================================
+-- Optimizes:
+--   - appointment lookups by id_emp outside scheduled-only paths
+--   - in_progress and completed visit queries per vet
+--
+-- Complements idx_appointment_vet_schedule (scheduled partial).
+-- =========================================================
+
+create index idx_appointment_id_emp
+on appointment (id_emp);
+
+
+-- =========================================================
+-- OPERATIONAL — animal medical history navigation
+-- =========================================================
+-- Optimizes:
+--   - vw_appointment_detail animal joins
+--   - animal-centric appointment history
+--
+-- FK child index on appointment.id_ani.
+-- =========================================================
+
+create index idx_appointment_id_ani
+on appointment (id_ani);
+
+
+-- =========================================================
+-- OPERATIONAL — client notification inbox
+-- =========================================================
+-- Optimizes:
+--   - unread notification feeds (id_cli, rea_not)
+--   - client notification panels
+--
+-- Composite index matches typical inbox filter order.
+-- =========================================================
+
+create index idx_notification_client_read_status
+on appointment_notification (id_cli, rea_not);

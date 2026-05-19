@@ -3,10 +3,10 @@
 -- =========================================================
 
 comment on index ix_stock_id_pro is
-'supports stock availability lookups and FIFO scans by product';
+'b-tree: stock availability and fifo consumption by product';
 
 comment on index ix_purchase_line_id_pur is
-'supports purchase line aggregation when receiving orders';
+'b-tree: purchase line aggregation and receiving workflows';
 
 comment on index ix_invoice_line_id_inv is
-'supports invoice total recalculation from child lines';
+'b-tree: invoice total recalculation from line items';
