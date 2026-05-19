@@ -55,7 +55,7 @@ CALL sp_check_restock_needs();
 SELECT fn_create_purchase(1, NULL); 
 
 -- 2. Agora já sabes que a compra é a 42, podes adicionar os produtos a ela:
-INSERT INTO purchase_line (ID_PURCHASE, ID_PRODUCT, BATCH, QUANTITY, UNIT_COST) 
+INSERT INTO purchase_line (ID_PURCHASE, id_product, BATCH, QUANTITY, UNIT_COST) 
 VALUES (43, 10, 'LOTE-TESTE', 23, 14.00);
 
 

@@ -1,58 +1,68 @@
---- ========================================================= ------
+-- =========================================================
+-- MODULE 3 — COMMERCIAL MANAGEMENT
+-- =========================================================
+-- FILE: 03_Triggers_Mod3.sql (Sincronizado)
+-- =========================================================
 
-
---Calls low stock function befor inserting new line 
-
+-- =========================================================
+-- Validates sellable quantity against on-hand stock
+-- =========================================================
+DROP TRIGGER IF EXISTS trg_check_stock_before_sale ON invoice_line;
 CREATE TRIGGER trg_check_stock_before_sale
 BEFORE INSERT ON invoice_line
 FOR EACH ROW
-EXECUTE FUNCTION trg_check_stock_before_sale_func();
+EXECUTE FUNCTION fn_check_stock_before_sale();
 
-
-
--- cals function that updates stock after a sale
+-- =========================================================
+-- Applies FIFO stock withdrawal after each sale line
+-- =========================================================
+DROP TRIGGER IF EXISTS trg_stock_after_sale ON invoice_line;
 CREATE TRIGGER trg_stock_after_sale
 AFTER INSERT ON invoice_line
 FOR EACH ROW
-EXECUTE FUNCTION trg_stock_after_sale_func();
+EXECUTE FUNCTION fn_stock_after_sale();
 
-
-
--- calls function that updates invoice total after inserting/updating/deleting an invoice line
-
+-- =========================================================
+-- Keeps invoice totals in sync with line changes
+-- =========================================================
+DROP TRIGGER IF EXISTS trg_update_invoice_total ON invoice_line;
 CREATE TRIGGER trg_update_invoice_total
 AFTER INSERT OR UPDATE OR DELETE ON invoice_line
 FOR EACH ROW
-EXECUTE FUNCTION trg_update_invoice_total_func();
+EXECUTE FUNCTION fn_update_invoice_total();
 
--- calls function that restocks products after a return is inserted
-
+-- =========================================================
+-- Replenishes stock when a customer return is posted
+-- =========================================================
+DROP TRIGGER IF EXISTS trg_return_restock ON "return";
 CREATE TRIGGER trg_return_restock
 AFTER INSERT ON "return"
 FOR EACH ROW
-EXECUTE FUNCTION trg_return_restock_func();
+EXECUTE FUNCTION fn_return_restock();
 
-
--- calls function that prevents sales of inactive products
-
+-- =========================================================
+-- Blocks invoice lines for inactive catalog items
+-- =========================================================
+DROP TRIGGER IF EXISTS trg_prevent_inactive_product_sale ON invoice_line;
 CREATE TRIGGER trg_prevent_inactive_product_sale
 BEFORE INSERT ON invoice_line
 FOR EACH ROW
-EXECUTE FUNCTION trg_prevent_inactive_product_sale_func();
+EXECUTE FUNCTION fn_prevent_inactive_product_sale();
 
-
-
-
--- calls function that sets return date after inserting a return
-
+-- =========================================================
+-- Defaults return closure metadata when omitted
+-- =========================================================
+DROP TRIGGER IF EXISTS trg_set_return_return_date ON "return";
 CREATE TRIGGER trg_set_return_return_date
 BEFORE INSERT ON "return"
 FOR EACH ROW
-EXECUTE FUNCTION trg_set_return_return_date_func();
+EXECUTE FUNCTION fn_set_return_date();
 
-
--- calls function that updates purchase total after inserting/updating/deleting a purchase line
-CREATE TRIGGER trg_update_purchase_total
-AFTER INSERT OR UPDATE OR DELETE ON purchase_line
+-- =========================================================
+-- Raises notice for low stock thresholds after entry
+-- =========================================================
+DROP TRIGGER IF EXISTS trg_warn_low_stock ON invoice_line;
+CREATE TRIGGER trg_warn_low_stock
+AFTER INSERT ON invoice_line
 FOR EACH ROW
-EXECUTE FUNCTION trg_update_purchase_total_func();
+EXECUTE FUNCTION fn_warn_low_stock();
