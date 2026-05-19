@@ -45,7 +45,7 @@ create table family (
     id_fam int generated always as identity,
     -- Family identifier
 
-    nam_fam varchar(100) not null,
+    nam_fam varchar (70) not null,
     -- Name
 
     des_fam text,
@@ -127,10 +127,12 @@ create table product (
     -- Minimum stock level,
 
 
-    constraint pk_product primary key (id_pro),
+    constraint pk_product primary key (id_pro)
     -- Unique identifier
 
-    constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete restrict
+
+    --
+    --constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete restrict
     -- Links product to family. Outras FKs serão adicionadas no final.
 
 );

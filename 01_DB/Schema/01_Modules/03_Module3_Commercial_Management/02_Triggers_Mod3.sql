@@ -53,6 +53,6 @@ EXECUTE FUNCTION trg_set_return_return_date_func();
 
 -- calls function that updates purchase total after inserting/updating/deleting a purchase line
 CREATE TRIGGER trg_update_purchase_total
-AFTER INSERT OR UPDATE OR DELETE ON PurchaseLine
+AFTER INSERT OR UPDATE OR DELETE ON purchase_line
 FOR EACH ROW
 EXECUTE FUNCTION trg_update_purchase_total_func();

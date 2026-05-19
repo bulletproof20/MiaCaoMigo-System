@@ -35,7 +35,7 @@ SELECT * FROM vw_produtos_para_encomendar order by stock_minimo desc;
 UPDATE product SET min_sto = 50 WHERE id_pro = 1;
 
 -- 2. Faz uma venda de teste (Garante que o ID da fatura existe, usei o 41 do teu exemplo)
-INSERT INTO invoice_line (id_inv, id_pro, qty_inv_lin, uni_pri_inv_lin, iva_inv_lin) 
+INSERT INTO invoice_line (id_invoice, id_product, quantity, unit_price, iva) 
 VALUES (41, 1, 1, 10.00, 23.00);
 
 
@@ -55,5 +55,5 @@ CALL sp_check_restock_needs();
 SELECT fn_create_purchase(1, NULL); 
 
 -- 2. Agora já sabes que a compra é a 42, podes adicionar os produtos a ela:
-INSERT INTO PurchaseLine (ID_PURCHASE, ID_PRODUCT, BATCH, QUANTITY, UNIT_COST) 
+INSERT INTO purchase_line (ID_PURCHASE, ID_PRODUCT, BATCH, QUANTITY, UNIT_COST) 
 VALUES (43, 10, 'LOTE-TESTE', 23, 14.00);

@@ -212,7 +212,7 @@ BEGIN
 
     UPDATE Purchase SET tot_val_pur = (
         SELECT COALESCE(SUM(QUANTITY * UNIT_COST), 0)
-        FROM PurchaseLine
+        FROM purchase_line
         WHERE ID_PURCHASE = v_id_pur
     )
     WHERE id_pur = v_id_pur;
