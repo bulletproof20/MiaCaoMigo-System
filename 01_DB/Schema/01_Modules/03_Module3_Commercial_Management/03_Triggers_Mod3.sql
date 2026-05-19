@@ -81,3 +81,11 @@ CREATE TRIGGER trg_set_return_return_date
 BEFORE INSERT ON "return"
 FOR EACH ROW
 EXECUTE FUNCTION fn_set_return_inactivation_date();
+
+
+
+
+CREATE TRIGGER trg_warn_low_stock
+AFTER INSERT ON invoice_line
+FOR EACH ROW
+EXECUTE FUNCTION fn_warn_low_stock();

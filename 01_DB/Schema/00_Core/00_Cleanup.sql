@@ -127,11 +127,11 @@ drop table if exists external_entity cascade;
 -- DESCRIPTION
 -- --------------------------------------------------------
 -- Removes all entities related to:
--- - Product catalog management
--- - Product families
+-- - product catalog management
+-- - product families
 -- - Purchases and invoices
 -- - Stock management
--- - Product returns
+-- - product returns
 --
 -- Tables are removed in reverse dependency order.
 --=========================================================

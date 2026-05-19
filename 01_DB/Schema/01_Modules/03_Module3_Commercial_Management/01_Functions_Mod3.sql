@@ -1,17 +1,17 @@
--- Stock disponível de um produto (todos os lotes juntos)
+-- stock disponível de um produto (todos os lotes juntos)
 CREATE OR REPLACE FUNCTION fn_get_available_stock(p_product_id INT)
 RETURNS INT AS $$
 BEGIN
     RETURN COALESCE(
-        (SELECT SUM(qty_sto) FROM Stock WHERE id_pro = p_product_id AND qty_sto > 0),
+        (SELECT SUM(qty_sto) FROM stock WHERE id_pro = p_product_id AND qty_sto > 0),
         0
     );
 END;
 $$ LANGUAGE plpgsql;
 
 
---function that is called by the trigger that checks for low stock 
---after a sale and raises a notice if the stock is below the minimum
+-- function that is called by the trigger that checks for low stock 
+-- after a sale and raises a notice if the stock is below the minimum
 
 CREATE OR REPLACE FUNCTION trg_warn_low_stock_func()
 RETURNS TRIGGER AS $$
@@ -25,12 +25,12 @@ BEGIN
     
     -- 2. Buscar dados do produto específico
     SELECT min_sto, nam_pro INTO v_min_sto, v_nam_pro
-    FROM Product 
+    FROM product 
     WHERE id_pro = NEW.ID_PRODUCT;
     
     -- 3. Aviso se atingir o limite individual
     IF v_stock_atual <= v_min_sto THEN
-        RAISE NOTICE ' STOCK BAIXO: O produto "%" (ID: %) tem apenas % unidades. (Mínimo: %). Consulte a View vw_produtos_para_encomendar.', 
+        RAISE NOTICE ' stock BAIXO: O produto "%" (ID: %) tem apenas % unidades. (Mínimo: %). Consulte a View vw_produtos_para_encomendar.', 
                      v_nam_pro, NEW.ID_PRODUCT, v_stock_atual, v_min_sto;
     END IF;
     
@@ -52,7 +52,7 @@ BEGIN
     SELECT fn_get_available_stock(NEW.ID_PRODUCT) INTO stock_atual;
     
     IF stock_atual < NEW.QUANTITY THEN
-        RAISE EXCEPTION 'Stock insuficiente para o produto % (disponível: %, solicitado: %)',
+        RAISE EXCEPTION 'stock insuficiente para o produto % (disponível: %, solicitado: %)',
                          NEW.ID_PRODUCT, stock_atual, NEW.QUANTITY;
     END IF;
     
@@ -74,16 +74,16 @@ BEGIN
     
     -- Percorre lotes FIFO (primeiro a expirar primeiro)
     FOR stock_record IN
-        SELECT id_sto, qty_sto FROM Stock
+        SELECT id_sto, qty_sto FROM stock
         WHERE id_pro = NEW.ID_PRODUCT AND qty_sto > 0
         ORDER BY val_dat_sto NULLS LAST
     LOOP
         IF remaining_quantity <= stock_record.qty_sto THEN
-            UPDATE Stock SET qty_sto = stock_record.qty_sto - remaining_quantity
+            UPDATE stock SET qty_sto = stock_record.qty_sto - remaining_quantity
             WHERE id_sto = stock_record.id_sto;
             EXIT;
         ELSE
-            UPDATE Stock SET qty_sto = 0
+            UPDATE stock SET qty_sto = 0
             WHERE id_sto = stock_record.id_sto;
             remaining_quantity := remaining_quantity - stock_record.qty_sto;
         END IF;
@@ -129,10 +129,10 @@ BEGIN
     END IF;
     
     -- Repor stock (adicionar ao lote mais recente)
-    INSERT INTO Stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
+    INSERT INTO stock (id_pro, bat_sto, qty_sto, ent_dat_sto, val_dat_sto)
     VALUES (
         prod_id,
-        (SELECT bat_sto FROM Stock WHERE id_pro = prod_id ORDER BY ent_dat_sto DESC LIMIT 1),
+        (SELECT bat_sto FROM stock WHERE id_pro = prod_id ORDER BY ent_dat_sto DESC LIMIT 1),
         NEW.QUANTITY_RETURNED,
         NOW(),
         NULL
@@ -153,7 +153,7 @@ DECLARE
     is_inactive BOOLEAN;
 BEGIN
     SELECT ina_dat_pro IS NOT NULL INTO is_inactive
-    FROM Product WHERE id_pro = NEW.ID_PRODUCT;
+    FROM product WHERE id_pro = NEW.ID_PRODUCT;
     
     IF is_inactive THEN
         RAISE EXCEPTION 'Produto % está inativo e não pode ser vendido', NEW.ID_PRODUCT;

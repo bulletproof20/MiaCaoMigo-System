@@ -10,7 +10,7 @@
 -- as well as relationships between employees and commercial operations.
 --
 -- The module supports:
--- - Product and family classification
+-- - product and family classification
 -- - Stock management and tracking
 -- - Purchase and return processes
 -- - Employee participation in commercial activities
@@ -93,7 +93,7 @@ create table invoice (
 -- Stores product information
 create table product (
     id_pro int generated always as identity,
-    -- Product identifier
+    -- product identifier
 
     ref_pro varchar(50),
     -- Reference code
@@ -147,7 +147,7 @@ create table stock (
     -- Stock identifier
 
     id_pro int not null,
-    -- Product
+    -- product
 
     bat_sto varchar(50),
     -- Batch
@@ -231,17 +231,17 @@ create table purchase (
 
 
 --=========================================================
--- 6. PURCHASE LINE (Criada após Purchase, Product e Stock existirem)
+-- 6. PURCHASE LINE (Criada após Purchase, product e Stock existirem)
 --=========================================================
 
--- Linhas de compra (junta Product, Purchase, Stock)
+-- Linhas de compra (junta product, Purchase, Stock)
 CREATE TABLE purchase_line (
 
     id_purchase_line SERIAL PRIMARY KEY,
 
     id_purchase INT NOT NULL REFERENCES Purchase(id_pur),
 
-    id_product INT NOT NULL REFERENCES Product(id_pro),
+    id_product INT NOT NULL REFERENCES product(id_pro),
 
     batch VARCHAR(50),
 
@@ -253,7 +253,7 @@ CREATE TABLE purchase_line (
 );
 
 --=========================================================
--- 7. INVOICE LINE (Criada após Invoice e Product existirem)
+-- 7. INVOICE LINE (Criada após Invoice e product existirem)
 --=========================================================
 
 -- Linhas de fatura (venda ao cliente)
@@ -263,7 +263,7 @@ CREATE TABLE invoice_line (
 
     id_invoice INT NOT NULL REFERENCES Invoice(id_inv),
 
-    id_product INT NOT NULL REFERENCES Product(id_pro),
+    id_product INT NOT NULL REFERENCES product(id_pro),
 
     quantity INT NOT NULL CHECK (quantity > 0),
 
