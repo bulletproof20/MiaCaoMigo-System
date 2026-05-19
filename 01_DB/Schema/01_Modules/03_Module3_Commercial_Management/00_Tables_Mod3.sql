@@ -86,6 +86,7 @@ create table invoice (
 );
 
 
+
 --=========================================================
 -- 3. PRODUCT
 --=========================================================
@@ -129,7 +130,7 @@ create table product (
     constraint pk_product primary key (id_pro),
     -- Unique identifier
 
-    constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete restrict,
+    constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete restrict
     -- Links product to family. Outras FKs serão adicionadas no final.
 
 );
@@ -226,8 +227,52 @@ create table purchase (
     -- Validates status
 );
 
+
 --=========================================================
--- 6. RETURN
+-- 6. PURCHASE LINE (Criada após Purchase, Product e Stock existirem)
+--=========================================================
+
+-- Linhas de compra (junta Product, Purchase, Stock)
+CREATE TABLE purchase_line (
+
+    id_purchase_line SERIAL PRIMARY KEY,
+
+    id_purchase INT NOT NULL REFERENCES Purchase(id_pur),
+
+    id_product INT NOT NULL REFERENCES Product(id_pro),
+
+    batch VARCHAR(50),
+
+    quantity INT NOT NULL CHECK (quantity > 0),
+
+    unit_cost NUMERIC(10,2) NOT NULL,
+
+    id_stock INT REFERENCES Stock(id_sto)
+);
+
+--=========================================================
+-- 7. INVOICE LINE (Criada após Invoice e Product existirem)
+--=========================================================
+
+-- Linhas de fatura (venda ao cliente)
+CREATE TABLE invoice_line (
+
+    id_invoice_line SERIAL PRIMARY KEY,
+
+    id_invoice INT NOT NULL REFERENCES Invoice(id_inv),
+
+    id_product INT NOT NULL REFERENCES Product(id_pro),
+
+    quantity INT NOT NULL CHECK (quantity > 0),
+
+    unit_price NUMERIC(10,2) NOT NULL,
+
+    iva NUMERIC(5,2) NOT NULL
+
+);
+
+--=========================================================
+-- 8. RETURN
 --=========================================================
 -- Represents product return operations
 create table return (
@@ -253,43 +298,8 @@ create table return (
     -- Unique identifier
 
     constraint fk_return_invoice_line foreign key (id_invLine) references invoice_line(id_invoice_line)
-        on DELETE set null,
+        on DELETE set null
 );
 
 
-
--- Linhas de compra (junta Product, Purchase, Stock)
-CREATE TABLE purchase_line (
-    
-    id_purchase_line SERIAL PRIMARY KEY,
-
-    id_purchase INT NOT NULL REFERENCES Purchase(id_pur),
-
-    id_product INT NOT NULL REFERENCES Product(id_pro),
-
-    batch VARCHAR(50),
-
-    quantity INT NOT NULL CHECK (quantity > 0),
-
-    unit_cost NUMERIC(10,2) NOT NULL,
-
-    id_stock INT REFERENCES Stock(id_sto)
-);
-
--- Linhas de fatura (venda ao cliente)
-CREATE TABLE invoice_line (
-
-    id_invoice_line SERIAL PRIMARY KEY,
-
-    id_invoice INT NOT NULL REFERENCES Invoice(id_inv),
-
-    id_product INT NOT NULL REFERENCES Product(id_pro),
-
-    quantity INT NOT NULL CHECK (quantity > 0),
-
-    unit_price NUMERIC(10,2) NOT NULL,
-
-    iva NUMERIC(5,2) NOT NULL
-
-);
 
