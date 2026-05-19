@@ -101,7 +101,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     UPDATE Invoice SET val_inv = (
         SELECT COALESCE(SUM(QUANTITY * UNIT_PRICE * (1 + IVA/100)), 0)
-        FROM InvoiceLine
+        FROM invoice_line
         WHERE ID_INVOICE = NEW.ID_INVOICE
     )
     WHERE id_inv = NEW.ID_INVOICE;
@@ -121,7 +121,7 @@ DECLARE
 BEGIN
     -- Obter produto e quantidade original
     SELECT ID_PRODUCT, QUANTITY INTO prod_id, qty_sold
-    FROM InvoiceLine WHERE ID_INVOICE_LINE = NEW.ID_INVOICE_LINE;
+    FROM invoice_line WHERE ID_INVOICE_LINE = NEW.ID_INVOICE_LINE;
     
     IF NEW.QUANTITY_RETURNED > qty_sold THEN
         RAISE EXCEPTION 'Quantidade devolvida (%) excede a quantidade vendida (%)',

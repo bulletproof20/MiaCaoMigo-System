@@ -30,6 +30,11 @@ drop table if exists stock cascade;
 -- Core entities
 drop table if exists product cascade;
 drop table if exists "family" cascade;
+drop table if exists invoice cascade;
+drop table if exists purchase_line cascade;
+drop table if exists invoice_line cascade;
+
+
 
 --=========================================================
 -- 1. FAMILY
@@ -246,14 +251,14 @@ create table return (
     constraint pk_return primary key (id_ret),
     -- Unique identifier
 
-    constraint fk_return_invoice_line foreign key (id_invLine) references InvoiceLine(id_invoice_line)
+    constraint fk_return_invoice_line foreign key (id_invLine) references invoice_line(id_invoice_line)
         on DELETE set null,
 );
 
 
 
 -- Linhas de compra (junta Product, Purchase, Stock)
-CREATE TABLE PurchaseLine (
+CREATE TABLE purchase_line (
     ID_PURCHASE_LINE SERIAL PRIMARY KEY,
     ID_PURCHASE INT NOT NULL REFERENCES Purchase(id_pur),
     ID_PRODUCT INT NOT NULL REFERENCES Product(id_pro),
@@ -264,7 +269,7 @@ CREATE TABLE PurchaseLine (
 );
 
 -- Linhas de fatura (venda ao cliente)
-CREATE TABLE InvoiceLine (
+CREATE TABLE invoice_line (
     ID_INVOICE_LINE SERIAL PRIMARY KEY,
     ID_INVOICE INT NOT NULL REFERENCES Invoice(id_inv),
     ID_PRODUCT INT NOT NULL REFERENCES Product(id_pro),
