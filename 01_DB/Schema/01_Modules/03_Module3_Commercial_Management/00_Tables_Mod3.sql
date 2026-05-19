@@ -100,15 +100,17 @@ create table product (
     id_fam int not null,
     -- Family
 
-    id_ret int,
-    -- Last return
-
+    
     min_sto INT NOT NULL DEFAULT 5,
     -- Minimum stock level,
 
 
     constraint pk_product primary key (id_pro)
     -- Unique identifier
+
+    constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete restrict,
+    -- Links product to family. Outras FKs serão adicionadas no final.
+
 );
 
 
@@ -151,7 +153,7 @@ create table purchase (
     id_pur int generated always as identity,
     -- Purchase identifier
 
-    pur_dat_pur timestamp,
+    pur_dat_pur timestamp default current_timestamp,
     -- Purchase date
 
     tot_val_pur numeric(10,2),
@@ -168,6 +170,9 @@ create table purchase (
 
     id_inv int,
     -- Linked invoice (see FK phase)
+    
+    sta_pur varchar(50) default 'pending',
+    -- Status
 
     id_cli int,
     -- client
@@ -248,9 +253,6 @@ create table return (
     id_ret int generated always as identity,
     -- Return identifier
 
-    --dat_ret date,
-    -- Return date, this column was "deleted" because of the trigger that sets the return date to the current timestamp if not provided.
-
     mot_ret varchar(100),
     -- Reason
 
@@ -265,9 +267,19 @@ create table return (
 
     qty_ret int not null default 1,
     -- Quantity returned (replaces legacy qty_ret)
+    return_date timestamp,
+    
+    id_invLine int,
+    -- Invoice line (if return is related to a sale)
 
-    constraint pk_return primary key (id_ret)
+    quant_ret int NOT NULL DEFAULT 1,
+    -- Quantity returned
+
+    constraint pk_return primary key (id_ret),
     -- Unique identifier
+
+    constraint fk_return_invoice_line foreign key (id_invLine) references InvoiceLine(id_invoice_line)
+        on DELETE set null,
 );
 
 --=========================================================
@@ -294,42 +306,3 @@ create table purchase_product (
     -- Ensures valid quantity
 );
 
--- RETURN ↔ PRODUCT
-create table return_product (
-    id_ret int not null,
-    -- Return
-
-    id_pro int not null,
-    -- Product
-
-    qty_ret_pro int not null,
-    -- Quantity
-
-    constraint pk_return_product primary key (id_ret, id_pro),
-
-    constraint ck_qty_return
-    check (qty_ret_pro > 0)
-    -- Ensures valid quantity
-);
-
--- EMPLOYEE ↔ PURCHASE
-create table employee_purchase (
-    id_emp int not null,
-    -- Employee
-
-    id_pur int not null,
-    -- Purchase
-
-    constraint pk_employee_purchase primary key (id_emp, id_pur)
-);
-
--- EMPLOYEE ↔ RETURN
-create table employee_return (
-    id_emp int not null,
-    -- Employee
-
-    id_ret int not null,
-    -- Return
-
-    constraint pk_employee_return primary key (id_emp, id_ret)
-);

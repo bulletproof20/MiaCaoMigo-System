@@ -22,7 +22,7 @@ SELECT
 FROM names;
 
 -- =========================================================
--- 2. EMPLOYEE (40 Registos)
+-- 2. EMPLOYEE (40 Registos) -- RETIRAR
 -- =========================================================
 INSERT INTO employee (id_usr, ema_emp, pas_emp, reg_dat_emp)
 SELECT
@@ -122,14 +122,13 @@ FROM generate_series(1, 40) as i;
 
 
 
-
 -- =========================================================
--- 7. PURCHASE (40 Registos)
+-- 7. PURCHASE (40 Registos) - Com status aleatório
 -- =========================================================
 INSERT INTO purchase (pur_dat_pur, sta_pur, id_cli, id_emp)
 SELECT
     current_timestamp - (i || ' days')::interval,
-    'received',
+    (ARRAY['pending', 'received', 'cancelled'])[floor(random() * 3) + 1], -- Escolhe aleatoriamente 1 dos 3 estados
     (i % 40) + 1, 
     (i % 40) + 1  
 FROM generate_series(1, 40) as i;
