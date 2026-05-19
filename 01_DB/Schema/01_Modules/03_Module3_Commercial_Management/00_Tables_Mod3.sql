@@ -1,17 +1,38 @@
--- =========================================================
--- MODULE 3 — COMMERCIAL MANAGEMENT
--- File: 00_Tables_Mod3.sql (tables only)
--- =========================================================
---
--- DESCRIPTION
--- Product catalog, stock, purchases, returns, and associative
--- links to employees. Purchase workflow state uses purchase_status
--- (see 00_Core/01_Types.sql).
---
--- FOREIGN KEYS
--- Deferred to 01_ForeignKeys_Mod3.sql after all module tables exist.
--- =========================================================
+--=========================================================
+-- MODULE 3: COMMERCIAL MANAGEMENT (Por retificar)
+--=========================================================
 
+--=========================================================
+-- DESCRIPTION
+--=========================================================
+-- This module defines the structure responsible for commercial management.
+-- It includes product catalog, stock control, purchases and returns,
+-- as well as relationships between employees and commercial operations.
+--
+-- The module supports:
+-- - product and family classification
+-- - Stock management and tracking
+-- - Purchase and return processes
+-- - Employee participation in commercial activities
+
+--=========================================================
+-- 0. CLEANUP
+--=========================================================
+-- Drops only tables related to this module in reverse dependency order
+
+
+
+-- Dependent entities
+drop table if exists "return" cascade;
+drop table if exists purchase cascade;
+drop table if exists stock cascade;
+
+-- Core entities
+drop table if exists product cascade;
+drop table if exists "family" cascade;
+drop table if exists invoice cascade;
+drop table if exists purchase_line cascade;
+drop table if exists invoice_line cascade;
 
 
 
@@ -20,10 +41,11 @@
 --=========================================================
 -- Defines product categories
 create table family (
+
     id_fam int generated always as identity,
     -- Family identifier
 
-    nam_fam varchar(100) not null,
+    nam_fam varchar (70) not null,
     -- Name
 
     des_fam text,
@@ -56,7 +78,13 @@ create table invoice (
 
     constraint pk_invoice primary key (id_inv)
     -- Unique identifier
+
+    -- constraint fk_invoice_appointment foreign key (id_app)
+    --     references appointment(id_app)
+    --     on delete set null
+    -- -- Links to appointment
 );
+
 
 
 --=========================================================
@@ -65,7 +93,7 @@ create table invoice (
 -- Stores product information
 create table product (
     id_pro int generated always as identity,
-    -- Product identifier
+    -- product identifier
 
     ref_pro varchar(50),
     -- Reference code
@@ -91,24 +119,22 @@ create table product (
     ina_dat_pro timestamp,
     -- Inactivation date
 
-    id_pur int,
-    -- Last purchase
-
-    id_sto int,
-    -- Current stock
-
-    id_fam int not null,
+    id_fam int NOT NULL,
     -- Family
 
-    id_ret int,
-    -- Last return
-
+    
     min_sto INT NOT NULL DEFAULT 5,
     -- Minimum stock level,
 
 
     constraint pk_product primary key (id_pro)
     -- Unique identifier
+
+
+    --
+    --constraint fk_product_family foreign key (id_fam) references family(id_fam) on delete restrict
+    -- Links product to family. Outras FKs serão adicionadas no final.
+
 );
 
 
@@ -121,7 +147,7 @@ create table stock (
     -- Stock identifier
 
     id_pro int not null,
-    -- Product
+    -- product
 
     bat_sto varchar(50),
     -- Batch
@@ -138,10 +164,25 @@ create table stock (
     constraint pk_stock primary key (id_sto),
     -- Unique identifier
 
-    constraint ck_qty_sto
+    constraint fk_stock_product 
+        foreign key (id_pro)
+        references product(id_pro)
+        on delete cascade,
+    -- Links stock to product
+
+    constraint chk_qty_sto
     check (qty_sto >= 0)
     -- Prevents negative stock
 );
+
+    -- alter table stock
+    -- add constraint fk_stock_product
+    -- foreign key (id_pro)
+    -- references product(id_pro)
+    -- on delete cascade;
+
+    
+-- this constraint had to be added via alter table after creating the stock table to prevent an error during the creation of the product table.
 
 --=========================================================
 -- 5. PURCHASE
@@ -151,7 +192,7 @@ create table purchase (
     id_pur int generated always as identity,
     -- Purchase identifier
 
-    pur_dat_pur timestamp,
+    pur_dat_pur timestamp default current_timestamp,
     -- Purchase date
 
     tot_val_pur numeric(10,2),
@@ -163,11 +204,8 @@ create table purchase (
     pay_met_pur varchar(50),
     -- Payment method
 
-    sta_pur purchase_status,
-    -- Workflow state (purchase_status enum; nullable until confirmed)
-
-    id_inv int,
-    -- Linked invoice (see FK phase)
+    sta_pur varchar(50) default 'pending',
+    -- Status
 
     id_cli int,
     -- client
@@ -175,69 +213,64 @@ create table purchase (
     id_emp int,
     -- Employee responsible
 
-    constraint pk_purchase primary key (id_pur)
+    constraint pk_purchase primary key (id_pur),
     -- Unique identifier
+
+
+    constraint fk_client foreign key (id_cli) references client(id_cli)
+        on DELETE set null,
+
+    constraint fk_employee foreign key (id_emp) references employee(id_emp)
+        on DELETE set null,
+
+
+    constraint chk_sta_pur
+    check (sta_pur in ('pending','received','cancelled') or sta_pur is null)
+    -- Validates status
+);
+
+
+--=========================================================
+-- 6. PURCHASE LINE (Criada após Purchase, product e Stock existirem)
+--=========================================================
+
+-- Linhas de compra (junta product, Purchase, Stock)
+CREATE TABLE purchase_line (
+
+    id_purchase_line SERIAL PRIMARY KEY,
+
+    id_purchase INT NOT NULL REFERENCES Purchase(id_pur),
+
+    id_product INT NOT NULL REFERENCES product(id_pro),
+
+    batch VARCHAR(50),
+
+    quantity INT NOT NULL CHECK (quantity > 0),
+
+    unit_cost NUMERIC(10,2) NOT NULL,
+
+    id_stock INT REFERENCES Stock(id_sto)
 );
 
 --=========================================================
--- 6. PURCHASE_LINE
+-- 7. INVOICE LINE (Criada após Invoice e product existirem)
 --=========================================================
--- Line items for a purchase (product, batch, cost; optional stock row)
-create table purchase_line (
-    id_pur_lin int generated always as identity,
-    -- Purchase line identifier
 
-    id_pur int not null,
-    -- Purchase header
+-- Linhas de fatura (venda ao cliente)
+CREATE TABLE invoice_line (
 
-    id_pro int not null,
-    -- Product
+    id_invoice_line SERIAL PRIMARY KEY,
 
-    bat_pln varchar(50),
-    -- Batch identifier
+    id_invoice INT NOT NULL REFERENCES Invoice(id_inv),
 
-    qty_pln int not null,
-    -- Quantity purchased
+    id_product INT NOT NULL REFERENCES product(id_pro),
 
-    uni_cos_pln numeric(10,2) not null,
-    -- Unit cost
+    quantity INT NOT NULL CHECK (quantity > 0),
 
-    id_sto int,
-    -- Optional link to stock row created from this line
+    unit_price NUMERIC(10,2) NOT NULL,
 
-    constraint pk_purchase_line primary key (id_pur_lin),
+    iva NUMERIC(5,2) NOT NULL
 
-    constraint ck_qty_pln
-    check (qty_pln > 0)
-);
-
---=========================================================
--- 7. INVOICE_LINE
---=========================================================
--- Line items for a customer invoice (sale)
-create table invoice_line (
-    id_inv_lin int generated always as identity,
-    -- Invoice line identifier
-
-    id_inv int not null,
-    -- Invoice header
-
-    id_pro int not null,
-    -- Product
- 
-    qty_inv_lin int not null,
-    -- Quantity sold
-
-    uni_pri_inv_lin numeric(10,2) not null,
-    -- Unit price
-
-    iva_inv_lin numeric(5,2) not null,
-    -- VAT rate or amount per business rules
-
-    constraint pk_invoice_line primary key (id_inv_lin),
-
-    constraint ck_qty_inv_lin
-    check (qty_inv_lin > 0)
 );
 
 --=========================================================
@@ -248,88 +281,27 @@ create table return (
     id_ret int generated always as identity,
     -- Return identifier
 
-    --dat_ret date,
-    -- Return date, this column was "deleted" because of the trigger that sets the return date to the current timestamp if not provided.
-
     mot_ret varchar(100),
     -- Reason
 
-    reg_dat_ret timestamp not null default current_timestamp,
+    reg_dat_ret timestamp default current_timestamp,
     -- Registration date
 
-    ina_dat_ret timestamp,
-    -- Inactivation / closing date
+    return_date timestamp,
+    -- Return date
 
-    id_inv_lin int,
-    -- Optional link to originating invoice line
+    id_invLine int,
+    -- Invoice line (if return is related to a sale)
 
-    qty_ret int not null default 1,
-    -- Quantity returned (replaces legacy qty_ret)
+    quant_ret int NOT NULL DEFAULT 1,
+    -- Quantity returned
 
-    constraint pk_return primary key (id_ret)
+    constraint pk_return primary key (id_ret),
     -- Unique identifier
+
+    constraint fk_return_invoice_line foreign key (id_invLine) references invoice_line(id_invoice_line)
+        on DELETE set null
 );
 
---=========================================================
--- 9. ASSOCIATIVE TABLES
---=========================================================
--- Defines many-to-many relationships
 
--- PURCHASE ↔ PRODUCT
-create table purchase_product (
-    id_pur int not null,
-    -- Purchase
 
-    id_pro int not null,
-    -- Product
-
-    qty_pur_pro int not null,
-    -- Quantity
-
-    constraint pk_purchase_product primary key (id_pur, id_pro),
-    -- Composite identifier
-
-    constraint ck_qty_purchase
-    check (qty_pur_pro > 0)
-    -- Ensures valid quantity
-);
-
--- RETURN ↔ PRODUCT
-create table return_product (
-    id_ret int not null,
-    -- Return
-
-    id_pro int not null,
-    -- Product
-
-    qty_ret_pro int not null,
-    -- Quantity
-
-    constraint pk_return_product primary key (id_ret, id_pro),
-
-    constraint ck_qty_return
-    check (qty_ret_pro > 0)
-    -- Ensures valid quantity
-);
-
--- EMPLOYEE ↔ PURCHASE
-create table employee_purchase (
-    id_emp int not null,
-    -- Employee
-
-    id_pur int not null,
-    -- Purchase
-
-    constraint pk_employee_purchase primary key (id_emp, id_pur)
-);
-
--- EMPLOYEE ↔ RETURN
-create table employee_return (
-    id_emp int not null,
-    -- Employee
-
-    id_ret int not null,
-    -- Return
-
-    constraint pk_employee_return primary key (id_emp, id_ret)
-);

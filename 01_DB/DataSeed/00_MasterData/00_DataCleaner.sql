@@ -143,7 +143,7 @@ RESTART IDENTITY CASCADE;
 -- - Products and families
 -- - Purchases and invoices
 -- - Stock management
--- - Product returns
+-- - product returns
 --
 -- Identity sequences are reset automatically.
 --=========================================================

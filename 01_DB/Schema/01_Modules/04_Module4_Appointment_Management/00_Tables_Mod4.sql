@@ -146,7 +146,7 @@ create table rel_app_product (
     -- Appointment
 
     id_pro int not null,
-    -- Product
+    -- product
 
     qty_pre_pro int not null,
     -- Quantity
@@ -168,7 +168,7 @@ create table rel_pre_prod (
     -- Prescription
 
     id_pro int not null,
-    -- Product
+    -- product
 
     qty_pre_pro int not null,
     -- Quantity of the product prescribed

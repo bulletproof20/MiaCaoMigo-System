@@ -22,7 +22,7 @@ SELECT
 FROM names;
 
 -- =========================================================
--- 2. EMPLOYEE (40 Registos)
+-- 2. EMPLOYEE (40 Registos) -- RETIRAR
 -- =========================================================
 INSERT INTO employee (id_usr, ema_emp, pas_emp, reg_dat_emp)
 SELECT
@@ -122,14 +122,13 @@ FROM generate_series(1, 40) as i;
 
 
 
-
 -- =========================================================
--- 7. PURCHASE (40 Registos)
+-- 7. PURCHASE (40 Registos) - Com status aleatório
 -- =========================================================
 INSERT INTO purchase (pur_dat_pur, sta_pur, id_cli, id_emp)
 SELECT
     current_timestamp - (i || ' days')::interval,
-    'received',
+    (ARRAY['pending', 'received', 'cancelled'])[floor(random() * 3) + 1], -- Escolhe aleatoriamente 1 dos 3 estados
     (i % 40) + 1, 
     (i % 40) + 1  
 FROM generate_series(1, 40) as i;
@@ -141,7 +140,7 @@ FROM generate_series(1, 40) as i;
 -- =========================================================
 -- 8. PURCHASE_LINE (40 Registos)
 -- =========================================================
-INSERT INTO purchase_line (id_pur, id_pro, bat_pln, qty_pln, uni_cos_pln, id_sto)
+INSERT INTO purchase_line (id_purchase, id_product, batch, quantity, unit_cost, id_stock)
 SELECT
     i, 
     (i % 30) + 1, 
@@ -165,7 +164,7 @@ FROM generate_series(1, 40) as i;
 -- =========================================================
 -- 10. INVOICE_LINE (40 Registos)
 -- =========================================================
-INSERT INTO invoice_line (id_inv, id_pro, qty_inv_lin, uni_pri_inv_lin, iva_inv_lin)
+INSERT INTO invoice_line (id_invoice, id_product, quantity, unit_price, iva)
 SELECT
     i, 
     (i % 30) + 1, 
