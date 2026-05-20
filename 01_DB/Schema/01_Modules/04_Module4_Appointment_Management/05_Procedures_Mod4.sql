@@ -51,23 +51,28 @@ create or replace procedure sp_generate_appointment_warnings()
 language plpgsql
 as $$
 declare
-    consulta record;
-    v_aviso text;
+    v_row record;
+    v_msg text;
 begin
-    for consulta in (
-        select a.id_app,
-               a.id_cli,
-               c.nam_usr as nome_cliente,
-               e.nam_emp as nome_veterinario,
-               an.nam_ani as nome_animal
-        from appointment a
-        join user_account c on a.id_cli = c.id_usr -- Assuming client name is in user_account
-        join animal an on a.id_ani = an.id_ani
-        join employee e on a.id_emp = e.id_emp
-        where a.sch_dat_app::date = current_date + interval '1 day' and a.status_app = 'scheduled'
-    ) loop
-        v_aviso := format('Lembrete: Bom dia %s! A sua consulta para o animal %s com o/a Dr(a). %s está marcada para amanhã.', consulta.nome_cliente, consulta.nome_animal, consulta.nome_veterinario);
-        insert into appointment_notification (id_cli, id_app, msg_not) values (consulta.id_cli, consulta.id_app, v_aviso);
+    -- Uses vw_scheduled_appointments_tomorrow (canonical joins via vw_appointment_detail).
+    for v_row in
+        select
+            t.id_app,
+            t.id_cli,
+            t.client_name,
+            t.veterinarian_name,
+            t.animal_name
+        from vw_scheduled_appointments_tomorrow t
+    loop
+        v_msg := format(
+            'Lembrete: Bom dia %s! A sua consulta para o animal %s com o/a Dr(a). %s está marcada para amanhã.',
+            v_row.client_name,
+            v_row.animal_name,
+            v_row.veterinarian_name
+        );
+
+        insert into appointment_notification (id_cli, id_app, msg_not)
+        values (v_row.id_cli, v_row.id_app, v_msg);
     end loop;
 end;
 $$;

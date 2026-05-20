@@ -14,7 +14,7 @@ comment on function cron.schedule(text, text, text) is
 'Executes scheduled pg_cron jobs responsible for automated database task execution';
 
 comment on procedure sp_generate_appointment_warnings() is
-'(Job: daily_appointment_warnings) — issues client notifications for visits on the next business day.';
+'(Job: daily_appointment_warnings) — issues reminders from vw_scheduled_appointments_tomorrow.';
 
 comment on procedure sp_auto_update_no_show_appointments() is
 '(Job: daily_no_show_appointment_updater) — marks missed appointments as No-Show for nightly hygiene.';

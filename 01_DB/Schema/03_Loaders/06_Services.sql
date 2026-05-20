@@ -52,6 +52,7 @@
 
 \i /docker-entrypoint-initdb.d/Services/03_Module3/01_Session_Read.sql
 \i /docker-entrypoint-initdb.d/Services/03_Module3/02_Inventory_Read.sql
+\i /docker-entrypoint-initdb.d/Services/03_Module3/03_Commercial_Write.sql
 
 \echo '>>> loading services layer (04_Module4)'
 

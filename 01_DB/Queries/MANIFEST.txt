@@ -1,0 +1,28 @@
+MiaCaoMigo — SQL Queries folder (reference only)
+================================================
+
+ROLE
+----
+Ad-hoc SELECT examples and API integration snippets.
+NOT loaded by Docker init (see Schema/init.sql).
+
+SOURCE OF TRUTH
+---------------
+Operational logic lives in:
+  - Schema/01_Modules/     DDL, views, procedures, jobs
+  - Services/              Application PL/pgSQL (loaded via 06_Services.sql)
+
+DEDUPLICATION
+-------------
+00_Core/ duplicates were removed. Do not re-add normalize_email or
+utility functions here — use Services/00_Core and Services/01_Module1.
+
+USAGE
+-----
+Run scripts manually against a database that already applied the full
+Schema + Services pipeline. Prefer calling service functions (fn_*)
+over copying inline SQL.
+
+TESTS
+-----
+Executable validation scripts: 01_DB/Tests/ (not mixed with Services DDL).

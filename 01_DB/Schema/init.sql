@@ -19,6 +19,7 @@
 --   04_Data_Migration.sql — reserved (ETL / reference data)
 --   05_Comments.sql       — COMMENT ON (mirrors 01_Modules order)
 --   06_Services.sql       — application PL/pgSQL (01_DB/Services)
+--   08_Service_Comments.sql — COMMENT ON service functions
 --   07_Sanity_Check.sql   — extensions, ENUMs, catalog smoke checks
 --
 -- Comments run after behavioral DDL so COMMENT ON resolves.
@@ -124,6 +125,16 @@ SET timezone TO 'Europe/Lisbon';
 \echo '>>> loading services layer'
 
 \i /docker-entrypoint-initdb.d/03_Loaders/06_Services.sql
+
+
+
+-- =========================================================
+-- service function comments
+-- =========================================================
+
+\echo '>>> loading service function comments'
+
+\i /docker-entrypoint-initdb.d/03_Loaders/08_Service_Comments.sql
 
 
 

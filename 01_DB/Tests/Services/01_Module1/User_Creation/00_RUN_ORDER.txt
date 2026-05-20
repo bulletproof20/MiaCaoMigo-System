@@ -1,0 +1,6 @@
+Suggested manual run order (requires Creation Stress seed + services loaded):
+  01_Client.sql
+  02_Employee.sql
+  03_Assistant.sql
+  04_Veterinarian.sql
+  05_Verification.sql
