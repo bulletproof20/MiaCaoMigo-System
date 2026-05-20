@@ -1,3 +1,13 @@
+-- =========================================================
+-- MODULE 1 — CORE (SERVICES)
+-- FILE: 01_Identity.sql
+-- =========================================================
+--
+-- Identity lookups and role predicates. Single definition of
+-- fn_get_user_by_email (also used by authentication layer).
+-- Depends on: normalize_email (00_Core).
+-- =========================================================
+
 --=========================================================
 -- MODULE 1 - IDENTITY FUNCTIONS
 --=========================================================

@@ -153,7 +153,7 @@ exception
 
         raise exception using
             message =
-                'fn_replace_employee_record failed: ' || sqlerrm,
+                'fn_renew_employee_record failed: ' || sqlerrm,
             errcode = sqlstate;
 
 end;

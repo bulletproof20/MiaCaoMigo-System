@@ -60,12 +60,3 @@ begin
     return v_id_emp_new;
     end;
 $$ language plpgsql;
-
-
-
-
-select fn_alter_employee_to_veterinarian(
-
-    4,
-    'OMV123456',
-    1) as id_utilizador;
