@@ -25,4 +25,5 @@ over copying inline SQL.
 
 TESTS
 -----
-Executable validation scripts: 01_DB/Tests/ (not mixed with Services DDL).
+Executable validation: 01_DB/Tests/ (Integrity, Manual, runners).
+Fixtures only: DataSeed/01_TestData/ + 04_Loaders/03_TestData.sql

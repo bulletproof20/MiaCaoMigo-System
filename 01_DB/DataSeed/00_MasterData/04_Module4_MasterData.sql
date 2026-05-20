@@ -1,0 +1,12 @@
+-- =========================================================
+-- MASTER DATA — MODULE 4 (APPOINTMENT MANAGEMENT)
+-- FILE: 04_Module4_MasterData.sql
+-- =========================================================
+--
+-- PURPOSE
+-- No standalone rows required at bootstrap.
+-- Appointments depend on Module 1 (client, employee, specialty)
+-- and Module 2 (animal) — see 03_DemoData/04_Module4_DemoData.sql.
+-- =========================================================
+
+-- Intentionally empty.

@@ -133,13 +133,13 @@ order by table_name;
 
 
 -- =========================================================
--- integrity validation
+-- object catalog validation (post-integrity layer)
 -- =========================================================
--- validates whether integrity-related
--- executable components were successfully loaded.
+-- Lists triggers, views, and functions created by 03_Integrity.sql.
+-- Not business-rule QA — see 01_DB/Tests/01_Integrity/.
 -- =========================================================
 
-\echo '=== Integrity Validation ==='
+\echo '=== Object Catalog Validation ==='
 
 
 -- validates trigger existence

@@ -35,8 +35,12 @@ services:
 
       # Schema DDL pipeline (init.sql orchestrates loaders)
       - ./01_DB/Schema:/docker-entrypoint-initdb.d
+      
       # Application service functions (loaded via 03_Loaders/06_Services.sql)
       - ./01_DB/Services:/docker-entrypoint-initdb.d/Services
+
+      # DataSeed tiers (official bootstrap via 03_Loaders/10_Official_Bootstrap.sql)
+      - ./01_DB/DataSeed:/docker-entrypoint-initdb.d/DataSeed
 
     # Additional configuration passed directly to PostgreSQL
     command: >

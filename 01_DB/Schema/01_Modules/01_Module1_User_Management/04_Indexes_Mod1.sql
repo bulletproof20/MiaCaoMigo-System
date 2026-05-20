@@ -97,7 +97,7 @@ exclude using gist (
         ('2000-01-01'::date + sta_tim_sch)::timestamp,
         ('2000-01-01'::date + fin_hou_sch)::timestamp
     ) with &&
-);
+); 
 
 
 -- =========================================================

@@ -18,7 +18,7 @@ create table user_account (
     id_usr int generated always as identity,
     -- Unique user identifier
 
-    nam_usr varchar(250) not null,
+    nam_usr varchar(250) not null, 
     -- Full name
 
     add_usr text not null,

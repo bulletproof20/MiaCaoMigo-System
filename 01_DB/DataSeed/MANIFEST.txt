@@ -1,0 +1,60 @@
+MiaCaoMigo — DataSeed layer
+============================
+
+ROLE
+----
+Deterministic data tiers. Executable tests: 01_DB/Tests/
+
+DataSeed contains DATASETS ONLY (no PASS/FAIL assertions).
+
+TIERS
+-----
+00_MasterData       System invariants — TRUNCATE + bootstrap rows
+01_TestData         QA fixtures / stress — manual only (never init)
+02_DevelopmentData  Dev comfort set — manual only (never init)
+03_DemoData         Demo narrative — official bootstrap (after Master)
+
+LOADERS (from 01_DB/DataSeed)
+-----------------------------
+04_Loaders/00_MasterData.sql        Official bootstrap step 1
+04_Loaders/01_DemoData.sql          Official bootstrap step 2
+04_Loaders/02_DevelopmentData.sql   Manual dev (after Master)
+04_Loaders/03_TestData.sql          Manual QA (never init)
+
+OFFICIAL BOOTSTRAP (Docker first init)
+--------------------------------------
+  docker-compose.yml mounts DataSeed
+  Schema/init.sql → 10_Official_Bootstrap.sql
+    → 00_MasterData.sql (clean + invariants)
+    → 01_DemoData.sql (append demo)
+  → 07_Sanity_Check.sql
+
+  NOT loaded on init: TestData, DevelopmentData
+
+MANUAL TIERS
+------------
+  psql -f 04_Loaders/02_DevelopmentData.sql   # after Master or full init
+  psql -f 04_Loaders/03_TestData.sql          # QA fixtures
+  psql -f 03_Loaders/09_DevelopmentData.sql   # gated: -v MIACAOMIGO_SEED_DEV=1
+
+QUICK START — FRESH DOCKER
+--------------------------
+  docker compose down -v
+  docker compose up --build -d
+
+QUICK START — QA (after init)
+-----------------------------
+  cd 01_DB/Tests/runners
+  .\run_full_qa.ps1
+
+TIER COMPARISON
+---------------
+MasterData        Required invariants; TRUNCATE first; official bootstrap
+DemoData          Staging narrative; append; official bootstrap
+DevelopmentData   Small dev set; append; manual / optional only
+TestData          Stress/fixtures; manual QA only
+
+ID CONTRACTS
+------------
+01_TestData/00_Contracts/00_ID_CONTRACT.txt
+

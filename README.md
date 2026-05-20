@@ -50,6 +50,8 @@ docker compose version
  │    ├── 03_Loaders/          # Ordered phases (extensions → tables → FKs → integrity → …)
  │    ├── 01_Modules/          # Modular domain: 00_Tables … 06_Jobs per module
  │    ├── 02_Comments/        # COMMENT ON metadata mirroring 01_Modules (…_Comments.sql)
+ │    └── 03_Loaders/10_Official_Bootstrap.sql  # MasterData + DemoData on first init
+ ├── DataSeed/                # Seed tiers (mounted into container)
  │
 docker-compose.yml             # Container orchestration
 Dockerfile                     # Custom PostgreSQL image (with pg_cron)
@@ -59,13 +61,19 @@ Dockerfile                     # Custom PostgreSQL image (with pg_cron)
 
 * **init.sql**
   Central script responsible for orchestrating the entire database creation.
-  It loads `03_Loaders` in order: extensions → **all tables** → **all foreign keys** → functions, triggers, indexes, procedures, jobs → data migration placeholder → **comments** (via `02_Comments/**`) → queries placeholder → sanity checks.
+  It loads `03_Loaders` in order: extensions → tables → FKs → integrity → comments → services → **official bootstrap** (MasterData + DemoData) → sanity checks.
 
 * **02_Comments/**
   Houses `COMMENT ON` scripts grouped like `01_Modules` (including `00_Core` for shared documentation notes). Cross-module foreign keys remain defined only under each module’s `01_ForeignKeys_ModX.sql`; their descriptions live in the matching `01_ForeignKeys_ModX_Comments.sql` files.
 
 * **01_Modules/**
-  Each module uses a fixed layout: `00_Tables`, `01_ForeignKeys`, `02_Functions`, `03_Triggers`, `04_Indexes`, `05_Procedures`, `06_Jobs` (module 4 also ships `07_Tests_Mod4.sql` for ad hoc checks).
+  Each module uses a fixed layout: `00_Tables`, `01_ForeignKeys`, `02_Functions`, `03_Triggers`, `04_Indexes`, `05_Procedures`, `06_Jobs`, `07_Views`.
+
+* **01_DB/Tests/**
+  Central QA layer (integrity, manual, runners). Not loaded by `init.sql`.
+
+* **01_DB/DataSeed/**
+  Official bootstrap on first init: MasterData + DemoData via `10_Official_Bootstrap.sql`. TestData and DevelopmentData are manual only.
 
 ---
 
@@ -103,8 +111,10 @@ During the first execution:
   * Indexes
   * Stored procedures
   * Scheduled jobs (via pg_cron)
+  * Official seed data: MasterData (truncate + invariants) and DemoData (demo narrative)
+  * Sanity smoke checks
 
-⚠️ This process runs **only once**, when the volume is empty.
+⚠️ Init scripts run **only once**, when the volume is empty (`docker compose down -v` resets).
 
 ---
 

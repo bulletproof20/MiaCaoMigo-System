@@ -16,11 +16,13 @@
 --   02_ForeignKeys.sql    — 01_ForeignKeys_Mod*.sql
 --   03_Integrity.sql      — functions, triggers, indexes, views,
 --                           procedures, jobs
---   04_Data_Migration.sql — reserved (ETL / reference data)
+--   04_Data_Migration.sql — reserved (ETL / reference imports; optional seed docs)
 --   05_Comments.sql       — COMMENT ON (mirrors 01_Modules order)
 --   06_Services.sql       — application PL/pgSQL (01_DB/Services)
 --   08_Service_Comments.sql — COMMENT ON service functions
+--   10_Official_Bootstrap.sql — MasterData + DemoData (official seed tiers)
 --   07_Sanity_Check.sql   — extensions, ENUMs, catalog smoke checks
+--   09_DevelopmentData.sql — optional manual only (NOT in init; MIACAOMIGO_SEED_DEV=1)
 --
 -- Comments run after behavioral DDL so COMMENT ON resolves.
 -- =========================================================
@@ -135,6 +137,18 @@ SET timezone TO 'Europe/Lisbon';
 \echo '>>> loading service function comments'
 
 \i /docker-entrypoint-initdb.d/03_Loaders/08_Service_Comments.sql
+
+
+
+-- =========================================================
+-- official data bootstrap (master + demo)
+-- =========================================================
+-- TestData and DevelopmentData are never loaded here.
+-- =========================================================
+
+\echo '>>> official data bootstrap (master + demo)'
+
+\i /docker-entrypoint-initdb.d/03_Loaders/10_Official_Bootstrap.sql
 
 
 

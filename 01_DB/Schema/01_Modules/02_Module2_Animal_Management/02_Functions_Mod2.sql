@@ -33,10 +33,13 @@ returns trigger as $$
 begin
      
      if exists (
-         select 1 
+         select 1
          from animal a
          where a.id_ani = new.id_ani
-           --and a.ina_dat_ani is not null
+           and (
+               a.ina_dat_ani is not null
+               or a.sta_ani in ('Falecido', 'Adotado')
+           )
      ) then
          raise exception 'Cannot assign ownership: Animal is inactive/deceased.';
      end if;
@@ -52,9 +55,11 @@ $$ language plpgsql;
 create or replace function fn_check_delivery_date_after_rescue()
 returns trigger as $$
 begin
-    if new.delivery_date < new.rescue_date then
-        raise exception 'Delivery date (%) cannot be earlier than rescue date (%)', 
-        new.delivery_date, new.rescue_date;
+    if new.del_dat_del is not null
+       and new.res_dat_del is not null
+       and new.del_dat_del < new.res_dat_del then
+        raise exception 'Delivery date (%) cannot be earlier than rescue date (%)',
+            new.del_dat_del, new.res_dat_del;
     end if;
 
     return new;

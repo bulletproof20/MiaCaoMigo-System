@@ -13,7 +13,7 @@
 -- LOAD ORDER
 --   00_Core → Module 1 (core → auth → creation → roles → attendance)
 --            → Module 2 → Module 3 → Module 4
--- Test scripts under */05_Tests/ and */99_* are excluded.
+-- Executable tests live in 01_DB/Tests/ (not loaded here).
 -- =========================================================
 
 \echo '>>> loading services layer (00_Core)'
