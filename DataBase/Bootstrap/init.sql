@@ -19,6 +19,7 @@
 -- MOUNTS (docker-compose.yml)
 --   DataBase/Bootstrap  → /docker-entrypoint-initdb.d
 --   DataBase/Schema     → /docker-entrypoint-initdb.d/Schema
+--   DataBase/Comments   → /docker-entrypoint-initdb.d/Comments
 --   DataBase/Services   → /docker-entrypoint-initdb.d/Services
 --   DataBase/DataSeed   → /docker-entrypoint-initdb.d/DataSeed
 -- =========================================================

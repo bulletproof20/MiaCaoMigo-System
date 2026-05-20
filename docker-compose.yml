@@ -39,6 +39,9 @@ services:
       # Structural DDL (referenced by Bootstrap/Loaders)
       - ./DataBase/Schema:/docker-entrypoint-initdb.d/Schema
 
+      # COMMENT ON metadata (Bootstrap/Loaders/05_Comments.sql, 08_Service_Comments.sql)
+      - ./DataBase/Comments:/docker-entrypoint-initdb.d/Comments
+
       # Application service functions (Bootstrap/Loaders/06_Services.sql)
       - ./DataBase/Services:/docker-entrypoint-initdb.d/Services
 

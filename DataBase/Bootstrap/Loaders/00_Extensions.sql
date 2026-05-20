@@ -9,7 +9,7 @@
 -- PURPOSE
 -- Run before custom types and table DDL.
 --
--- Notes: Extension-specific COMMENT ON belongs in 02_Comments
+-- Notes: Extension-specific COMMENT ON belongs in DataBase/Comments/
 -- or next to dependent objects.
 -- =========================================================
 

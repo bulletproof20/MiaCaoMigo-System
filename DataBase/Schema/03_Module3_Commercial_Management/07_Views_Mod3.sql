@@ -24,18 +24,17 @@
 -- =========================================================
 -- Entities: product, family
 -- Purpose: procurement and sp_check_restock_needs monitoring
--- Note: legacy name retained for procedure compatibility
-
 drop view if exists vw_produtos_para_encomendar;
+drop view if exists vw_products_to_reorder;
 
-create view vw_produtos_para_encomendar as
+create view vw_products_to_reorder as
 select
-    p.id_pro as id,
-    p.nam_pro as produto,
-    f.nam_fam as familia,
-    fn_get_available_stock(p.id_pro) as stock_atual,
-    p.min_sto as stock_minimo,
-    (p.min_sto * 2) - fn_get_available_stock(p.id_pro) as sugestao_encomenda
+    p.id_pro,
+    p.nam_pro,
+    f.nam_fam,
+    fn_get_available_stock(p.id_pro) as qty_available,
+    p.min_sto,
+    (p.min_sto * 2) - fn_get_available_stock(p.id_pro) as qty_reorder_suggestion
 from product p
 inner join family f on f.id_fam = p.id_fam
 where fn_get_available_stock(p.id_pro) <= p.min_sto

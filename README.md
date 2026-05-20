@@ -6,7 +6,7 @@ This document explains how to configure and run the Docker environment used in t
 
 Its goal is to ensure that any developer can set up the database quickly, consistently, and without manual configuration.
 
-All system-related documentation (requirements, architecture, design decisions) is available in the `00_Planeamento/` directory.
+All system-related documentation (requirements, architecture, design decisions) is available in the sibling repository `00_MiaCaoMigo_Engineering/`.
 
 ---
 
@@ -46,7 +46,8 @@ docker compose version
 ```
 DataBase/
  ├── Bootstrap/               # init.sql + Loaders + Profiles (Docker entry)
- ├── Schema/                  # DDL only (00_Core, 01_Modules, 02_Comments)
+ ├── Schema/                  # DDL only (00_Core, 01_Module* … 04_Module*)
+ ├── Comments/                # COMMENT ON layer (Schema + Services metadata)
  ├── Services/                # Application PL/pgSQL
  ├── DataSeed/                # Seed tiers (datasets)
  ├── Tests/                   # QA scripts (not in default init)

@@ -2,8 +2,7 @@
 -- BOOTSTRAP PROFILE — DEMO (official Docker default)
 -- =========================================================
 --
--- Order preserved from legacy Schema/init.sql:
---   core → official bootstrap (master + demo) → sanity
+-- Pipeline: init_core (DDL + services) → Master + Demo → sanity
 -- =========================================================
 
 \echo '>>> profile: init_demo'

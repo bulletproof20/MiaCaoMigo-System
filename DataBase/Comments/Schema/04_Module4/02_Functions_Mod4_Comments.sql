@@ -23,7 +23,7 @@ comment on function fn_block_past_appointments() is
 comment on function fn_appointment_duration_check() is
 'validates that completed visits end after they start';
 
-comment on function fn_appointment_see_app_clt(integer) is
+comment on function fn_appointment_list_by_client(integer) is
 'returns appointment projections for client self-service views including veterinarian display name and specialty metadata';
 
 comment on function fn_validate_appointment_vet_specialty() is

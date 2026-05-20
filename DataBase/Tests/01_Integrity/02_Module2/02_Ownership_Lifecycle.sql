@@ -31,7 +31,7 @@ end;
 $$;
 
 -- TEST 02 — end ownership
-call sp_end_ownership(p_id_ani => 1, p_reason => 'Integrity return');
+call sp_end_ownership(p_id_ani => 1, p_mot_own => 'Integrity return');
 
 do $$
 declare

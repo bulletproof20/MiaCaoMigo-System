@@ -91,6 +91,9 @@ begin
     where
         id_ani = p_id_ani;
 
+exception
+    when others then
+        raise exception 'Falha ao atribuir posse ao animal %: %', p_id_ani, sqlerrm;
 end;
 $$;
 
@@ -98,7 +101,7 @@ $$;
 -- Closes the open ownership interval and returns animal to internal status
 -- =========================================================
 
-create or replace procedure sp_end_ownership(p_id_ani int, p_reason varchar) language plpgsql as $$
+create or replace procedure sp_end_ownership(p_id_ani int, p_mot_own varchar) language plpgsql as $$
 declare
     v_ownership_id int;
 begin
@@ -119,7 +122,7 @@ begin
     update
         ownership
     set
-        end_dat_own = current_date, mot_own = p_reason
+        end_dat_own = current_date, mot_own = p_mot_own
     where
         id_own = v_ownership_id;
 
@@ -131,6 +134,9 @@ begin
     where
         id_ani = p_id_ani;
 
+exception
+    when others then
+        raise exception 'Falha ao terminar posse do animal %: %', p_id_ani, sqlerrm;
 end;
 $$;
 
@@ -143,16 +149,15 @@ declare
     v_id_del int;
     v_emp_id int;
 begin
-    -- 1. Check if animal exists
-    if not exists (
-        select
-            1
-        from
-            animal
-        where
-            id_ani = p_id_ani
-    ) then raise exception 'Animal com ID % não existe. Registe o animal primeiro.', p_id_ani;
-end if;
+    -- 1. Lock animal row for the duration of the workflow
+    perform 1
+    from animal
+    where id_ani = p_id_ani
+    for update;
+
+    if not found then
+        raise exception 'Animal com ID % não existe. Registe o animal primeiro.', p_id_ani;
+    end if;
 -- 2. Create the delivery record
 insert into
     delivery (
@@ -184,6 +189,10 @@ set
     sta_ani = 'Interno'
 where
     id_ani = p_id_ani;
+
+exception
+    when others then
+        raise exception 'Falha ao registar entrega do animal %: %', p_id_ani, sqlerrm;
 end;
 $$;
 
@@ -233,5 +242,9 @@ begin
         sta_ani = 'Transferido'
     where
         id_ani = p_id_ani;
+
+exception
+    when others then
+        raise exception 'Falha ao processar concessão do animal %: %', p_id_ani, sqlerrm;
 end;
 $$;

@@ -18,7 +18,7 @@
 -- ---------------------------------------------------------
 -- Requires:
 -- - purchase / purchase_line / stock schema
--- - vw_produtos_para_encomendar view
+-- - vw_products_to_reorder view
 --
 -- Must load before:
 -- - Manual or scheduled inventory review jobs
@@ -34,7 +34,26 @@ as $$
 declare
     v_line record;
     v_id_sto int;
+    v_dummy purchase_status;
 begin
+    select sta_pur
+    into v_dummy
+    from purchase
+    where id_pur = p_id_pur
+    for update;
+
+    if not found then
+        raise exception 'Encomenda com ID % não encontrada.', p_id_pur;
+    end if;
+
+    if not exists (
+        select 1
+        from purchase_line
+        where id_pur = p_id_pur
+    ) then
+        raise exception 'Encomenda com ID % não tem linhas para receção.', p_id_pur;
+    end if;
+
     update purchase
     set sta_pur = 'received'
     where id_pur = p_id_pur;
@@ -52,6 +71,10 @@ begin
         set id_sto = v_id_sto
         where id_pur_lin = v_line.id_pur_lin;
     end loop;
+
+exception
+    when others then
+        raise exception 'Falha ao receber encomenda %: %', p_id_pur, sqlerrm;
 end;
 $$;
 
@@ -63,17 +86,17 @@ create or replace procedure sp_check_restock_needs()
 language plpgsql
 as $$
 declare
-    v_total_produtos int;
+    v_total_products int;
 begin
-    select count(*) into v_total_produtos
-    from vw_produtos_para_encomendar;
+    select count(*) into v_total_products
+    from vw_products_to_reorder;
 
-    if v_total_produtos > 0 then
+    if v_total_products > 0 then
         raise notice
-            'ATENÇÃO: Existem % produtos que atingiram o stock mínimo e precisam de reposição!',
-            v_total_produtos;
+            'WARNING: % products are at or below minimum stock and need replenishment.',
+            v_total_products;
         raise notice
-            'Consulte a view vw_produtos_para_encomendar para ver a lista detalhada.';
+            'See view vw_products_to_reorder for the detailed list.';
     else
         raise notice
             'Stock em conformidade: Nenhum produto necessita de encomenda no momento.';

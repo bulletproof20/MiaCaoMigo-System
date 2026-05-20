@@ -17,14 +17,14 @@
 -- - btree_gist extension
 -- =========================================================
 
-drop index if exists idx_appointment_status_for_jobs;
-drop index if exists idx_appointment_id_cli;
-drop index if exists idx_appointment_id_emp;
-drop index if exists idx_appointment_id_ani;
-drop index if exists idx_appointment_vet_schedule;
-drop index if exists idx_appointment_sch_dat_app;
-drop index if exists idx_appointment_operational_day;
-drop index if exists idx_notification_client_read_status;
+drop index if exists ix_appointment_status_for_jobs;
+drop index if exists ix_appointment_id_cli;
+drop index if exists ix_appointment_id_emp;
+drop index if exists ix_appointment_id_ani;
+drop index if exists ix_appointment_vet_schedule;
+drop index if exists ix_appointment_sch_dat_app;
+drop index if exists ix_appointment_operational_day;
+drop index if exists ix_notification_client_read_status;
 alter table appointment drop constraint if exists ex_appointment_vet_overlap;
 
 
@@ -57,7 +57,7 @@ exclude using gist (
 -- Replaces a generic sch_dat_app index for job-shaped queries.
 -- =========================================================
 
-create index idx_appointment_status_for_jobs
+create index ix_appointment_status_for_jobs
 on appointment (sch_dat_app)
 where status_app = 'scheduled';
 
@@ -73,7 +73,7 @@ where status_app = 'scheduled';
 -- narrows to bookable visits only.
 -- =========================================================
 
-create index idx_appointment_vet_schedule
+create index ix_appointment_vet_schedule
 on appointment (id_emp, sch_dat_app)
 where status_app = 'scheduled';
 
@@ -88,7 +88,7 @@ where status_app = 'scheduled';
 -- Partial index covers scheduled and in-progress same-day loads.
 -- =========================================================
 
-create index idx_appointment_operational_day
+create index ix_appointment_operational_day
 on appointment (sch_dat_app)
 where status_app in ('scheduled', 'in_progress');
 
@@ -103,7 +103,7 @@ where status_app in ('scheduled', 'in_progress');
 -- FK child index on appointment.id_cli.
 -- =========================================================
 
-create index idx_appointment_id_cli
+create index ix_appointment_id_cli
 on appointment (id_cli);
 
 
@@ -114,10 +114,10 @@ on appointment (id_cli);
 --   - appointment lookups by id_emp outside scheduled-only paths
 --   - in_progress and completed visit queries per vet
 --
--- Complements idx_appointment_vet_schedule (scheduled partial).
+-- Complements ix_appointment_vet_schedule (scheduled partial).
 -- =========================================================
 
-create index idx_appointment_id_emp
+create index ix_appointment_id_emp
 on appointment (id_emp);
 
 
@@ -131,7 +131,7 @@ on appointment (id_emp);
 -- FK child index on appointment.id_ani.
 -- =========================================================
 
-create index idx_appointment_id_ani
+create index ix_appointment_id_ani
 on appointment (id_ani);
 
 
@@ -145,5 +145,5 @@ on appointment (id_ani);
 -- Composite index matches typical inbox filter order.
 -- =========================================================
 
-create index idx_notification_client_read_status
+create index ix_notification_client_read_status
 on appointment_notification (id_cli, rea_not);

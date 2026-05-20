@@ -17,13 +17,13 @@ create function fn_register_adoption(
     p_id_cli int,
     p_id_ani int,
     p_id_emp int,
-    p_motive varchar
+    p_mot_own varchar
 )
 returns void
 language plpgsql
 as $$
 begin
-    call sp_assign_ownership(p_id_ani, p_id_cli, p_id_emp, p_motive);
+    call sp_assign_ownership(p_id_ani, p_id_cli, p_id_emp, p_mot_own);
 end;
 $$;
 
@@ -36,7 +36,7 @@ drop function if exists fn_register_delivery_team(int, int, varchar, varchar, in
 
 create function fn_register_delivery_team(
     p_id_ani int,
-    p_id_ext int,
+    p_id_ext_ent int,
     p_location varchar,
     p_status_clinic varchar,
     p_emp_ids int[]
@@ -50,7 +50,7 @@ begin
         current_timestamp,
         p_location,
         p_status_clinic,
-        p_id_ext,
+        p_id_ext_ent,
         p_emp_ids
     );
 end;
@@ -66,7 +66,7 @@ drop function if exists fn_animal_exit(int, varchar);
 
 create function fn_animal_exit(
     p_id_ani int,
-    p_reason varchar
+    p_sta_ani varchar
 )
 returns void
 language plpgsql
@@ -74,7 +74,7 @@ as $$
 begin
 
     update animal
-    set sta_ani = p_reason
+    set sta_ani = p_sta_ani
     where id_ani = p_id_ani;
 
     update ownership
@@ -82,6 +82,9 @@ begin
     where id_ani = p_id_ani
       and end_dat_own is null;
 
+exception
+    when others then
+        raise exception 'Falha ao registar saída do animal %: %', p_id_ani, sqlerrm;
 end;
 $$;
 

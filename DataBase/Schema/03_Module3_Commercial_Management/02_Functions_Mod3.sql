@@ -67,7 +67,7 @@ begin
 
     if v_stock_atual <= v_min_sto then
         raise notice
-            'STOCK BAIXO: O produto "%" (ID: %) tem apenas % unidades. (Mínimo: %). Consulte a view vw_produtos_para_encomendar.',
+            'LOW STOCK: product "%" (ID: %) has only % units (minimum: %). See view vw_products_to_reorder.',
             v_nam_pro, new.id_pro, v_stock_atual, v_min_sto;
     end if;
 

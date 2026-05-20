@@ -58,5 +58,25 @@ begin
 
     -- return the new employee id
     return v_id_emp_new;
-    end;
+
+exception
+    when unique_violation then
+        raise exception using
+            message = 'Veterinarian record already exists for this employee.',
+            detail = sqlerrm,
+            errcode = sqlstate;
+
+    when foreign_key_violation then
+        raise exception using
+            message = 'Invalid employee association while creating veterinarian.',
+            detail = sqlerrm,
+            errcode = sqlstate;
+
+    when others then
+        raise exception using
+            message = 'Unexpected error while converting employee to veterinarian.',
+            detail = sqlerrm,
+            errcode = sqlstate;
+
+end;
 $$ language plpgsql;

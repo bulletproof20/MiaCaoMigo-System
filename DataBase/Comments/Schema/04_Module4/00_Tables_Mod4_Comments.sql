@@ -1,7 +1,7 @@
 -- =========================================================
 -- MODULE 4 — APPOINTMENT MANAGEMENT (TABLE COMMENTS)
--- Mirrors: 01_Modules/04_*/00_Tables_Mod4.sql
--- ENUM metadata: 02_Comments/00_Core/02_Types_Comments.sql
+-- Mirrors: Schema/04_Module4_Appointment_Management/00_Tables_Mod4.sql
+-- ENUM metadata: Comments/Schema/00_Core/02_Types_Comments.sql
 -- =========================================================
 
 -- ---------------------------------------------------------

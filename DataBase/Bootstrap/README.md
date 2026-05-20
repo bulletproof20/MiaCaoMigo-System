@@ -15,14 +15,14 @@ Default profile: `Profiles/init_demo.sql` (MasterData + DemoData + sanity).
 | Loader | Role |
 |--------|------|
 | `00_Extensions` | pg_cron, btree_gist |
-| `01_Structure` | Tables (+ module indexes) |
-| `02_ForeignKeys` | Deferred FKs |
-| `03_Integrity` | Functions, triggers, views, procedures, jobs |
+| `01_Structure` | Tables only (`00_Tables_Mod*.sql`) |
+| `02_ForeignKeys` | Foreign keys (`01_ForeignKeys_Mod*.sql`) |
+| `03_Integrity` | Functions, triggers, indexes, views, procedures, jobs |
 | `04_Data_Migration` | ETL placeholder / tier docs |
-| `05_Comments` | COMMENT ON schema objects |
+| `05_Comments` | COMMENT ON schema objects (`DataBase/Comments/Schema/`) |
+| `08_Service_Comments` | COMMENT ON service functions (`DataBase/Comments/Services/`) |
 | `06_Services` | Application PL/pgSQL |
 | `07_Sanity_Check` | Light post-init catalog smoke |
-| `08_Service_Comments` | COMMENT ON service functions |
 | `09_DevelopmentData` | Gated dev tier (manual) |
 | `10_Official_Bootstrap` | Master + Demo (composite) |
 | `11_MasterData` | Delegate → DataSeed |

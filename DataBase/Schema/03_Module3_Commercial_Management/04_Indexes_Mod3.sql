@@ -27,7 +27,7 @@ drop index if exists ix_invoice_line_id_inv;
 -- Optimizes:
 --   - fn_get_available_stock
 --   - fn_stock_after_sale (qty_sto > 0, order by val_dat_sto)
---   - vw_product_stock_levels / vw_produtos_para_encomendar
+--   - vw_product_stock_levels / vw_products_to_reorder
 --
 -- High-frequency filter: stock.id_pro with positive quantities.
 -- =========================================================

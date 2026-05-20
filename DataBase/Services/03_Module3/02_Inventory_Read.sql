@@ -4,7 +4,7 @@
 -- =========================================================
 --
 -- Read helpers over Module 3 reporting views.
--- Depends on: vw_product_stock_levels, vw_produtos_para_encomendar.
+-- Depends on: vw_product_stock_levels, vw_products_to_reorder.
 -- =========================================================
 
 drop function if exists fn_list_product_stock_levels();
@@ -23,13 +23,13 @@ $$;
 drop function if exists fn_list_products_to_reorder();
 
 create function fn_list_products_to_reorder()
-returns setof vw_produtos_para_encomendar
+returns setof vw_products_to_reorder
 language sql
 stable
 as $$
     select *
-    from vw_produtos_para_encomendar
-    order by stock_minimo desc;
+    from vw_products_to_reorder
+    order by min_sto desc;
 $$;
 
 

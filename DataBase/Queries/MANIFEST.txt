@@ -9,7 +9,7 @@ NOT loaded by Docker init (see Bootstrap/init.sql).
 SOURCE OF TRUTH
 ---------------
 Operational logic lives in:
-  - Schema/01_Modules/     DDL, views, procedures, jobs
+  - Schema/01_Module* …     DDL, views, procedures, jobs
   - Services/              Application PL/pgSQL (loaded via 06_Services.sql)
 
 LAYOUT

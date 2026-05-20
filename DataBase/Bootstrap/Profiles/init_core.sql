@@ -6,6 +6,8 @@
 -- by downstream profiles (init_minimal, init_demo, etc.).
 -- =========================================================
 
+\set ON_ERROR_STOP on
+
 \i /docker-entrypoint-initdb.d/Loaders/00_Extensions.sql
 \i /docker-entrypoint-initdb.d/Schema/00_Core/01_Types.sql
 \i /docker-entrypoint-initdb.d/Loaders/01_Structure.sql

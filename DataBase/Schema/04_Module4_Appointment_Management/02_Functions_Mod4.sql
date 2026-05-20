@@ -187,7 +187,7 @@ $$ language plpgsql;
 -- Returns upcoming and historical appointments for a client profile
 -- =========================================================
 
-create or replace function fn_appointment_see_app_clt(p_client_id int)
+create or replace function fn_appointment_list_by_client(p_id_cli int)
 returns table(
     appointment_id int,
     scheduled_date timestamp,
@@ -216,7 +216,7 @@ begin
     join user_account ua on e.id_usr = ua.id_usr
     join animal an on a.id_ani = an.id_ani
     join specialty s on a.id_spe = s.id_spe
-    where a.id_cli = p_client_id
+    where a.id_cli = p_id_cli
     order by a.sta_dat_app desc nulls last, a.sch_dat_app desc;
 end;
 $$;

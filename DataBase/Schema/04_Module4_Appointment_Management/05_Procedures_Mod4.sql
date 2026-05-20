@@ -81,17 +81,17 @@ $$;
 -- Cancels appointments outside the 24-hour change window
 -- =========================================================
 
-create or replace procedure sp_cancel_appointment(p_app_id int)
+create or replace procedure sp_cancel_appointment(p_id_app int)
 language plpgsql
 as $$
 declare
     v_scheduled_time timestamp;
 begin
     -- Get the scheduled time and lock the row
-    select sch_dat_app into v_scheduled_time from appointment where id_app = p_app_id for update;
+    select sch_dat_app into v_scheduled_time from appointment where id_app = p_id_app for update;
 
     if not found then
-        raise exception 'Consulta com ID % não encontrada.', p_app_id;
+        raise exception 'Consulta com ID % não encontrada.', p_id_app;
     end if;
 
     -- Check if the cancellation is being made within the allowed window
@@ -101,7 +101,7 @@ begin
     end if;
 
     -- Update the status to 'cancelled'
-    update appointment set status_app = 'cancelled' where id_app = p_app_id;
+    update appointment set status_app = 'cancelled' where id_app = p_id_app;
 end;
 $$;
 
@@ -110,8 +110,8 @@ $$;
 -- =========================================================
 
 create or replace procedure sp_reschedule_appointment(
-    p_app_id int,
-    p_new_scheduled_time timestamp
+    p_id_app int,
+    p_sch_dat_app timestamp
 )
 language plpgsql
 as $$
@@ -122,11 +122,11 @@ begin
     select sch_dat_app
     into v_original_scheduled_time
     from appointment
-    where id_app = p_app_id
+    where id_app = p_id_app
     for update;
 
     if not found then
-        raise exception 'Consulta com ID % não encontrada.', p_app_id;
+        raise exception 'Consulta com ID % não encontrada.', p_id_app;
     end if;
 
     -- Check if the rescheduling is being made within the allowed window
@@ -136,7 +136,7 @@ begin
 
     -- Perform the update. This will fire the trigger for past dates, ensuring the new slot is valid.
     -- Note: The overlap trigger should also be based on sch_dat_app if appointments have a fixed duration.
-    update appointment set sch_dat_app = p_new_scheduled_time where id_app = p_app_id;
+    update appointment set sch_dat_app = p_sch_dat_app where id_app = p_id_app;
 end;
 $$;
 
@@ -149,7 +149,7 @@ create or replace procedure sp_create_appointment(
     p_id_ani int,
     p_id_emp int,
     p_id_spe int,
-    p_scheduled_time timestamp
+    p_sch_dat_app timestamp
 )
 language plpgsql
 as $$
@@ -158,7 +158,7 @@ begin
     -- The sta_dat_app and end_dat_app fields are left NULL, to be filled in by the vet later.
     -- Triggers enforce: past dates, overlaps, absences, ownership, vet × specialty (expert).
     insert into appointment (id_cli, id_ani, id_emp, id_spe, sch_dat_app, status_app)
-    values (p_id_cli, p_id_ani, p_id_emp, p_id_spe, p_scheduled_time, 'scheduled');
+    values (p_id_cli, p_id_ani, p_id_emp, p_id_spe, p_sch_dat_app, 'scheduled');
 end;
 $$;
 
@@ -166,7 +166,7 @@ $$;
 -- Transitions an appointment into in-progress clinical state
 -- =========================================================
 
-create or replace procedure sp_start_appointment(p_app_id int)
+create or replace procedure sp_start_appointment(p_id_app int)
 language plpgsql
 as $$
 begin
@@ -175,11 +175,11 @@ begin
         sta_dat_app = now(),
         status_app = 'in_progress'
     where
-        id_app = p_app_id
+        id_app = p_id_app
         and status_app in ('scheduled'); -- Can start if it's scheduled 
 
     if not found then
-        raise exception 'Não foi possível iniciar a consulta. Verifique se o ID % existe e se o estado é "Scheduled".', p_app_id;
+        raise exception 'Não foi possível iniciar a consulta. Verifique se o ID % existe e se o estado é "Scheduled".', p_id_app;
     end if;
 end;
 $$;
@@ -189,9 +189,9 @@ $$;
 -- =========================================================
 
 create or replace procedure sp_end_appointment(
-    p_app_id int,
-    p_diagnosis varchar(100),
-    p_comments text
+    p_id_app int,
+    p_dia_app varchar(100),
+    p_com_app text
 )
 language plpgsql
 as $$
@@ -200,14 +200,14 @@ begin
     set
         end_dat_app = now(),
         status_app = 'completed',
-        dia_app = p_diagnosis,
-        com_app = p_comments
+        dia_app = p_dia_app,
+        com_app = p_com_app
     where
-        id_app = p_app_id
+        id_app = p_id_app
         and status_app = 'in_progress'; -- Can only end an appointment that is in progress
 
     if not found then
-        raise exception 'Não foi possível terminar a consulta. Verifique se o ID % existe e se o estado é "In Progress".', p_app_id;
+        raise exception 'Não foi possível terminar a consulta. Verifique se o ID % existe e se o estado é "In Progress".', p_id_app;
     end if;
 end;
 $$;
@@ -223,8 +223,24 @@ create or replace procedure sp_prescription_for_appointment(
 )
 language plpgsql
 as $$
+declare
+    v_status appointment_status;
 begin
+    select status_app
+    into v_status
+    from appointment
+    where id_app = p_id_app
+    for update;
+
+    if not found then
+        raise exception 'Consulta com ID % não encontrada.', p_id_app;
+    end if;
+
     insert into prescription (id_app, reg_dat_pre, des_pre)
     values (p_id_app, now(), p_des_pre);
+
+exception
+    when others then
+        raise exception 'Falha ao registar prescrição para consulta %: %', p_id_app, sqlerrm;
 end;
 $$;
