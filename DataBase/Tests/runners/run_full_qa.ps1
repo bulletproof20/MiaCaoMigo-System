@@ -1,4 +1,4 @@
-# Full QA: TestData fixtures + integrity suite
+# Full QA: fixtures + integrity (FAIL: gate).
 param(
     [string]$Container = "miacaomigo-db",
     [string]$Db = "miacaomigo",
@@ -6,9 +6,5 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$Runners = $PSScriptRoot
-
-& (Join-Path $Runners "run_test_data.ps1") -Container $Container -Db $Db -User $User
-& (Join-Path $Runners "run_integrity_all.ps1") -Container $Container -Db $Db -User $User
-
-Write-Host "Full QA run complete."
+& (Join-Path $PSScriptRoot "run_regression.ps1") -Container $Container -Db $Db -User $User
+exit $LASTEXITCODE

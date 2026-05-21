@@ -5,13 +5,13 @@
 -- VOLUME:    40 sp_assign_ownership on animal 1 (internal after lifecycle tests may vary)
 -- EXPECTED:  at most one success; rest blocked by procedure or triggers
 -- METRICS:   attempts, successes, blocks, active ownerships
--- REQUIRES:  04_Loaders/03_TestData.sql — uses animal 5 (internal)
+-- REQUIRES:  04_Loaders/03_TestData.sql + contracts/01_QA_Functions.sql
 -- =========================================================
 
 do $$
 declare
-    v_ani int := 5;
-    v_cli int := 5;
+    v_ani int := qa_animal_stress_internal_id();
+    v_cli int := qa_client_secondary_id();
     v_attempts int := 40;
     v_ok int := 0;
     v_block int := 0;
@@ -30,7 +30,7 @@ begin
 
     for v_i in 1..v_attempts loop
         begin
-            call sp_assign_ownership(v_ani, v_cli, 1, 'STRESS adoption race');
+            call sp_assign_ownership(v_ani, v_cli, qa_registrar_emp_id(), 'STRESS adoption race');
             v_ok := v_ok + 1;
         exception
             when others then

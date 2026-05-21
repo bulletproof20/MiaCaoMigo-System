@@ -1,16 +1,13 @@
 -- =========================================================
--- BOOTSTRAP PROFILE — FULL QA (test fixtures + manual test hint)
+-- BOOTSTRAP PROFILE — FULL QA
 -- =========================================================
---
--- USE FOR
---   QA environment seed. SQL init loads TestData only.
---   Run integrity scripts after DB is up:
---     cd DataBase/Tests/runners
---     .\run_integrity_all.ps1
+-- SQL init: Master + Demo only. After container is up:
+--   cd DataBase/Tests/runners
+--   .\run_regression.ps1
 -- =========================================================
 
 \echo '>>> profile: init_full_qa'
 
-\i /docker-entrypoint-initdb.d/Profiles/init_test.sql
+\i /docker-entrypoint-initdb.d/Profiles/init_demo.sql
 
-\echo '>>> next step (host): Tests/runners/run_integrity_all.ps1'
+\echo '>>> next step (host): Tests/runners/run_regression.ps1'

@@ -2,25 +2,29 @@
 -- INTEGRITY — MODULE 2 — OWNERSHIP LIFECYCLE
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: 04_Loaders/03_TestData.sql
+-- REQUIRES: fixtures/cleanup/02_Reset_Module2_Animal1.sql (runner prefix)
 -- RULE:     sp_assign_ownership, sp_end_ownership
--- FIXTURES: animal 1 internal; id_cli 4; id_emp 1
--- =========================================================
--- expected:
--- - assign sets Adotado + one active ownership
--- - end restores Interno and closes ownership
+-- CONTRACT: qa_animal_internal_id, qa_client_active_id, qa_registrar_emp_id
 -- =========================================================
 
--- TEST 01 — assign ownership on internal animal
-call sp_assign_ownership(p_id_ani => 1, p_id_cli => 4, p_id_emp => 1, p_mot_own => 'Integrity assign');
+do $$
+declare
+    v_ani int := qa_animal_internal_id();
+    v_cli int := qa_client_active_id();
+    v_emp int := qa_registrar_emp_id();
+begin
+    call sp_assign_ownership(v_ani, v_cli, v_emp, 'Integrity assign');
+end;
+$$;
 
 do $$
 declare
     v_sta varchar;
     v_active int;
+    v_ani int := qa_animal_internal_id();
 begin
-    select sta_ani into v_sta from animal where id_ani = 1;
-    select count(*) into v_active from ownership where id_ani = 1 and end_dat_own is null;
+    select sta_ani into v_sta from animal where id_ani = v_ani;
+    select count(*) into v_active from ownership where id_ani = v_ani and end_dat_own is null;
 
     if v_sta = 'Adotado' and v_active = 1 then
         raise notice 'PASS: sp_assign_ownership updated animal and ownership';
@@ -30,16 +34,22 @@ begin
 end;
 $$;
 
--- TEST 02 — end ownership
-call sp_end_ownership(p_id_ani => 1, p_mot_own => 'Integrity return');
+do $$
+declare
+    v_ani int := qa_animal_internal_id();
+begin
+    call sp_end_ownership(v_ani, 'Integrity return');
+end;
+$$;
 
 do $$
 declare
     v_sta varchar;
     v_closed int;
+    v_ani int := qa_animal_internal_id();
 begin
-    select sta_ani into v_sta from animal where id_ani = 1;
-    select count(*) into v_closed from ownership where id_ani = 1 and end_dat_own is not null;
+    select sta_ani into v_sta from animal where id_ani = v_ani;
+    select count(*) into v_closed from ownership where id_ani = v_ani and end_dat_own is not null;
 
     if v_sta = 'Interno' and v_closed >= 1 then
         raise notice 'PASS: sp_end_ownership restored internal status';

@@ -65,16 +65,16 @@ Dockerfile
   Structural definitions only. Loaded via `Bootstrap/Loaders/` (paths under `/docker-entrypoint-initdb.d/Schema/`).
 
 * **Bootstrap/Loaders/**
-  Orchestration phases (`00_Extensions` … `13_TestData`). Data tiers `11`–`13` delegate to `DataSeed/04_Loaders/`.
+  Single orchestration layer (`00_Extensions` … `12_DemoData`). Data tiers `\i` datasets under `DataSeed/` directly.
 
 * **Bootstrap/Profiles/**
   Reusable compositions: `init_minimal`, `init_master`, `init_demo`, `init_dev`, `init_test`, `init_full_qa`.
 
 * **DataSeed/**
-  Datasets only. Official init uses Master + Demo; TestData and DevelopmentData are manual or via profiles.
+  Datasets only. Official init: Master + Demo. QA fixtures: `Tests/fixtures/`. DevelopmentData: manual / init_dev.
 
 * **Tests/**
-  Executable validation. Use `Tests/runners/` after `init_test` or `03_TestData.sql`.
+  SQL-centric QA (integrity, stress, manual). CI gate: `Tests/runners/run_regression.ps1` (fixtures + integrity). See `Tests/README.md`, `Tests/MATRIX.md`.
 
 ---
 

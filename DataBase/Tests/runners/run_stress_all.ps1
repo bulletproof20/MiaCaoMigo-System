@@ -1,5 +1,4 @@
-# Run stress suite (metrics via NOTICE — not integrity PASS/FAIL)
-# Prerequisites: Bootstrap + recommended run_test_data.ps1
+# Run stress suite (metrics via STRESS NOTICE — SQL errors fail the run)
 param(
     [string]$Container = "miacaomigo-db",
     [string]$Db = "miacaomigo",
@@ -8,11 +7,11 @@ param(
     [string]$Module = "all"
 )
 
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "lib/Invoke-QaSqlRunner.ps1")
+
 $Tests = Split-Path $PSScriptRoot -Parent
 $Stress = Join-Path $Tests "02_Stress"
-$SetupCommercial = "00_Setup/01_Commercial_Stress_Fixture.sql"
-
 $allScripts = [ordered]@{
     "1" = @(
         "01_Module1/01_Login_Concurrency.sql",
@@ -40,41 +39,47 @@ if ($Module -eq "all") {
     $scripts = $allScripts[$Module]
 }
 
-function Invoke-StressSql {
-    param([string]$RelativePath)
-    $path = Join-Path $Stress $RelativePath
-    Get-Content -Path $path -Raw -Encoding UTF8 | docker exec -i $Container psql -U $User -d $Db -v ON_ERROR_STOP=1 2>&1 | Out-Host
-    return $LASTEXITCODE
-}
-
 Write-Host "========================================"
 Write-Host "STRESS SUITE - $($scripts.Count) script(s)  Module: $Module"
 Write-Host "Container: $Container  Database: $Db"
 Write-Host "========================================"
 
-$fail = 0
-foreach ($rel in $scripts) {
-    if ($rel -like "03_Module3/*") {
-        Write-Host ""
-        Write-Host ">>> (setup) $SetupCommercial"
-        if ((Invoke-StressSql -RelativePath $SetupCommercial) -ne 0) { $fail++ }
-    }
+Write-Host ""
+Write-Host ">>> (preflight) QA fixtures (all modules + stress commercial)"
+& (Join-Path $PSScriptRoot "run_fixtures.ps1") -Container $Container -Db $Db -User $User -Module all -IncludeStress
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+$scriptsRun = 0
+$scriptsFailed = 0
+$totalFail = 0
+$totalError = 0
+$totalFatal = 0
+
+foreach ($rel in $scripts) {
     Write-Host ""
     Write-Host ">>> $rel"
-    if ((Invoke-StressSql -RelativePath $rel) -ne 0) {
-        $fail++
+    $path = Join-Path $Stress $rel
+    $result = Invoke-QaSqlScript -Container $Container -DatabaseName $Db -User $User -FilePath $path
+    $result.Output | Write-Host
+
+    $scriptsRun++
+    $totalFail += $result.Metrics.FailCount
+    $totalError += $result.Metrics.ErrorCount
+    $totalFatal += $result.Metrics.FatalCount
+
+    if (-not $result.Success) {
+        $scriptsFailed++
         Write-Host "ERROR: stress script failed - $rel"
     }
 }
 
-Write-Host ""
-Write-Host "========================================"
-if ($fail -eq 0) {
-    Write-Host "Stress runners finished. Review STRESS M*-* NOTICE metrics."
-} else {
-    Write-Host "Stress suite completed with $fail script error(s)."
-}
-Write-Host "========================================"
+$passed = Write-QaRunSummary `
+    -SuiteName "STRESS" `
+    -ScriptsRun $scriptsRun `
+    -ScriptsFailed $scriptsFailed `
+    -TotalFailNotices $totalFail `
+    -TotalPassNotices -1 `
+    -TotalSqlErrors $totalError `
+    -TotalFatals $totalFatal
 
-if ($fail -gt 0) { exit 1 }
+if (-not $passed) { exit 1 }

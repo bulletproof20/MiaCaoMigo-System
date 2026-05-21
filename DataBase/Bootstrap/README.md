@@ -2,7 +2,7 @@
 
 Orchestrates database initialization: DDL loaders, Services, optional DataSeed tiers, and sanity checks.
 
-**Structural definitions** live in `../Schema/`. **Datasets** live in `../DataSeed/`.
+**Structural definitions** live in `../Schema/`. **Datasets** live in `../DataSeed/` (no loaders under DataSeed).
 
 ## Docker entry
 
@@ -23,11 +23,9 @@ Default profile: `Profiles/init_demo.sql` (MasterData + DemoData + sanity).
 | `08_Service_Comments` | COMMENT ON service functions (`DataBase/Comments/Services/`) |
 | `06_Services` | Application PL/pgSQL |
 | `07_Sanity_Check` | Light post-init catalog smoke |
-| `09_DevelopmentData` | Gated dev tier (manual) |
-| `10_Official_Bootstrap` | Master + Demo (composite) |
-| `11_MasterData` | Delegate → DataSeed |
-| `12_DemoData` | Delegate → DataSeed |
-| `13_TestData` | Delegate → DataSeed (QA manual) |
+| `09_DevelopmentData` | → `DataSeed/02_DevelopmentData/*` (init_dev) |
+| `11_MasterData` | → `DataSeed/00_MasterData/*` |
+| `12_DemoData` | → `DataSeed/03_DemoData/*` |
 
 ## Profiles (`Profiles/`)
 
@@ -38,7 +36,7 @@ Default profile: `Profiles/init_demo.sql` (MasterData + DemoData + sanity).
 | `init_master.sql` | core + MasterData + sanity |
 | `init_demo.sql` | core + Master + Demo + sanity (**Docker default**) |
 | `init_dev.sql` | core + Master + Development + sanity |
-| `init_test.sql` | core + Master + TestData + sanity |
+| `init_test.sql` | core + Master + Demo + sanity (QA via `Tests/runners/`) |
 | `init_full_qa.sql` | init_test + hint to run `Tests/runners/` |
 
 Manual example:

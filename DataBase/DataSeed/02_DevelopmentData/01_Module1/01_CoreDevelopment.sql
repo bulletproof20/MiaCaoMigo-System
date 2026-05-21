@@ -6,10 +6,10 @@
 -- PURPOSE
 -- Comfortable daily-dev identities (clients + assistant).
 --
--- TIER: 02_DevelopmentData (loaded via 04_Loaders/02_DevelopmentData.sql)
+-- TIER: 02_DevelopmentData (loaded via Bootstrap/Loaders/09_DevelopmentData.sql)
 --
 -- PREREQUISITE
---   04_Loaders/00_MasterData.sql (bootstrap admin id_emp 1, vet id_emp 2)
+--   Bootstrap/Loaders/11_MasterData.sql (bootstrap admin id_emp 1, vet id_emp 2)
 --
 -- ID CONTRACT (after this script on fresh MasterData)
 --   id_cli 1–2 — dev clients | id_emp 3 — dev assistant

@@ -4,7 +4,7 @@
 -- TYPE:     01_Integrity
 -- REQUIRES: 04_Loaders/03_TestData.sql
 -- RULE:     trg_validate_animal_breed_species
--- FIXTURES: animal 5 internal; breed 3 (cat) vs species 1 (dog)
+-- CONTRACT: qa_animal_stress_internal_id; breed 3 (cat) vs species 1 (dog)
 -- =========================================================
 -- expected:
 -- - breed not belonging to species blocked on update
@@ -14,7 +14,7 @@ do $$
 begin
     update animal
        set id_bre = 3
-     where id_ani = 5;
+     where id_ani = qa_animal_stress_internal_id();
 
     raise notice 'FAIL: breed/species mismatch should be blocked';
 exception

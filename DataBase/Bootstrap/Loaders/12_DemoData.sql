@@ -1,19 +1,33 @@
 -- =========================================================
--- DATA TIER LOADER — DEMO DATA (Bootstrap delegate)
+-- DATA TIER LOADER — DEMO DATA
 -- =========================================================
---
--- DESCRIPTION
--- Appends demo narrative on top of MasterData.
--- Delegates to DataSeed/04_Loaders/01_DemoData.sql.
---
--- PREREQUISITE
---   11_MasterData.sql (or 00_MasterData.sql via DataSeed) already applied.
---
--- REQUIRES MOUNT
---   ./DataBase/DataSeed → /docker-entrypoint-initdb.d/DataSeed
+-- Orchestration only: appends demo narrative (03_DemoData/*).
+-- PREREQUISITE: 11_MasterData.sql in the same profile run.
+-- INVOKED BY: init_demo, init_test.
 -- =========================================================
 
-\echo '>>> data tier: demo data'
+\echo '========================================'
+\echo 'DEMO DATA'
+\echo '========================================'
 
-\cd /docker-entrypoint-initdb.d/DataSeed
-\i 04_Loaders/01_DemoData.sql
+\set QUIET 1
+set client_min_messages to warning;
+set timezone to 'Europe/Lisbon';
+
+\echo '>>> module 1 demo data'
+\i /docker-entrypoint-initdb.d/DataSeed/03_DemoData/01_Module1_DemoData.sql
+
+\echo '>>> module 2 demo data'
+\i /docker-entrypoint-initdb.d/DataSeed/03_DemoData/02_Module2_DemoData.sql
+
+\echo '>>> module 3 demo data'
+\i /docker-entrypoint-initdb.d/DataSeed/03_DemoData/03_Module3_DemoData.sql
+
+\echo '>>> module 4 demo data'
+\i /docker-entrypoint-initdb.d/DataSeed/03_DemoData/04_Module4_DemoData.sql
+
+\set QUIET 0
+
+\echo '========================================'
+\echo 'DEMO DATA COMPLETE'
+\echo '========================================'

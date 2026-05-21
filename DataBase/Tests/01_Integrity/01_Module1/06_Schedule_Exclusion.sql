@@ -2,9 +2,9 @@
 -- INTEGRITY — MODULE 1 — SCHEDULE EXCLUSION
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: 04_Loaders/03_TestData.sql
+-- REQUIRES: fixtures/01_Module1/01_Core_Context.sql + Bootstrap Master (1@miacaomigo.pt)
 -- RULE:     ex_schedule_overlap (GiST on schedule)
--- FIXTURES: id_emp 1 Monday 08:00–18:00 (CreationStress)
+-- FIXTURES: bootstrap admin schedule Monday 08:00-18:00
 -- =========================================================
 -- expected:
 -- - overlapping schedule interval for same employee/day blocked

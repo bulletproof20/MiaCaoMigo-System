@@ -4,7 +4,7 @@
 -- =========================================================
 --
 -- TIER: 00_MasterData (infrastructure)
--- Invoked first by 04_Loaders/00_MasterData.sql
+-- Invoked first by Bootstrap/Loaders/11_MasterData.sql
 -- =========================================================
 --
 -- DESCRIPTION

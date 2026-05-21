@@ -13,12 +13,16 @@
 do $$
 declare
     v_id_app int;
+    v_cli int := qa_client_active_id();
+    v_ani int := qa_animal_adopted_id();
+    v_emp int := qa_vet_primary_id();
+    v_spe int := qa_specialty_general_id();
 begin
-    call sp_create_appointment(4, 3, 8, 1, (now() + interval '10 days')::timestamp);
+    call sp_create_appointment(v_cli, v_ani, v_emp, v_spe, (now() + interval '10 days')::timestamp);
 
     select id_app into v_id_app
       from appointment
-     where id_cli = 4
+     where id_cli = v_cli
      order by id_app desc
      limit 1;
 
@@ -39,12 +43,23 @@ $$;
 do $$
 declare
     v_id_app int;
+    v_cli int := qa_client_active_id();
+    v_ani int := qa_animal_adopted_id();
+    v_emp int := qa_vet_primary_id();
+    v_spe int;
 begin
-    call sp_create_appointment(4, 3, 8, 7, (now() + interval '11 days')::timestamp);
+    select e.id_spe into v_spe
+      from expert e
+     where e.id_emp = v_emp
+       and e.id_spe is not null
+       and e.id_spe <> qa_specialty_general_id()
+     limit 1;
+
+    call sp_create_appointment(v_cli, v_ani, v_emp, v_spe, (now() + interval '11 days')::timestamp);
 
     select id_app into v_id_app
       from appointment
-     where id_cli = 4
+     where id_cli = v_cli
      order by id_app desc
      limit 1;
 

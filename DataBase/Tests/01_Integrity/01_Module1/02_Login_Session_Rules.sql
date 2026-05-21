@@ -2,7 +2,7 @@
 -- INTEGRITY — MODULE 1 — LOGIN / SESSION RULES
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: 04_Loaders/03_TestData.sql
+-- REQUIRES: fixtures/01_Module1/01_Core_Context.sql
 -- RULE:     login_user — single active session; logout_user semantics
 -- FIXTURES: 12@miacaomigo.pt (open session), 20@miacaomigo.pt (no open session)
 -- =========================================================
@@ -77,3 +77,9 @@ exception
         raise notice 'FAIL: login success test — %', sqlerrm;
 end;
 $$;
+
+-- Re-run safety: close registrar session opened by test 03
+update login_record
+   set sou_tim_log = current_timestamp
+ where ema_log = '20@miacaomigo.pt'
+   and sou_tim_log is null;

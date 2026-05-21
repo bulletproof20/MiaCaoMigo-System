@@ -45,7 +45,7 @@ services:
       # Application service functions (Bootstrap/Loaders/06_Services.sql)
       - ./DataBase/Services:/docker-entrypoint-initdb.d/Services
 
-      # DataSeed tiers (Bootstrap/Loaders/10_Official_Bootstrap.sql, etc.)
+      # DataSeed datasets (Bootstrap/Loaders/11_MasterData.sql, 12_DemoData.sql, etc.)
       - ./DataBase/DataSeed:/docker-entrypoint-initdb.d/DataSeed
 
     # Additional configuration passed directly to PostgreSQL

@@ -1,30 +1,34 @@
 -- =========================================================
--- OPTIONAL DATA TIER — DEVELOPMENT (Bootstrap delegate)
+-- DATA TIER LOADER — DEVELOPMENT DATA
 -- =========================================================
---
--- DESCRIPTION
--- Thin orchestration entry that loads DataSeed/04_Loaders/02_DevelopmentData.sql
--- when explicitly enabled. Keeps seed paths out of init.sql body.
---
--- NOT part of Bootstrap/init.sql (official bootstrap is 10_Official_Bootstrap.sql).
---
--- ENABLE (manual)
---   psql -v MIACAOMIGO_SEED_DEV=1 -f Bootstrap/Loaders/09_DevelopmentData.sql
---   or: psql -f DataSeed/04_Loaders/02_DevelopmentData.sql
---
--- PREREQUISITE
---   MasterData loaded (00_MasterData.sql or zzz_dev_bootstrap.sql step 1)
---   Schema + Services pipeline complete
---
--- REQUIRES MOUNT
---   ./DataBase/DataSeed → /docker-entrypoint-initdb.d/DataSeed
+-- Orchestration only: comfortable local dev rows (02_DevelopmentData/*).
+-- Appends on MasterData; does not truncate. Not for production.
+-- PREREQUISITE: 11_MasterData.sql in the same profile run.
+-- INVOKED BY: init_dev.sql (not part of default init_demo).
 -- =========================================================
 
-\echo '>>> optional data tier: development'
+\echo '========================================'
+\echo 'DEVELOPMENT DATA'
+\echo '========================================'
 
-\if :{?MIACAOMIGO_SEED_DEV}
-\echo '--- MIACAOMIGO_SEED_DEV is set — loading development data'
-\i /docker-entrypoint-initdb.d/DataSeed/04_Loaders/02_DevelopmentData.sql
-\else
-\echo '--- development data skipped (set MIACAOMIGO_SEED_DEV=1 or use docker-compose.dev.yml)'
-\endif
+\set QUIET 1
+set client_min_messages to warning;
+set timezone to 'Europe/Lisbon';
+
+\echo '>>> module 1 development data'
+\i /docker-entrypoint-initdb.d/DataSeed/02_DevelopmentData/01_Module1/01_CoreDevelopment.sql
+
+\echo '>>> module 2 development data'
+\i /docker-entrypoint-initdb.d/DataSeed/02_DevelopmentData/02_Module2/01_AnimalsDevelopment.sql
+
+\echo '>>> module 3 development data'
+\i /docker-entrypoint-initdb.d/DataSeed/02_DevelopmentData/03_Module3/01_InventoryDevelopment.sql
+
+\echo '>>> module 4 development data'
+\i /docker-entrypoint-initdb.d/DataSeed/02_DevelopmentData/04_Module4/01_AppointmentsDevelopment.sql
+
+\set QUIET 0
+
+\echo '========================================'
+\echo 'DEVELOPMENT DATA COMPLETE'
+\echo '========================================'

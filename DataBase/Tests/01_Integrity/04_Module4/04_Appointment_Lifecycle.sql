@@ -5,7 +5,7 @@
 -- REQUIRES: 04_Loaders/03_TestData.sql
 -- RULE:     sp_cancel_appointment, sp_start_appointment, sp_end_appointment,
 --           trg_prevent_completed_appointment_modification
--- FIXTURES: id_cli 4, id_ani 3, id_emp 8
+-- CONTRACT: qa_client_active_id, qa_animal_adopted_id, qa_vet_primary_id, qa_specialty_general_id
 -- =========================================================
 -- expected:
 -- - cancel within 24h blocked; cancel beyond 24h allowed
@@ -17,12 +17,16 @@
 do $$
 declare
     v_id int;
+    v_cli int := qa_client_active_id();
+    v_ani int := qa_animal_adopted_id();
+    v_emp int := qa_vet_primary_id();
+    v_spe int := qa_specialty_general_id();
 begin
-    call sp_create_appointment(4, 3, 8, 1, (now() + interval '12 hours')::timestamp);
+    call sp_create_appointment(v_cli, v_ani, v_emp, v_spe, (now() + interval '12 hours')::timestamp);
 
     select id_app into v_id
       from appointment
-     where id_cli = 4
+     where id_cli = v_cli
      order by id_app desc
      limit 1;
 
@@ -43,12 +47,16 @@ do $$
 declare
     v_id int;
     v_status appointment_status;
+    v_cli int := qa_client_active_id();
+    v_ani int := qa_animal_adopted_id();
+    v_emp int := qa_vet_primary_id();
+    v_spe int := qa_specialty_general_id();
 begin
-    call sp_create_appointment(4, 3, 8, 1, (now() + interval '3 days')::timestamp);
+    call sp_create_appointment(v_cli, v_ani, v_emp, v_spe, (now() + interval '3 days')::timestamp);
 
     select id_app into v_id
       from appointment
-     where id_cli = 4
+     where id_cli = v_cli
        and status_app = 'scheduled'
      order by id_app desc
      limit 1;
@@ -75,12 +83,16 @@ declare
     v_status appointment_status;
     v_sta timestamp;
     v_end timestamp;
+    v_cli int := qa_client_active_id();
+    v_ani int := qa_animal_adopted_id();
+    v_emp int := qa_vet_primary_id();
+    v_spe int := qa_specialty_general_id();
 begin
-    call sp_create_appointment(4, 3, 8, 1, (now() + interval '14 days')::timestamp);
+    call sp_create_appointment(v_cli, v_ani, v_emp, v_spe, (now() + interval '14 days')::timestamp);
 
     select id_app into v_id_app
       from appointment
-     where id_cli = 4
+     where id_cli = v_cli
        and status_app = 'scheduled'
      order by id_app desc
      limit 1;
@@ -124,7 +136,7 @@ declare
 begin
     select id_app into v_id_app
       from appointment
-     where id_cli = 4
+     where id_cli = qa_client_active_id()
        and status_app = 'completed'
      order by id_app desc
      limit 1;

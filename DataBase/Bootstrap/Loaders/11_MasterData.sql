@@ -1,22 +1,36 @@
 -- =========================================================
--- DATA TIER LOADER — MASTER DATA (Bootstrap delegate)
+-- DATA TIER LOADER — MASTER DATA
 -- =========================================================
---
--- DESCRIPTION
--- Thin orchestration entry for the MasterData tier.
--- Delegates to DataSeed/04_Loaders/00_MasterData.sql (TRUNCATE + invariants).
---
--- PREREQUISITE
---   Schema + Services pipeline complete (Loaders 00–08).
---
--- REQUIRES MOUNT
---   ./DataBase/DataSeed → /docker-entrypoint-initdb.d/DataSeed
---
--- NOT FOR
---   TestData (13_TestData.sql) or DevelopmentData (09_DevelopmentData.sql)
+-- Orchestration only: TRUNCATE + system invariants (00_MasterData/*).
+-- PREREQUISITE: Loaders 00–08 (schema + services).
+-- INVOKED BY: init_demo, init_master, init_dev (step 1).
 -- =========================================================
 
-\echo '>>> data tier: master data'
+\echo '========================================'
+\echo 'MASTER DATA'
+\echo '========================================'
 
-\cd /docker-entrypoint-initdb.d/DataSeed
-\i 04_Loaders/00_MasterData.sql
+\set QUIET 1
+set client_min_messages to warning;
+set timezone to 'Europe/Lisbon';
+
+\echo '>>> step 1: data cleaner'
+\i /docker-entrypoint-initdb.d/DataSeed/00_MasterData/00_DataCleaner.sql
+
+\echo '>>> step 2: module 1 master data'
+\i /docker-entrypoint-initdb.d/DataSeed/00_MasterData/01_Module1_MasterData.sql
+
+\echo '>>> step 3: module 2 master data'
+\i /docker-entrypoint-initdb.d/DataSeed/00_MasterData/02_Module2_MasterData.sql
+
+\echo '>>> step 4: module 3 master data'
+\i /docker-entrypoint-initdb.d/DataSeed/00_MasterData/03_Module3_MasterData.sql
+
+\echo '>>> step 5: module 4 master data'
+\i /docker-entrypoint-initdb.d/DataSeed/00_MasterData/04_Module4_MasterData.sql
+
+\set QUIET 0
+
+\echo '========================================'
+\echo 'MASTER DATA COMPLETE'
+\echo '========================================'

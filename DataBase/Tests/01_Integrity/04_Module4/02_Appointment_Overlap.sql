@@ -2,31 +2,25 @@
 -- INTEGRITY — MODULE 4 — APPOINTMENT OVERLAP (GiST)
 -- =========================================================
 -- TYPE:     01_Integrity
--- REQUIRES: 04_Loaders/03_TestData.sql (Module4 fixtures)
+-- REQUIRES: fixtures/04_Module4_Appointment_Slots.sql (qa_appt_overlap_slot)
 -- RULE:     ex_appointment_vet_overlap
--- FIXTURES: appointment id_app 1 — emp 8, now()+1 day
--- =========================================================
--- expected:
--- - overlapping scheduled slot for same veterinarian blocked
+-- CONTRACT: qa_client_active_id, qa_animal_adopted_id, qa_vet_primary_id, qa_specialty_general_id
 -- =========================================================
 
 do $$
 declare
-    v_slot timestamp;
+    v_slot timestamp := qa_appt_overlap_slot();
+    v_cli int := qa_client_active_id();
+    v_ani int := qa_animal_adopted_id();
+    v_emp int := qa_vet_primary_id();
+    v_spe int := qa_specialty_general_id();
 begin
-    select sch_dat_app into v_slot
-      from appointment
-     where id_emp = 8
-       and status_app = 'scheduled'
-     order by id_app
-     limit 1;
-
     if v_slot is null then
-        raise notice 'FAIL: no scheduled fixture appointment for overlap test';
+        raise notice 'FAIL: qa_appt_overlap_slot fixture missing — run run_fixtures.ps1';
         return;
     end if;
 
-    call sp_create_appointment(4, 3, 8, 1, v_slot);
+    call sp_create_appointment(v_cli, v_ani, v_emp, v_spe, v_slot);
     raise notice 'FAIL: overlapping appointment should be blocked';
 exception
     when others then

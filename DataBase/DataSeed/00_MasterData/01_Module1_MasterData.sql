@@ -8,7 +8,7 @@
 -- and one active administrator employee.
 --
 -- USAGE
--- Loaded by 04_Loaders/00_MasterData.sql after 00_DataCleaner.sql.
+-- Loaded by Bootstrap/Loaders/11_MasterData.sql after 00_DataCleaner.sql.
 -- Does not TRUNCATE (cleaner runs first).
 --
 -- DEPENDENCIES

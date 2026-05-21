@@ -10,10 +10,10 @@
 
 do $$
 declare
-    v_cli int := 4;
-    v_ani int := 3;
-    v_emp int := 8;
-    v_spe int := 1;
+    v_cli int := qa_client_active_id();
+    v_ani int := qa_animal_adopted_id();
+    v_emp int := qa_vet_primary_id();
+    v_spe int := qa_specialty_general_id();
     v_slot timestamp := timestamp '2099-05-15 14:00:00';
     v_attempts int := 50;
     v_ok int := 0;

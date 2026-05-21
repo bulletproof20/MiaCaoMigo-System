@@ -1,9 +1,20 @@
-# Regression suites (future)
+# Regression
 
-Stable, idempotent test chains for CI (e.g. pgTAP or NOTICE parsers).
+CI gate — no stress, no manual.
 
-Candidate flow:
+```powershell
+.\run_regression.ps1
+```
 
-1. `DataSeed/04_Loaders/03_TestData.sql`
-2. `01_Integrity/**`
-3. Exit non-zero on any `FAIL:` in server logs
+## Steps
+
+1. `run_fixtures.ps1` (contracts + all module fixtures + reset)
+2. `01_Integrity/**` (FAIL parser)
+
+## Prerequisite
+
+Docker **init_demo** (Master + Demo).
+
+## Re-run
+
+Always use `run_regression.ps1` or `run_fixtures.ps1` before integrity-only reruns.

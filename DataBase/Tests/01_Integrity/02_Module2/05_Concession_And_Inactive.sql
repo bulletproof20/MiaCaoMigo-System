@@ -4,7 +4,7 @@
 -- TYPE:     01_Integrity
 -- REQUIRES: 04_Loaders/03_TestData.sql
 -- RULE:     sp_process_concession; fn_block_ownership_if_animal_inactive
--- FIXTURES: animal 3 Adotado; animal 3 active ownership
+-- CONTRACT: qa_animal_adopted_id, qa_registrar_emp_id, qa_client_secondary_id
 -- =========================================================
 -- expected:
 -- - concession on adopted animal blocked
@@ -14,7 +14,13 @@
 -- TEST 01 — concession on adopted animal
 do $$
 begin
-    call sp_process_concession(3, 1, 1, 'Integrity concession test', 'OK');
+    call sp_process_concession(
+        qa_animal_adopted_id(),
+        qa_registrar_emp_id(),
+        qa_registrar_emp_id(),
+        'Integrity concession test',
+        'OK'
+    );
     raise notice 'FAIL: concession on adopted animal should be blocked';
 exception
     when others then
@@ -30,7 +36,13 @@ $$;
 do $$
 begin
     insert into ownership (id_cli, id_ani, id_emp, sta_dat_own, mot_own)
-    values (5, 3, 1, current_date, 'Integrity direct ownership');
+    values (
+        qa_client_secondary_id(),
+        qa_animal_adopted_id(),
+        qa_registrar_emp_id(),
+        current_date,
+        'Integrity direct ownership'
+    );
 
     raise notice 'FAIL: ownership on adopted animal should be blocked';
 exception

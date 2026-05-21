@@ -1,5 +1,5 @@
 # Run manual workflow scripts (human-reviewed output)
-# Prerequisites: Bootstrap schema + services; recommended run_test_data.ps1
+# Prerequisites: Bootstrap init_demo; recommended run_fixtures.ps1
 param(
     [string]$Container = "miacaomigo-db",
     [string]$Db = "miacaomigo",
