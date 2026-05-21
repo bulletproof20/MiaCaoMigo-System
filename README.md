@@ -68,13 +68,16 @@ Dockerfile
   Single orchestration layer (`00_Extensions` … `12_DemoData`). Data tiers `\i` datasets under `DataSeed/` directly.
 
 * **Bootstrap/Profiles/**
-  Reusable compositions: `init_minimal`, `init_master`, `init_demo`, `init_dev`, `init_test`, `init_full_qa`.
+  Reusable compositions: `init_minimal`, `init_master`, `init_demo`, `init_test`, `init_full_qa`.
 
 * **DataSeed/**
-  Datasets only. Official init: Master + Demo. QA fixtures: `Tests/fixtures/`. DevelopmentData: manual / init_dev.
+  INSERT tiers only. Contracts: `DataSeed/contracts/00_ENTITIES.md`.
 
-* **Tests/**
-  SQL-centric QA (integrity, stress, manual). CI gate: `Tests/runners/run_regression.ps1` (fixtures + integrity). See `Tests/README.md`, `Tests/MATRIX.md`.
+* **Docs (DataBase/)**
+  `DOC_STYLE.md`, `PASSWORD_AUTH.md`, per-layer `README.md`.
+
+* **Tests/** (optional)
+  QA runners and fixtures — not loaded by default Docker init.
 
 ---
 

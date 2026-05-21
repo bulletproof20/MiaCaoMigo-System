@@ -1,11 +1,13 @@
 -- =========================================================
--- MODULE 3 — COMMERCIAL / SESSION READ (SERVICES)
--- FILE: 01_Session_Read.sql
+-- SESSION READ (MODULE 3 — COMMERCIAL)
+-- FILE: Services/03_Module3/01_Session_Read.sql
 -- =========================================================
---
--- Session and credential helpers aligned with login_record.id_usr
--- (no legacy performs table). Depends on: normalize_email,
--- fn_get_user_by_email, fn_is_employee_email (Module 1).
+-- PURPOSE:   Login session queries (active sessions, last login audit)
+-- DOMAIN:    Module 3 — Commercial (reads Module 1 login_record)
+-- LOADED BY: Bootstrap/Loaders/06_Services.sql
+-- CLEANUP:   drop function if exists before create
+-- =========================================================
+-- Credential hash lookup: see 01_Module1/01_Authentication/03_Credentials_Read.sql
 -- =========================================================
 
 drop function if exists is_user_logged_in(int);
@@ -94,43 +96,4 @@ as $$
       and lr.suc_log = false
     order by lr.sig_tim_log desc
     limit 1;
-$$;
-
-
-drop function if exists get_user_credentials(int);
-
-create or replace function get_user_credentials(p_id_usr int)
-returns table(
-    id_usr int,
-    email varchar,
-    pass_hash varchar,
-    role text
-)
-language sql
-stable
-as $$
-    select
-        e.id_usr,
-        e.ema_emp,
-        e.pas_emp,
-        'employee'::text
-    from employee e
-    where e.id_usr = p_id_usr
-      and e.dea_dat_emp is null
-    union all
-    select
-        u.id_usr,
-        u.ema_usr,
-        c.pas_cli,
-        'client'::text
-    from client c
-    inner join user_account u on u.id_usr = c.id_usr
-    where c.id_usr = p_id_usr
-      and c.ina_dat_cli is null
-      and not exists (
-          select 1
-          from employee e2
-          where e2.id_usr = p_id_usr
-            and e2.dea_dat_emp is null
-      );
 $$;

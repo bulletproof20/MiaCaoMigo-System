@@ -12,7 +12,6 @@
 -- OTHER PROFILES (manual, from container or psql)
 --   Profiles/init_minimal.sql
 --   Profiles/init_master.sql
---   Profiles/init_dev.sql
 --   Profiles/init_test.sql
 --   Profiles/init_full_qa.sql
 --
@@ -28,6 +27,7 @@
 \echo 'MIACAOMIGO DATABASE INITIALIZATION'
 \echo '========================================'
 
+\set ON_ERROR_STOP on
 \set QUIET 1
 set client_min_messages to warning;
 

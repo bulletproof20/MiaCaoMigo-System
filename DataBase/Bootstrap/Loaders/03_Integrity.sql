@@ -148,13 +148,7 @@
 \i /docker-entrypoint-initdb.d/Schema/01_Module1_User_Management/06_Jobs_Mod1.sql
 
 
-\echo '--- module 2 | jobs'
-\i /docker-entrypoint-initdb.d/Schema/02_Module2_Animal_Management/06_Jobs_Mod2.sql
-
-
-\echo '--- module 3 | jobs'
-\i /docker-entrypoint-initdb.d/Schema/03_Module3_Commercial_Management/06_Jobs_Mod3.sql
-
+-- module 2/3: no pg_cron jobs (placeholder files skipped)
 
 \echo '--- module 4 | jobs'
 \i /docker-entrypoint-initdb.d/Schema/04_Module4_Appointment_Management/06_Jobs_Mod4.sql

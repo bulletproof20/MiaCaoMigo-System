@@ -1,9 +1,10 @@
 -- =========================================================
--- BOOTSTRAP PROFILE — TEST (same data tier as demo)
+-- BOOTSTRAP PROFILE — TEST (alias of init_demo)
 -- =========================================================
--- QA entities live in Tests/fixtures/ (run_fixtures.ps1), not DataSeed.
+-- PURPOSE: Same SQL init as init_demo (Master + Demo).
+-- QA data: Tests/fixtures/ via Tests/runners/ — not a separate DataSeed tier.
 -- =========================================================
 
-\echo '>>> profile: init_test (Master + Demo; QA via Tests/runners)'
+\echo '>>> profile: init_test (= init_demo; QA via Tests/runners)'
 
 \i /docker-entrypoint-initdb.d/Profiles/init_demo.sql

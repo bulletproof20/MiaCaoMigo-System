@@ -8,14 +8,15 @@
 -- and one active administrator employee.
 --
 -- USAGE
--- Loaded by Bootstrap/Loaders/11_MasterData.sql after 00_DataCleaner.sql.
--- Does not TRUNCATE (cleaner runs first).
+-- Loaded by Bootstrap/Loaders/11_MasterData.sql after Schema/00_Core/00_Data_Cleanup.sql.
+-- Inserts only (no TRUNCATE in DataSeed).
 --
 -- DEPENDENCIES
 -- Schema + Services pipeline applied. setup rows are created by
 -- trg_create_default_setup on user_account insert (do not insert setup).
 --
--- STABLE IDENTIFIERS (ID contract)
+-- ID CONTRACT: see ../contracts/00_ENTITIES.md (Master tier)
+-- STABLE IDENTIFIERS (this file)
 --   id_usr 1 — bootstrap administrator identity
 --   id_emp 1 — active employee (1@miacaomigo.pt)
 --   id_pro 1 — administrador profile

@@ -8,7 +8,7 @@
 -- that had schedules, onto the target active employee.
 -- =========================================================
 
-create or replace function fn_replicate_previous_schedule (
+create or replace function fn_replicate_previous_schedule ( 
     p_id_emp int
 )
 returns void

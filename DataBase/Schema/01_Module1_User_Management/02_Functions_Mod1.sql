@@ -29,6 +29,7 @@
 -- Blocks clock-in when the timestamp falls inside an absence window
 -- =========================================================
 
+drop function if exists fn_block_clock_in_if_absent();
 create or replace function fn_block_clock_in_if_absent()
 returns trigger as $$
 begin
@@ -54,6 +55,7 @@ $$ language plpgsql;
 -- Blocks employee inactivation while an open clock-in exists
 -- =========================================================
 
+drop function if exists fn_block_inactivate_if_clock_active();
 create or replace function fn_block_inactivate_if_clock_active()
 returns trigger as $$
 begin
@@ -83,6 +85,7 @@ $$ language plpgsql;
 -- Blocks assistant assignment when the employee is already a veterinarian
 -- =========================================================
 
+drop function if exists fn_block_assistant_if_veterinarian_exists();
 create or replace function fn_block_assistant_if_veterinarian_exists()
 returns trigger as $$
 begin
@@ -108,6 +111,7 @@ $$ language plpgsql;
 -- Blocks veterinarian assignment when the employee is already an assistant
 -- =========================================================
 
+drop function if exists fn_block_veterinarian_if_assistant_exists();
 create or replace function fn_block_veterinarian_if_assistant_exists()
 returns trigger as $$
 begin
@@ -133,6 +137,7 @@ $$ language plpgsql;
 -- Prevents overlapping absences for the same user across employee rows
 -- =========================================================
 
+drop function if exists fn_block_absence_overlap_by_user();
 create or replace function fn_block_absence_overlap_by_user()
 returns trigger as $$
 begin
@@ -196,7 +201,6 @@ $$ language plpgsql;
 -- =========================================================
 
 drop function if exists fn_create_default_setup();
-
 create function fn_create_default_setup()
 returns trigger as $$
 begin

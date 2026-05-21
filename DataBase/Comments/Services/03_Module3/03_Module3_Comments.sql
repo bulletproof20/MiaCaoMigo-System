@@ -18,9 +18,6 @@ comment on function get_last_successful_login(integer) is
 comment on function get_last_failed_login(integer) is
 'Most recent failed login_record for the user.';
 
-comment on function get_user_credentials(integer) is
-'Returns email and password hash for active employee or client channel (auth integration).';
-
 -- inventory reads
 comment on function fn_list_product_stock_levels() is
 'Full catalog read from vw_product_stock_levels ordered by product name.';

@@ -1,53 +1,49 @@
-# Bootstrap — pipeline orchestration
+# Bootstrap — orchestration only
 
-Orchestrates database initialization: DDL loaders, Services, optional DataSeed tiers, and sanity checks.
+Docker runs `init.sql` → default profile `init_demo`.
 
-**Structural definitions** live in `../Schema/`. **Datasets** live in `../DataSeed/` (no loaders under DataSeed).
+## Pipeline (init_demo)
 
-## Docker entry
-
-`init.sql` (this folder root) runs on first container start when `Bootstrap/` is mounted to `/docker-entrypoint-initdb.d`.
-
-Default profile: `Profiles/init_demo.sql` (MasterData + DemoData + sanity).
-
-## Loaders (`Loaders/`)
-
-| Loader | Role |
-|--------|------|
-| `00_Extensions` | pg_cron, btree_gist |
-| `01_Structure` | Tables only (`00_Tables_Mod*.sql`) |
-| `02_ForeignKeys` | Foreign keys (`01_ForeignKeys_Mod*.sql`) |
-| `03_Integrity` | Functions, triggers, indexes, views, procedures, jobs |
-| `04_Data_Migration` | ETL placeholder / tier docs |
-| `05_Comments` | COMMENT ON schema objects (`DataBase/Comments/Schema/`) |
-| `08_Service_Comments` | COMMENT ON service functions (`DataBase/Comments/Services/`) |
-| `06_Services` | Application PL/pgSQL |
-| `07_Sanity_Check` | Light post-init catalog smoke |
-| `09_DevelopmentData` | → `DataSeed/02_DevelopmentData/*` (init_dev) |
-| `11_MasterData` | → `DataSeed/00_MasterData/*` |
-| `12_DemoData` | → `DataSeed/03_DemoData/*` |
-
-## Profiles (`Profiles/`)
-
-| Profile | Contents |
-|---------|----------|
-| `init_core.sql` | DDL + services only (shared base) |
-| `init_minimal.sql` | core + sanity |
-| `init_master.sql` | core + MasterData + sanity |
-| `init_demo.sql` | core + Master + Demo + sanity (**Docker default**) |
-| `init_dev.sql` | core + Master + Development + sanity |
-| `init_test.sql` | core + Master + Demo + sanity (QA via `Tests/runners/`) |
-| `init_full_qa.sql` | init_test + hint to run `Tests/runners/` |
-
-Manual example:
-
-```bash
-psql -U postgres -d miacaomigo -f /docker-entrypoint-initdb.d/Profiles/init_test.sql
 ```
+init_core
+  00_Extensions → 01_Types → 01_Structure → 02_FK → 03_Integrity
+  → 05_Comments → 06_Services → 08_Service_Comments
+11_MasterData
+  00_Data_Cleanup (TRUNCATE) → 00_MasterData/*.sql (INSERT)
+12_DemoData → 03_DemoData/*.sql (INSERT)
+07_Sanity_Check
+```
+
+## Loaders
+
+| Loader | Target |
+|--------|--------|
+| `00_Extensions` | pg_cron, btree_gist |
+| `01_Structure` | `Schema/*/00_Tables_Mod*` |
+| `02_ForeignKeys` | `Schema/*/01_ForeignKeys_*` |
+| `03_Integrity` | functions, triggers, indexes, views, procedures, jobs (M1+M4 only) |
+| `05_Comments` | `Comments/Schema/` (skips empty placeholders) |
+| `06_Services` | `Services/` |
+| `08_Service_Comments` | `Comments/Services/` |
+| `07_Sanity_Check` | post-init smoke |
+| `11_MasterData` | `00_Data_Cleanup` + `DataSeed/00_MasterData/` |
+| `12_DemoData` | `DataSeed/03_DemoData/` |
+
+## Profiles
+
+| Profile | Data tiers |
+|---------|------------|
+| `init_core` | DDL + services only |
+| `init_minimal` | core + sanity |
+| `init_master` | core + Master + sanity |
+| `init_demo` | core + Master + Demo + sanity (**default**) |
+| `init_test` | alias → `init_demo` (QA uses `Tests/fixtures/`) |
+| `init_full_qa` | alias → `init_demo` + hint to run `Tests/runners/` |
 
 ## Reset
 
 ```bash
-docker compose down -v
-docker compose up --build -d
+docker compose down -v && docker compose up --build -d
 ```
+
+Docs: `../DOC_STYLE.md`, `../DataSeed/contracts/00_ENTITIES.md`, `../PASSWORD_AUTH.md`.

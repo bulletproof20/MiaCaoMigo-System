@@ -1,3 +1,16 @@
+-- =========================================================
+-- VALIDATIONS (MODULE 1 — CORE)
+-- FILE: Services/01_Module1/00_Core_Mod1/02_Validations.sql
+-- =========================================================
+-- PURPOSE:   Account and password hash checks for auth flows
+-- DOMAIN:    Module 1 — User Management
+-- LOADED BY: Bootstrap/Loaders/06_Services.sql (before authentication)
+-- See:       ../../../PASSWORD_AUTH.md
+-- =========================================================
+
+-- --- fn_is_account_active ---
+-- PURPOSE: true when email maps to an active employee or client row
+
 create or replace function fn_is_account_active(
     p_email varchar
 )
@@ -38,17 +51,10 @@ end;
 $$ language plpgsql;
 
 
---=========================================================
--- function: validate_password
---=========================================================
--- description:
--- validates a user's password based on their email.
---
--- purpose:
--- - retrieves password from correct table
--- - supports both employee and client
--- - uses direct comparison (no encryption)
---=========================================================
+-- --- validate_password ---
+-- PURPOSE: compare stored hash (pas_emp / pas_cli) with API-supplied hash string
+-- NOTE: p_password parameter carries the bcrypt hash from the API, not plaintext
+
 drop function if exists validate_password(varchar, varchar);
 
 create function validate_password(p_email varchar, p_password varchar)
@@ -81,10 +87,7 @@ begin
 
     end if;
 
-    --=====================================================
-    -- 2. VALIDATE PASSWORD
-    --=====================================================
-
+    -- compares stored hash with API-supplied hash (equality; no hashing in DB)
     return v_password_db = p_password;
 
 end;

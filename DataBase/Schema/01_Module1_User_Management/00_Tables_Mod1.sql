@@ -1,15 +1,36 @@
 -- =========================================================
--- MODULE 1 — USER & EMPLOYEE MANAGEMENT
--- File: 00_Tables_Mod1.sql (tables only)
+-- TABLES — MODULE 1 (USER MANAGEMENT)
+-- FILE: Schema/01_Module1_User_Management/00_Tables_Mod1.sql
 -- =========================================================
---
--- DESCRIPTION
--- Accounts, roles, attendance, absences, and related entities.
--- Absence workflow uses absence_status (see 00_Core/01_Types.sql).
---
--- FOREIGN KEYS
--- Applied in 01_ForeignKeys_Mod1.sql after all module tables exist.
+-- PURPOSE:   Core identity, RBAC, attendance, and absence tables
+-- DOMAIN:    Module 1 — User Management
+-- LOADED BY: Bootstrap/Loaders/01_Structure.sql
+-- CLEANUP:   inline DROP (module 1 only) then CREATE
+-- FK LAYER:  01_ForeignKeys_Mod1.sql (uses absence_status from 01_Types.sql)
 -- =========================================================
+
+--=========================================================
+-- 0. CLEANUP
+--=========================================================
+-- removes previous module 1 tables before recreation
+
+drop table if exists occupies cascade;
+drop table if exists have cascade;
+drop table if exists expert cascade;
+drop table if exists assistant cascade;
+drop table if exists veterinarian cascade;
+drop table if exists schedule cascade;
+drop table if exists absence cascade;
+drop table if exists clock_in cascade;
+drop table if exists setup cascade;
+drop table if exists login_record cascade;
+drop table if exists client cascade;
+drop table if exists employee cascade;
+drop table if exists profile cascade;
+drop table if exists permission cascade;
+drop table if exists specialty cascade;
+drop table if exists user_account cascade;
+
 --=========================================================
 -- 1. USER_ACCOUNT
 --=========================================================

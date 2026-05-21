@@ -1,6 +1,0 @@
--- =========================================================
--- QUERIES — CORE (REFERENCE ONLY — NOT LOADED IN INIT)
--- =========================================================
--- normalize_email is defined in Services/00_Core/00_Normalization.sql
--- and loaded via 03_Loaders/06_Services.sql.
--- =========================================================

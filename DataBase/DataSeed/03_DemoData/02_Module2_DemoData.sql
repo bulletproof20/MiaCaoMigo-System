@@ -21,6 +21,7 @@ insert into animal (reg_id_ani, nam_ani, dat_bir_ani, gen_ani, ori_ani, sta_ani,
     ('ANI-DEMO-002', 'Luna', '2021-02-10', 'F', 'Interno', 'Interno', 2, 4),
     ('ANI-DEMO-003', 'Tareco', '2019-11-20', 'M', 'Interno', 'Interno', 2, 2);
 
--- id_cli 1–2: first demo clients (João, Maria). Active custody on animal 2.
+-- id_cli 1–2: first demo clients (João, Maria).
 insert into ownership (id_cli, id_ani, id_emp, sta_dat_own, mot_own) values
+    (1, 1, 2, current_date - interval '3 months', 'Registo clínico demo'),
     (2, 2, 2, current_date - interval '6 months', 'Adoção demo');

@@ -1,17 +1,15 @@
---=========================================================
--- function: login_user
---=========================================================
--- description:
--- validates login attempts based on:
--- - existing account
--- - valid password
--- - active account
--- - no active sessions
---
--- behavior:
--- - all attempts are registered in login_record
--- - only one active session allowed per user
---=========================================================
+-- =========================================================
+-- LOGIN (MODULE 1 — AUTHENTICATION)
+-- FILE: Services/01_Module1/01_Authentication/01_Login.sql
+-- =========================================================
+-- PURPOSE:   Authenticate user, enforce single session, audit login_record
+-- DOMAIN:    Module 1 — User Management
+-- LOADED BY: Bootstrap/Loaders/06_Services.sql
+-- PASSWORD:  p_password must be API-supplied bcrypt hash (see PASSWORD_AUTH.md)
+-- =========================================================
+
+-- --- login_user ---
+-- BEHAVIOUR: registers every attempt; success only when hash, active account, no open session
 
 create or replace function login_user(
     p_email varchar,
@@ -71,10 +69,7 @@ begin
 
     end if;
 
-    --=====================================================
-    -- 3. VALIDATE PASSWORD
-    --=====================================================
-
+    -- delegates hash equality to validate_password (stored vs API hash)
     v_password_ok := validate_password(
         p_email,
         p_password

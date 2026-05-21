@@ -1,15 +1,26 @@
 -- =========================================================
--- MODULE 4 — APPOINTMENT MANAGEMENT
--- File: 00_Tables_Mod4.sql (tables only)
+-- TABLES — MODULE 4 (APPOINTMENT MANAGEMENT)
+-- FILE: Schema/04_Module4_Appointment_Management/00_Tables_Mod4.sql
 -- =========================================================
---
--- DESCRIPTION
--- Consultations, clinical notes, prescriptions, product usage,
--- and client notifications. Workflow fields use appointment_status
--- and invoice_status from 00_Core/01_Types.sql.
---
--- FOREIGN KEYS: 01_ForeignKeys_Mod4.sql (after all module tables exist).
+-- PURPOSE:   Appointments, clinical notes, prescriptions, notifications
+-- DOMAIN:    Module 4 — Appointment Management
+-- LOADED BY: Bootstrap/Loaders/01_Structure.sql
+-- CLEANUP:   inline DROP (module 4 only) then CREATE
+-- FK LAYER:  01_ForeignKeys_Mod4.sql (appointment_status from 01_Types.sql)
 -- =========================================================
+
+-- =========================================================
+-- 0. CLEANUP
+-- =========================================================
+-- removes previous module 4 tables before recreation
+
+drop table if exists rel_app_product cascade;
+drop table if exists rel_pre_prod cascade;
+drop table if exists appointment_notification cascade;
+drop table if exists prescription cascade;
+drop table if exists anamnesis cascade;
+drop table if exists overall_assessment cascade;
+drop table if exists appointment cascade;
 
 -- =========================================================
 -- 1. APPOINTMENT

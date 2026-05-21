@@ -21,7 +21,7 @@ begin
 
     if not exists (
         select 1
-        from vw_active_employee_directory d
+        from vw_active_employee_directory d 
         where d.id_emp = p_id_emp
     ) then
         raise exception 'Employee % does not exist or is inactive.', p_id_emp;

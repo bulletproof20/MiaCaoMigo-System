@@ -1,15 +1,12 @@
 -- =========================================================
--- MODULE 3 — COMMERCIAL MANAGEMENT
--- File: 00_Tables_Mod3.sql (tables only)
+-- TABLES — MODULE 3 (COMMERCIAL MANAGEMENT)
+-- FILE: Schema/03_Module3_Commercial_Management/00_Tables_Mod3.sql
 -- =========================================================
---
--- DESCRIPTION
--- Product catalog, stock, purchases, invoicing, returns, and
--- employee linkage for commercial operations. Workflow status
--- fields use purchase_status from 00_Core/01_Types.sql.
---
--- FOREIGN KEYS
--- Applied in 01_ForeignKeys_Mod3.sql after all module tables exist.
+-- PURPOSE:   Products, stock, purchases, invoices, returns
+-- DOMAIN:    Module 3 — Commercial Management
+-- LOADED BY: Bootstrap/Loaders/01_Structure.sql
+-- CLEANUP:   inline DROP (module 3 only) then CREATE
+-- FK LAYER:  01_ForeignKeys_Mod3.sql (purchase_status from 01_Types.sql)
 -- =========================================================
 
 

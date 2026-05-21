@@ -1,9 +1,9 @@
 -- =========================================================
 -- DATA TIER LOADER — MASTER DATA
 -- =========================================================
--- Orchestration only: TRUNCATE + system invariants (00_MasterData/*).
+-- Orchestration only: Core data reset + MasterData inserts (00_MasterData/*).
 -- PREREQUISITE: Loaders 00–08 (schema + services).
--- INVOKED BY: init_demo, init_master, init_dev (step 1).
+-- INVOKED BY: init_demo, init_master.
 -- =========================================================
 
 \echo '========================================'
@@ -14,8 +14,8 @@
 set client_min_messages to warning;
 set timezone to 'Europe/Lisbon';
 
-\echo '>>> step 1: data cleaner'
-\i /docker-entrypoint-initdb.d/DataSeed/00_MasterData/00_DataCleaner.sql
+\echo '>>> step 1: logical data reset (Core)'
+\i /docker-entrypoint-initdb.d/Schema/00_Core/00_Data_Cleanup.sql
 
 \echo '>>> step 2: module 1 master data'
 \i /docker-entrypoint-initdb.d/DataSeed/00_MasterData/01_Module1_MasterData.sql

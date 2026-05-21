@@ -1,16 +1,28 @@
 -- =========================================================
--- MODULE 2 — ANIMAL MANAGEMENT
--- File: 00_Tables_Mod2.sql (tables only)
+-- TABLES — MODULE 2 (ANIMAL MANAGEMENT)
+-- FILE: Schema/02_Module2_Animal_Management/00_Tables_Mod2.sql
 -- =========================================================
---
--- DESCRIPTION
--- Species, breeds, animals, ownership, external entities,
--- deliveries, and concessions. Status-like free text (e.g. animal
--- clinical state) remains VARCHAR where values are not a fixed enum.
---
--- FOREIGN KEYS
--- Applied in 01_ForeignKeys_Mod2.sql after all module tables exist.
+-- PURPOSE:   Species, animals, ownership, deliveries, concessions
+-- DOMAIN:    Module 2 — Animal Management
+-- LOADED BY: Bootstrap/Loaders/01_Structure.sql
+-- CLEANUP:   inline DROP (module 2 only) then CREATE
+-- FK LAYER:  01_ForeignKeys_Mod2.sql (includes optional animal.id_cli link)
 -- =========================================================
+
+--=========================================================
+-- 0. CLEANUP
+--=========================================================
+-- removes previous module 2 tables before recreation
+
+drop table if exists delivery_employee cascade;
+drop table if exists concession cascade;
+drop table if exists delivery cascade;
+drop table if exists ownership cascade;
+drop table if exists animal cascade;
+drop table if exists breed cascade;
+drop table if exists species cascade;
+drop table if exists external_entity cascade;
+
 --=========================================================
 -- 1. SPECIES
 --=========================================================
@@ -95,11 +107,6 @@ create table animal (
 
     constraint uq_reg_id_ani unique (reg_id_ani),
     -- Prevents duplicate registrations
-
-    constraint fk_animal_client
-        foreign key (id_cli)
-        references client(id_cli)
-        on delete set null,
 
     constraint ck_gen_ani
     check (gen_ani in ('M','F') or gen_ani is null)

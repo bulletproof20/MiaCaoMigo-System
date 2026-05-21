@@ -27,7 +27,6 @@
 -- Purpose: operational directory of staff with active contracts
 
 drop view if exists vw_active_employee_directory;
-
 create view vw_active_employee_directory as
 select
     e.id_emp,
@@ -49,7 +48,6 @@ where e.dea_dat_emp is null;
 -- Purpose: supports attendance hygiene and open-shift monitoring
 
 drop view if exists vw_open_clock_in_sessions;
-
 create view vw_open_clock_in_sessions as
 select
     c.id_clk,

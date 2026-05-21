@@ -120,7 +120,7 @@ begin
         id_usr,
         pho_emp,
         pho_emg,
-        ema_emp,
+        ema_emp, 
         pas_emp,
         reg_dat_emp,
         aut_reg_emp

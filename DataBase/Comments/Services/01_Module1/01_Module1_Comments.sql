@@ -47,7 +47,7 @@ comment on function fn_is_account_active(character varying) is
 'True for active employees (dea_dat_emp null) or active clients (ina_dat_cli null).';
 
 comment on function validate_password(character varying, character varying) is
-'Compares plaintext password against pas_emp or pas_cli for the resolved email channel.';
+'Compares API-supplied bcrypt hash against stored pas_emp or pas_cli for the resolved email channel.';
 
 -- authentication
 comment on function has_active_sessions(character varying) is
@@ -57,10 +57,13 @@ comment on function close_active_sessions_by_email(character varying) is
 'Sets sou_tim_log on all open successful sessions for the given email.';
 
 comment on function login_user(character varying, character varying, inet) is
-'Authenticates by email/password, enforces single session, and writes login_record audit rows.';
+'Authenticates by email and API-supplied password hash; enforces single session; audits login_record.';
 
 comment on function logout_user(character varying) is
 'Closes the active successful session for the email; returns false when none exists.';
+
+comment on function get_user_credentials(integer) is
+'Read-only: email and stored password hash for employee or client channel (integration helper).';
 
 -- user creation
 comment on function fn_create_user_account(character varying, text, character varying, character varying, character varying, character varying) is

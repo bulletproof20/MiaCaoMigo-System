@@ -1,11 +1,15 @@
---=========================================================
--- DATABASE TYPE CLEANUP
--- Veterinary Clinic Management System
---=========================================================
---
--- DESCRIPTION
--- --------------------------------------------------------
--- Removes all PostgreSQL ENUM types used across the system.
+-- =========================================================
+-- CORE TYPES
+-- FILE: Schema/00_Core/01_Types.sql
+-- =========================================================
+-- PURPOSE:   Shared ENUM types (workflow statuses)
+-- DOMAIN:    Core
+-- LOADED BY: Bootstrap/Profiles/init_core.sql (before 01_Structure)
+-- CLEANUP:   inline DROP TYPE then CREATE
+-- =========================================================
+
+-- --- CLEANUP: ENUM types (reverse dependency handled by CASCADE) ---
+-- removes previous enum definitions before recreation
 --
 -- Types are removed after dependent tables to prevent
 -- dependency conflicts during database cleanup.
@@ -51,12 +55,10 @@ drop type if exists invoice_status cascade;
 
 drop type if exists appointment_status cascade;
 
---=========================================================
--- DATABASE CUSTOM TYPES
---=========================================================
---
+-- --- CREATE: shared ENUM types ---
+-- central catalog of workflow status values used by module tables
+
 -- DESCRIPTION
--- --------------------------------------------------------
 -- Central catalog of PostgreSQL ENUM types used for workflow
 -- and lifecycle status fields across all modules.
 --

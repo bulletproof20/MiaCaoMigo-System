@@ -27,6 +27,7 @@
 -- Closes overnight clock-ins still missing an end timestamp
 -- =========================================================
 
+drop procedure if exists sp_auto_close_clock_in_midnight();
 create or replace procedure sp_auto_close_clock_in_midnight()
 language plpgsql
 as $$
@@ -46,6 +47,7 @@ $$;
 -- Marks expired pending absences as cancelled
 -- =========================================================
 
+drop procedure if exists sp_auto_cancel_expired_absences();
 create or replace procedure sp_auto_cancel_expired_absences()
 language plpgsql
 as $$

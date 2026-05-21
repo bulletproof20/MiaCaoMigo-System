@@ -6,7 +6,8 @@
 -- PURPOSE
 -- Scheduled and completed appointments using demo identities.
 -- Requires active ownership (see 03_DemoData/02_Module2_DemoData.sql):
---   id_cli 2, id_ani 2, id_emp 2, id_spe 1.
+--   id_cli 1, id_ani 1 — Bobi / João (bootstrap vet id_emp 2)
+--   id_cli 2, id_ani 2 — Luna / Maria (demo vet id_emp 3)
 -- =========================================================
 
 insert into appointment (
@@ -14,6 +15,10 @@ insert into appointment (
     sch_dat_app, sta_dat_app, end_dat_app,
     status_app, dia_app, com_app
 ) values
+    (1, 2, 1, 1,
+     current_timestamp + interval '3 days',
+     null, null,
+     'scheduled', null, 'Primeira consulta Bobi'),
     (2, 2, 2, 1,
      current_timestamp + interval '1 day',
      null, null,

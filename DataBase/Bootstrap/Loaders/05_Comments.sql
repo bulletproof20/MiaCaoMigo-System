@@ -1,18 +1,11 @@
 -- =========================================================
--- COMMENTS LAYER (Bootstrap/Loaders/05_Comments.sql)
+-- COMMENTS LAYER LOADER
+-- FILE: Bootstrap/Loaders/05_Comments.sql
 -- =========================================================
---
--- DESCRIPTION
--- Applies COMMENT ON metadata after structural and behavioral DDL.
--- Sources live under DataBase/Comments/Schema/ (not under Schema/).
---
--- ORDER (mirrors Schema module folders)
--- Core types -> per module: tables, FKs, functions, triggers,
--- indexes, views, procedures, jobs.
---
--- PURPOSE
--- Documentation for operators, SchemaSpy, and tooling reading
--- pg_catalog descriptions.
+-- PURPOSE:   Apply COMMENT ON for Schema objects (Catalog metadata)
+-- DOMAIN:    Bootstrap orchestration
+-- SKIPS:     Empty placeholders (00_Common, Mod2/3/4 job comment stubs)
+-- ORDER:     Mirrors 03_Integrity (types → tables → … → views → procedures)
 -- =========================================================
 
 \echo '========================================'
@@ -32,11 +25,7 @@
 
 \i /docker-entrypoint-initdb.d/Comments/Schema/00_Core/02_Types_Comments.sql
 
-\echo '--- core | shared functions'
-
-\i /docker-entrypoint-initdb.d/Comments/Schema/00_Core/00_Common_Functions_Comments.sql
-
-
+-- (00_Common_Functions_Comments.sql is a placeholder — not loaded)
 
 -- =========================================================
 -- module 1 comments
@@ -79,10 +68,7 @@
 
 \i /docker-entrypoint-initdb.d/Comments/Schema/01_Module1/05_Procedures_Mod1_Comments.sql
 
-
-\echo '--- module 1 | job comments'
-
-\i /docker-entrypoint-initdb.d/Comments/Schema/01_Module1/06_Jobs_Mod1_Comments.sql
+-- (06_Jobs_Mod1_Comments.sql — narrative only; pg_cron jobs documented in Schema)
 
 
 
@@ -127,10 +113,7 @@
 
 \i /docker-entrypoint-initdb.d/Comments/Schema/02_Module2/05_Procedures_Mod2_Comments.sql
 
-
-\echo '--- module 2 | job comments'
-
-\i /docker-entrypoint-initdb.d/Comments/Schema/02_Module2/06_Jobs_Mod2_Comments.sql
+-- (06_Jobs_Mod2 — no cron jobs; comment file not loaded)
 
 
 
@@ -175,10 +158,7 @@
 
 \i /docker-entrypoint-initdb.d/Comments/Schema/03_Module3/05_Procedures_Mod3_Comments.sql
 
-
-\echo '--- module 3 | job comments'
-
-\i /docker-entrypoint-initdb.d/Comments/Schema/03_Module3/06_Jobs_Mod3_Comments.sql
+-- (06_Jobs_Mod3 — no cron jobs; comment file not loaded)
 
 
 
@@ -223,11 +203,7 @@
 
 \i /docker-entrypoint-initdb.d/Comments/Schema/04_Module4/05_Procedures_Mod4_Comments.sql
 
-
-\echo '--- module 4 | job comments'
-
-\i /docker-entrypoint-initdb.d/Comments/Schema/04_Module4/06_Jobs_Mod4_Comments.sql
-
+-- (06_Jobs_Mod4_Comments — narrative only; not loaded)
 
 \echo '========================================'
 \echo 'COMMENTS LAYER COMPLETE'

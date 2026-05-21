@@ -1,11 +1,7 @@
 -- =========================================================
--- comments: core (shared utilities)
+-- PLACEHOLDER — NOT LOADED AT BOOTSTRAP
+-- FILE: Comments/Schema/00_Core/00_Common_Functions_Comments.sql
 -- =========================================================
--- Cross-cutting SQL objects are not maintained under a separate
--- Schema/00_Core and module trees; shared extensions load in 00_Extensions.sql
--- and behavioral objects live in numbered module files.
---
--- This placeholder keeps the comments loader layout stable and
--- documents that no standalone “common function” catalog exists
--- beyond per-module Schema folders.
+-- PURPOSE: Reserved layout slot; no COMMENT ON targets.
+-- Bootstrap/Loaders/05_Comments.sql skips this file.
 -- =========================================================

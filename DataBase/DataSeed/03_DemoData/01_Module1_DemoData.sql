@@ -3,9 +3,12 @@
 -- FILE: 01_Module1_DemoData.sql
 -- =========================================================
 --
--- PURPOSE
--- Realistic clinic staff and client identities for staging/demos.
--- Requires 00_MasterData/01_Module1_MasterData.sql (bootstrap ids 1–2).
+-- PURPOSE:   Functional demo staff, clients, and schedules
+-- DOMAIN:    DemoData tier — Module 1 (workflows; not Master invariants)
+-- PREREQ:    MasterData bootstrap ids 1–2
+-- CONTRACT:  ../contracts/00_ENTITIES.md (Demo tier)
+-- PASSWORD:  ../PASSWORD_AUTH.md (hash literals in inserts)
+-- CLEANUP:   none (insert only)
 -- =========================================================
 
 set timezone to 'Europe/Lisbon';
